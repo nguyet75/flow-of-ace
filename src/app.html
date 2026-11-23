@@ -1,0 +1,1013 @@
+<title>LockIn: Volleyball</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="theme-color" content="#0b0f14">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Layout: one-column, thumb-first sideline app. Fixed top status bar during a session, big tap zones, full-bleed drill arenas. Single committed dark "court at night" look. */
+:root {
+  --bg: #0b0f14;          /* obsidian */
+  --surface: #131a22;     /* slate panel */
+  --surface-2: #1b2430;
+  --line: #2a3644;
+  --fg: #eef3f7;
+  --muted: #8b9aab;
+  --optic: #e4ff3a;       /* optic yellow */
+  --cyan: #2ee6ff;        /* electric cyan */
+  --warn: #ff9f43;
+  --good: #3ddc97;
+  --on-accent: #0b0f14;
+  --font-display: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --r: 18px;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; }
+body {
+  background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 15px; line-height: 1.45;
+  overscroll-behavior: none;
+}
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible { outline: 3px solid var(--cyan); outline-offset: 2px; }
+h1, h2, h3 { font-family: var(--font-display); text-transform: uppercase; letter-spacing: .02em; line-height: 1; margin: 0; text-wrap: balance; }
+.eyebrow { font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: .14em; font-size: 13px; color: var(--muted); }
+.app { max-width: 520px; margin: 0 auto; min-height: 100%; display: flex; flex-direction: column;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.screen { display: flex; flex-direction: column; gap: 18px; padding-block: 16px 28px; flex: 1; }
+.screen[hidden] { display: none !important; }
+
+/* Buttons */
+.btn { display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 64px; border-radius: var(--r); border: 0;
+  font-family: var(--font-display); font-weight: 800; font-size: 24px; text-transform: uppercase; letter-spacing: .04em; width: 100%; }
+.btn-primary { background: var(--optic); color: var(--on-accent); }
+.btn-primary:active { transform: scale(.98); }
+.btn-ghost { background: var(--surface); border: 1px solid var(--line); color: var(--fg); font-size: 20px; min-height: 56px; }
+.btn[disabled] { opacity: .35; }
+.row { display: flex; gap: 10px; }
+.row > * { flex: 1; min-width: 0; }
+.link { background: none; border: 0; color: var(--cyan); font-weight: 600; padding: 8px 0; text-align: left; }
+
+/* Hub */
+.brand { display: flex; align-items: baseline; gap: 10px; padding-top: 8px; }
+.brand h1 { font-size: 46px; font-weight: 800; }
+.brand h1 b { color: var(--optic); }
+.brand .colon { color: var(--cyan); }
+.tag { color: var(--muted); max-width: 40ch; }
+.sports { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.sport { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px; min-height: 112px;
+  display: flex; flex-direction: column; justify-content: space-between; text-align: left; }
+.sport .name { font-family: var(--font-display); font-weight: 800; font-size: 24px; text-transform: uppercase; }
+.sports > .sport:last-child:nth-child(even) { grid-column: 1 / -1; min-height: 96px; }
+.sport.active { grid-column: 1 / -1; min-height: 150px; border: 2px solid var(--optic);
+  background: radial-gradient(120% 140% at 100% 0%, rgba(228,255,58,.18), transparent 60%), var(--surface); }
+.sport.active .name { font-size: 40px; color: var(--optic); }
+.sport.active .go { font-family: var(--font-display); font-weight: 700; font-size: 18px; color: var(--fg); text-transform: uppercase; letter-spacing: .08em; }
+.sport.locked .name { color: var(--muted); }
+.badge { display: inline-block; font-family: var(--font-display); font-weight: 700; font-size: 12px; letter-spacing: .1em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 99px; border: 1px solid var(--cyan); color: var(--cyan); width: max-content; }
+.badge.live { border-color: var(--optic); color: var(--on-accent); background: var(--optic); }
+.wl { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--muted); }
+.switch { position: relative; width: 44px; height: 26px; border-radius: 99px; background: var(--surface-2); border: 1px solid var(--line); flex: none; padding: 0; }
+.switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: var(--muted); transition: transform .2s; }
+.switch[aria-checked="true"] { background: var(--cyan); border-color: var(--cyan); }
+.switch[aria-checked="true"]::after { transform: translateX(18px); background: var(--on-accent); }
+.foot { color: var(--muted); font-size: 12px; }
+
+/* Check-in */
+.q { display: flex; flex-direction: column; gap: 10px; }
+.q h2 { font-size: 26px; }
+.choices { display: grid; gap: 10px; }
+.choices.two { grid-template-columns: 1fr 1fr; }
+.choices.three { grid-template-columns: repeat(3, 1fr); }
+.choice { background: var(--surface); border: 2px solid var(--line); border-radius: var(--r); padding: 14px 12px; min-height: 76px; text-align: left;
+  display: flex; flex-direction: column; justify-content: center; gap: 2px; }
+.choice .t { font-family: var(--font-display); font-weight: 800; font-size: 22px; text-transform: uppercase; line-height: 1.05; }
+.choice .s { color: var(--muted); font-size: 12.5px; }
+.choice[aria-pressed="true"] { border-color: var(--optic); background: var(--surface-2); }
+.choice[aria-pressed="true"] .t { color: var(--optic); }
+.choices.three .choice { text-align: center; align-items: center; }
+.choices.three .t { font-size: 34px; }
+.state-flat[aria-pressed="true"] { border-color: var(--optic); }
+.state-anx[aria-pressed="true"] { border-color: var(--cyan); }
+.state-anx[aria-pressed="true"] .t { color: var(--cyan); }
+.ames { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-size: 12px; padding: 4px 10px; border-radius: 99px; background: var(--surface-2); color: var(--muted); border: 1px solid var(--line); }
+.chip.low { color: var(--warn); border-color: rgba(255,159,67,.5); }
+.chip.ok { color: var(--good); border-color: rgba(61,220,151,.5); }
+
+/* Session bar */
+.sbar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); display: flex; align-items: center; gap: 12px; padding-block: 10px; border-bottom: 1px solid var(--line); }
+.sbar[hidden] { display: none; }
+.sbar .clock { display: flex; align-items: center; gap: 10px; }
+.sbar .clock .v { font-family: var(--font-display); font-weight: 800; font-size: 26px; font-variant-numeric: tabular-nums; line-height: 1; }
+.sbar .clock .l { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; }
+.steps { display: flex; gap: 4px; flex: 1; }
+.steps i { flex: 1; height: 5px; border-radius: 3px; background: var(--surface-2); }
+.steps i.done { background: var(--cyan); }
+.steps i.now { background: var(--optic); }
+.iconbtn { width: 44px; height: 44px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); display: grid; place-items: center; flex: none; padding: 0; }
+.iconbtn svg { width: 22px; height: 22px; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+
+/* Ring */
+.ring { transform: rotate(-90deg); }
+.ring .trk { stroke: var(--surface-2); }
+.ring .bar { stroke: var(--optic); stroke-linecap: round; transition: stroke-dashoffset .25s linear; }
+
+/* Prime */
+.prime-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; }
+.prime-head h2 { font-size: 34px; }
+.bpm { text-align: right; }
+.bpm .v { font-family: var(--font-display); font-weight: 800; font-size: 40px; line-height: 1; color: var(--optic); font-variant-numeric: tabular-nums; }
+.bpm .l { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; }
+.breath { position: relative; display: grid; place-items: center; aspect-ratio: 1; max-width: 100%; width: min(320px, 82vw); margin: 0 auto; }
+.breath svg.ring { position: absolute; inset: 0; width: 100%; height: 100%; }
+.orb { width: 46%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 35% 30%, var(--cyan), rgba(46,230,255,.15) 70%);
+  box-shadow: 0 0 60px rgba(46,230,255,.35); transform: scale(.7); transition-property: transform; transition-timing-function: ease-in-out; }
+.orb.flat { background: radial-gradient(circle at 35% 30%, var(--optic), rgba(228,255,58,.12) 70%); box-shadow: 0 0 60px rgba(228,255,58,.35); }
+.breath .lbl { position: absolute; bottom: 14%; font-family: var(--font-display); font-weight: 800; font-size: 26px; text-transform: uppercase; text-align: center; }
+.breath .cnt { position: absolute; top: 16%; font-family: var(--font-display); font-weight: 700; font-size: 18px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.seg { display: flex; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 4px; gap: 4px; }
+.seg button { flex: 1; min-height: 44px; border: 0; border-radius: 10px; background: transparent; color: var(--muted); font-weight: 600; }
+.seg button[aria-pressed="true"] { background: var(--surface-2); color: var(--fg); }
+.note { font-size: 13px; color: var(--muted); }
+.note.warn { color: var(--warn); }
+.curve { width: 100%; height: auto; display: block; }
+
+/* Drills */
+.drill-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.drill-head h2 { font-size: 28px; }
+.mini-ring { position: relative; width: 52px; height: 52px; flex: none; }
+.mini-ring svg { width: 100%; height: 100%; }
+.mini-ring span { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--font-display); font-weight: 800; font-size: 18px; font-variant-numeric: tabular-nums; }
+.arena { position: relative; height: min(58vh, 460px); border-radius: var(--r); background:
+  linear-gradient(var(--line), var(--line)) center 34% / 100% 2px no-repeat,
+  repeating-linear-gradient(90deg, transparent 0 calc(50% - 1px), rgba(42,54,68,.6) calc(50% - 1px) calc(50% + 1px), transparent calc(50% + 1px) 100%),
+  var(--surface); overflow: hidden; touch-action: manipulation; user-select: none; }
+.arena .intro { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; gap: 14px; padding: 22px; background: rgba(11,15,20,.88); z-index: 3; }
+.arena .intro h3 { font-size: 30px; color: var(--optic); }
+.arena .intro ul { margin: 0; padding-left: 18px; color: var(--fg); display: grid; gap: 6px; }
+.tgt { position: absolute; width: 104px; height: 104px; margin: -52px 0 0 -52px; border-radius: 50%; border: 2px dashed var(--line);
+  display: grid; place-items: center; text-align: center; background: transparent; padding: 6px; }
+.tgt span { font-family: var(--font-display); font-weight: 700; font-size: 13px; letter-spacing: .06em; color: var(--muted); line-height: 1.05; text-transform: uppercase; }
+.tgt.lit { border: 0; background: var(--optic); box-shadow: 0 0 40px rgba(228,255,58,.55); }
+.tgt.lit span { color: var(--on-accent); }
+.tgt.hit { background: var(--cyan); box-shadow: 0 0 30px rgba(46,230,255,.6); }
+.anchor { position: absolute; left: 50%; top: 45%; width: 70px; height: 70px; margin: -35px 0 0 -35px; border-radius: 50%; border: 3px solid var(--optic);
+  display: grid; place-items: center; font-family: var(--font-display); font-weight: 800; font-size: 34px; color: var(--optic); }
+.anchor::after { content: ""; position: absolute; width: 8px; height: 8px; border-radius: 50%; background: var(--optic); }
+.anchor b { position: absolute; top: -26px; font-size: 13px; letter-spacing: .1em; color: var(--muted); white-space: nowrap; }
+.blip { position: absolute; width: 46px; height: 46px; border-radius: 10px; background: var(--cyan); box-shadow: 0 0 30px rgba(46,230,255,.7); opacity: 0; }
+.blip.on { opacity: 1; }
+.sides { position: absolute; left: 0; right: 0; bottom: 0; display: flex; gap: 2px; }
+.sides button { flex: 1; min-height: 96px; border: 0; background: rgba(27,36,48,.92); font-family: var(--font-display); font-weight: 800; font-size: 22px; text-transform: uppercase; letter-spacing: .06em; }
+.sides button.ok { background: var(--good); color: var(--on-accent); }
+.sides button.no { background: var(--warn); color: var(--on-accent); }
+.nf { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; padding: 20px; transition: background .3s; }
+.nf .big { font-family: var(--font-display); font-weight: 800; font-size: 56px; line-height: 1; }
+.nf .tiny { font-family: var(--font-body); font-weight: 600; font-size: 13px; letter-spacing: .02em; color: var(--fg); background: var(--bg); padding: 4px 8px; border-radius: 6px; }
+.nf.near .big { color: var(--cyan); }
+.nf.far { background: #05070a; }
+.nf.far .big { color: var(--optic); }
+.result { display: flex; gap: 10px; }
+.stat { flex: 1; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; }
+.stat .v { font-family: var(--font-display); font-weight: 800; font-size: 28px; font-variant-numeric: tabular-nums; }
+.stat .l { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+
+/* Viz */
+.viz-stage { position: relative; min-height: 230px; background: var(--surface); border-radius: var(--r); border: 1px solid var(--line); padding: 22px; display: flex; flex-direction: column; justify-content: center; gap: 14px; }
+.viz-line { font-family: var(--font-display); font-weight: 700; font-size: 30px; line-height: 1.1; text-transform: none; transition: opacity .5s; }
+.viz-n { font-size: 12px; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; font-family: var(--font-display); font-weight: 700; }
+.cues { display: grid; gap: 10px; }
+.cue { text-align: left; background: var(--surface); border: 2px solid var(--line); border-radius: 14px; min-height: 60px; padding: 12px 14px;
+  font-family: var(--font-display); font-weight: 800; font-size: 22px; text-transform: uppercase; }
+.cue[aria-pressed="true"] { border-color: var(--optic); color: var(--optic); }
+input[type=text] { width: 100%; min-height: 56px; border-radius: 14px; border: 2px solid var(--line); background: var(--surface); color: var(--fg);
+  padding: 0 14px; font-size: 17px; }
+input[type=text]::placeholder { color: var(--muted); }
+
+/* Deck */
+.deck { position: relative; height: 400px; touch-action: pan-y; }
+.card { position: absolute; inset: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 22px; padding: 20px; display: flex; flex-direction: column; gap: 12px;
+  transition: transform .3s ease, opacity .3s ease; will-change: transform; }
+.card.dragging { transition: none; }
+.card h3 { font-size: 32px; }
+.card .dose { font-family: var(--font-display); font-weight: 700; font-size: 20px; color: var(--cyan); text-transform: uppercase; }
+.card .cuebox { border-left: 4px solid var(--optic); padding: 4px 0 4px 12px; font-weight: 600; font-size: 17px; }
+.card .why { color: var(--muted); font-size: 13.5px; }
+.card .acts { margin-top: auto; display: flex; gap: 8px; }
+.card .acts button { flex: 1; min-height: 52px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface-2); font-weight: 600; }
+.card .acts button[aria-pressed="true"] { background: var(--optic); color: var(--on-accent); border-color: var(--optic); }
+.dots { display: flex; justify-content: center; gap: 8px; }
+.dots i { width: 9px; height: 9px; border-radius: 50%; background: var(--surface-2); }
+.dots i.on { background: var(--optic); }
+.flash { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; background: var(--bg); font-family: var(--font-display); font-weight: 800; font-size: 120px; color: var(--surface-2); }
+.flash.go { background: var(--optic); color: var(--on-accent); }
+
+/* Lock-in */
+#lock { gap: 14px; }
+.lock-top { display: flex; justify-content: space-between; align-items: center; }
+.zone { font-family: var(--font-display); font-weight: 800; font-size: 18px; letter-spacing: .2em; color: var(--cyan); text-transform: uppercase; }
+.anchor-big { font-family: var(--font-display); font-weight: 800; font-size: clamp(48px, 15vw, 76px); line-height: .92; text-transform: uppercase; color: var(--optic); overflow-wrap: anywhere; }
+.lk { display: grid; gap: 2px; padding: 14px 0; border-top: 1px solid var(--line); }
+.lk .k { font-family: var(--font-display); font-weight: 700; letter-spacing: .14em; font-size: 13px; color: var(--muted); text-transform: uppercase; }
+.lk .v { font-family: var(--font-display); font-weight: 800; font-size: 28px; line-height: 1.05; text-transform: uppercase; }
+.lk.vis .v { color: var(--cyan); }
+.reset-run { position: fixed; inset: 0; z-index: 30; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; text-align: center; padding: 24px; }
+.reset-run .big { font-family: var(--font-display); font-weight: 800; font-size: 54px; text-transform: uppercase; line-height: 1; }
+.reset-run .dotfix { width: 18px; height: 18px; border-radius: 50%; background: var(--optic); box-shadow: 0 0 30px var(--optic); }
+
+/* Sheet & toast */
+.sheet { position: fixed; inset: 0; z-index: 50; background: rgba(5,7,10,.7); display: flex; align-items: flex-end; }
+.sheet .panel { background: var(--surface); border-radius: 22px 22px 0 0; max-height: 86vh; overflow: auto; width: 100%; max-width: 560px; margin: 0 auto;
+  padding: 20px max(18px, env(safe-area-inset-right, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) max(18px, env(safe-area-inset-left, 0px)); display: grid; gap: 14px; }
+.sheet h2 { font-size: 30px; }
+.sci { display: grid; gap: 4px; padding-top: 12px; border-top: 1px solid var(--line); }
+.sci h3 { font-size: 20px; }
+.sci p { margin: 0; color: var(--muted); font-size: 13.5px; }
+.sci a { color: var(--cyan); }
+.ev { font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+.ev.m { color: var(--good); } .ev.l { color: var(--warn); }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); z-index: 60; background: var(--optic); color: var(--on-accent);
+  font-family: var(--font-display); font-weight: 800; font-size: 20px; text-transform: uppercase; padding: 14px 20px; border-radius: 14px; width: min(480px, calc(100% - 32px)); text-align: center; }
+.toast.cyan { background: var(--cyan); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0s !important; animation-duration: 0s !important; }
+}
+@media (max-width: 360px) {
+  .choices.three .t { font-size: 28px; }
+  .brand h1 { font-size: 38px; }
+}
+</style>
+
+<div class="app" id="app">
+  <!-- Session bar -->
+  <div class="sbar" id="sbar" hidden>
+    <div class="clock">
+      <div class="mini-ring" aria-hidden="true">
+        <svg viewBox="0 0 52 52" class="ring"><circle class="trk" cx="26" cy="26" r="22" fill="none" stroke-width="5"/><circle id="clockRing" class="bar" cx="26" cy="26" r="22" fill="none" stroke-width="5"/></svg>
+      </div>
+      <div><div class="v" id="clockV">10:00</div><div class="l" id="clockL">to first serve</div></div>
+    </div>
+    <div class="steps" id="steps" aria-label="Progress"></div>
+    <button class="iconbtn" id="muteBtn" aria-label="Mute audio">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path id="muteWave" d="M16 9a4 4 0 0 1 0 6M19 6a8 8 0 0 1 0 12"/></svg>
+    </button>
+  </div>
+
+  <!-- HUB -->
+  <section class="screen" id="hub">
+    <div class="brand"><h1>Lock<b>In</b><span class="colon">:</span></h1></div>
+    <p class="tag">A 5 to 15 minute pre-match routine: settle your arousal level, prime your eyes, rehearse your role, and walk on court with one cue.</p>
+    <div class="sports" id="sports"></div>
+    <button class="link" data-sheet="science">How this works and what the research supports</button>
+    <p class="foot">Works offline once loaded. Waitlist choices are saved on this device only.</p>
+  </section>
+
+  <!-- CHECK-IN -->
+  <section class="screen" id="checkin" hidden>
+    <div class="row" style="align-items:center">
+      <div class="eyebrow">Check-in · 15 seconds</div>
+      <button class="link" style="flex:none;text-align:right" id="backHub">Sports</button>
+    </div>
+    <div class="q">
+      <h2>Your position</h2>
+      <div class="choices two" id="posChoices"></div>
+    </div>
+    <div class="q">
+      <h2>How do you feel right now?</h2>
+      <div class="choices" id="stateChoices"></div>
+      <div class="ames" id="amesChips" aria-live="polite"></div>
+    </div>
+    <div class="q">
+      <h2>Minutes to first serve</h2>
+      <div class="choices three" id="winChoices"></div>
+    </div>
+    <button class="btn btn-primary" id="startBtn" disabled>Start lock-in</button>
+    <p class="note">Start audio with headphones in. Do this after your team warm-up, not instead of it.</p>
+  </section>
+
+  <!-- PRIME -->
+  <section class="screen" id="prime" hidden>
+    <div class="prime-head">
+      <div><div class="eyebrow" id="primeEyebrow">Step 1 · Arousal tune</div><h2 id="primeTitle">Calm the engine</h2></div>
+      <div class="bpm"><div class="v" id="bpmV">72</div><div class="l">BPM</div></div>
+    </div>
+    <div class="seg" id="breathSeg" hidden></div>
+    <div class="breath">
+      <svg class="ring" viewBox="0 0 100 100" aria-hidden="true"><circle class="trk" cx="50" cy="50" r="46" fill="none" stroke-width="3"/><circle id="primeRing" class="bar" cx="50" cy="50" r="46" fill="none" stroke-width="3"/></svg>
+      <div class="orb" id="orb"></div>
+      <div class="cnt" id="breathCnt"></div>
+      <div class="lbl" id="breathLbl">Ready</div>
+    </div>
+    <p class="note" id="primeNote"></p>
+    <svg class="curve" id="curve" viewBox="0 0 320 96" role="img" aria-label="Arousal curve showing where you are and the target zone"></svg>
+    <button class="btn btn-ghost" id="primeSkip">Skip to eye drills</button>
+  </section>
+
+  <!-- DRILLS -->
+  <section class="screen" id="drills" hidden>
+    <div class="drill-head">
+      <div><div class="eyebrow" id="drillEyebrow">Step 2 · Eyes · Drill 1 of 3</div><h2 id="drillTitle">Saccade jumps</h2></div>
+      <div class="mini-ring" aria-hidden="true">
+        <svg viewBox="0 0 52 52" class="ring"><circle class="trk" cx="26" cy="26" r="22" fill="none" stroke-width="5"/><circle id="drillRing" class="bar" cx="26" cy="26" r="22" fill="none" stroke-width="5"/></svg>
+        <span id="drillSec">0</span>
+      </div>
+    </div>
+    <div class="arena" id="arena"></div>
+    <div class="result" id="drillResult"></div>
+  </section>
+
+  <!-- VIZ -->
+  <section class="screen" id="viz" hidden>
+    <div class="drill-head">
+      <div><div class="eyebrow">Step 3 · See it, say it</div><h2 id="vizTitle">Your role</h2></div>
+      <div class="mini-ring" aria-hidden="true">
+        <svg viewBox="0 0 52 52" class="ring"><circle class="trk" cx="26" cy="26" r="22" fill="none" stroke-width="5"/><circle id="vizRing" class="bar" cx="26" cy="26" r="22" fill="none" stroke-width="5"/></svg>
+        <span id="vizSec">60</span>
+      </div>
+    </div>
+    <div class="viz-stage"><div class="viz-n" id="vizN">Eyes closed if you like</div><div class="viz-line" id="vizLine">Tap Play. Read each line, then close your eyes and see it.</div></div>
+    <div class="row">
+      <button class="btn btn-ghost" id="vizPlay">Play</button>
+      <button class="btn btn-ghost" id="vizVoice" aria-pressed="false">Voice off</button>
+    </div>
+    <div class="q" style="margin-top:6px">
+      <h2>Pick your action cue</h2>
+      <p class="note">One short, positive phrase you'll say between points.</p>
+      <div class="cues" id="cueChoices"></div>
+      <label class="eyebrow" for="customCue">Or write your own</label>
+      <input type="text" id="customCue" maxlength="32" placeholder="e.g. Ball to target" autocomplete="off">
+    </div>
+    <button class="btn btn-primary" id="vizNext">Lock cue · Activate</button>
+  </section>
+
+  <!-- DECK -->
+  <section class="screen" id="deck" hidden>
+    <div><div class="eyebrow">Step 4 · Activation finishers</div><h2 style="font-size:30px">Swipe the deck</h2></div>
+    <div class="deck" id="deckEl"></div>
+    <div class="dots" id="deckDots"></div>
+    <div class="row">
+      <button class="btn btn-ghost" id="deckPrev">Back</button>
+      <button class="btn btn-ghost" id="deckNext">Next</button>
+    </div>
+    <button class="btn btn-primary" id="deckDone">Lock in</button>
+  </section>
+
+  <!-- LOCK -->
+  <section class="screen" id="lock" hidden>
+    <div class="lock-top"><span class="zone">In the zone</span><span class="eyebrow" id="lockPos"></span></div>
+    <div class="anchor-big" id="lockCue">Next ball</div>
+    <div class="lk vis"><span class="k">Visual cue</span><span class="v" id="lockVis"></span></div>
+    <div class="lk"><span class="k">Physical cue</span><span class="v" id="lockPhys"></span></div>
+    <div class="lk"><span class="k">Reset routine · 3 seconds, between every point</span><span class="v" id="lockReset" style="font-size:22px"></span></div>
+    <button class="btn btn-primary" id="resetPractice">Practice the reset</button>
+    <div class="row">
+      <button class="btn btn-ghost" id="lockAgain">New session</button>
+      <button class="btn btn-ghost" data-sheet="science">The science</button>
+    </div>
+  </section>
+</div>
+
+<script>
+(() => {
+'use strict';
+
+/* ---------- storage (best-effort) ---------- */
+const store = {
+  get(k, d) { try { const v = localStorage.getItem('lockin.' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v) { try { localStorage.setItem('lockin.' + k, JSON.stringify(v)); } catch {} }
+};
+const $ = (s, r = document) => r.querySelector(s);
+const h = (tag, attrs = {}, ...kids) => {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === 'class') el.className = v;
+    else if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else if (v != null) el.setAttribute(k, v);
+  }
+  for (const c of kids.flat()) if (c != null) el.append(c.nodeType ? c : document.createTextNode(c));
+  return el;
+};
+const buzz = (p) => { try { navigator.vibrate && navigator.vibrate(p); } catch {} };
+const fmt = (s) => { s = Math.max(0, Math.ceil(s)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+const setRing = (el, frac) => { const r = +el.getAttribute('r'); const c = 2 * Math.PI * r; el.style.strokeDasharray = c; el.style.strokeDashoffset = c * (1 - Math.max(0, Math.min(1, frac))); };
+
+/* ---------- content ---------- */
+const SPORTS = [
+  { id: 'volleyball', name: 'Volleyball', live: true },
+  { id: 'basketball', name: 'Basketball' }, { id: 'soccer', name: 'Soccer' },
+  { id: 'tennis', name: 'Tennis' }, { id: 'track', name: 'Track' }, { id: 'esports', name: 'Esports' }
+];
+
+const POS = {
+  setter: {
+    name: 'Setter', sub: 'Tempo & distribution',
+    tri: ['PASS', 'MIDDLE BLOCKER', 'PIN HITTER'],
+    vis: 'Pass → their middle → my hitter',
+    cues: ['Feet first, hands high', 'Own the tempo', 'Quiet hands', 'Next ball'],
+    script: [
+      'Ball is served. Release to target early. You beat the pass there.',
+      'Pass coming. Feet set, right foot slightly forward, hands high.',
+      'Quick glance at their middle. Where is the block starting?',
+      'Soft hands. Same shape on every set. The tempo is yours.',
+      'The set leaves your hands on rhythm. Your hitter gets a clean swing.',
+      'Cover. Eyes back to the ball. Calm and in charge.',
+      'You set the pace of this match. Next ball.'
+    ],
+    move: { title: 'Release & jump-set shadow', dose: '×5 from base to target', cue: 'Beat the ball to the spot', why: 'Rehearses the run from defense to target and a balanced jump-set posture at match tempo.' }
+  },
+  hitter: {
+    name: 'Outside / Opp', sub: 'Pin attack & passing',
+    tri: ['PASS', 'SETTER HANDS', 'BLOCKER HANDS'],
+    vis: 'Setter hands → block → seam',
+    cues: ['High snap, swing free', 'See the block, hit the seam', 'Fast arm', 'Next ball'],
+    script: [
+      'You are passing. Platform quiet, ball to target.',
+      'Transition off the net and out wide. Eyes on the setter’s hands.',
+      'Ball is up. Read the set and start your approach. Slow, then fast.',
+      'Both arms back, big swing up. Jump tall.',
+      'At the top, see the block. Find the seam or the line.',
+      'High contact, fast arm, wrist snap. Swing free.',
+      'Land balanced. Back to cover. Next ball.'
+    ],
+    move: { title: '3-step approach, no ball', dose: '×4, full speed', cue: 'Slow, fast, arms back', why: 'Grooves approach rhythm and arm swing timing at full speed without the fatigue of a full hitting line.' }
+  },
+  middle: {
+    name: 'Middle Blocker', sub: 'Block & quick attack',
+    tri: ['PASS', 'SETTER HANDS', 'HITTER SHOULDER'],
+    vis: 'Setter release → hitter shoulder',
+    cues: ['Eyes on the release', 'Close and press', 'Read, step, seal', 'Next ball'],
+    script: [
+      'Base position at the net. Hands up, eyes on their pass.',
+      'Pass goes up. Eyes jump to the setter’s hands.',
+      'Watch the release. The ball leaving the hands is your trigger.',
+      'Eyes to the hitter’s shoulder and arm. Step, crossover, plant.',
+      'Close the block. Seal the gap with your outside blocker.',
+      'Press over the net. Hands strong, thumbs up.',
+      'Land, transition off, call for the quick. Next ball.'
+    ],
+    move: { title: 'Block slide + quick approach', dose: '×3 each side + ×3 quick', cue: 'Step, cross, plant, press', why: 'Primes lateral footwork and a fast two-step approach for the quick set.' }
+  },
+  libero: {
+    name: 'Libero / DS', sub: 'Serve receive & defense',
+    tri: ['SERVER TOSS', 'SETTER HANDS', 'HITTER SHOULDER'],
+    vis: 'Toss → contact → platform angle',
+    cues: ['Early eyes, quiet platform', 'Feet beat the ball', 'Angle to target', 'Next ball'],
+    script: [
+      'Serve receive. Feet set, weight forward, platform relaxed.',
+      'Eyes on the server. Watch the toss leave the hand.',
+      'Contact. Read the hand: float or topspin. Track it early.',
+      'Feet move first. Get behind the ball before your arms do anything.',
+      'Quiet platform. Angle it to the target. The ball lands soft.',
+      'Defense. Eyes jump to their setter’s hands, then the hitter’s shoulder.',
+      'Dig it high and to the middle. Next ball.'
+    ],
+    move: { title: 'Shuffle-drop to platform', dose: '×4 each side', cue: 'Low, wide, still at contact', why: 'Rehearses getting to the ball and stopping before contact, so the platform is set early.' }
+  }
+};
+
+const STATES = {
+  flat:  { name: 'Flat / Heavy legs', sub: 'Low energy, slow', cls: 'state-flat', bpm: 138, tempoRange: '130–145',
+           title: 'Turn it up', low: ['Vigor', 'Motivation', 'Tirelessness'], ok: ['Calm'],
+           note: 'Driving beat and power breathing to raise activation. Stop and breathe normally if you feel dizzy or tingly.' },
+  anx:   { name: 'Anxious / Overthinking', sub: 'Tight, racing thoughts', cls: 'state-anx', bpm: 72, tempoRange: '65–80',
+           title: 'Calm the engine', low: ['Calm', 'Confidence', 'Concentration'], ok: ['Vigor'],
+           note: 'Slow pulse and long exhales to bring activation down. Let the exhale be longer than the inhale.' },
+  ready: { name: 'Wired & ready', sub: 'Up, but in control', cls: 'state-ready', bpm: 104, tempoRange: '~100–110',
+           title: 'Hold the line', low: [], ok: ['Vigor', 'Calm', 'Confidence'],
+           note: 'You are near your best zone. Steady breathing to stay there, without adding more energy.' }
+};
+
+const BREATHS = {
+  sigh: { label: 'Cyclic sigh', steps: [['in', 2, 'Inhale · nose'], ['in2', 1, 'Top-up sip'], ['out', 6, 'Long exhale']] },
+  box:  { label: 'Box 4-4-4-4', steps: [['in', 4, 'Inhale'], ['hold', 4, 'Hold'], ['out', 4, 'Exhale'], ['hold2', 4, 'Hold']] },
+  power:{ label: 'Power breaths', steps: [['in', 1.2, 'Sharp in'], ['out', 0.9, 'Strong out']], rounds: 12, rest: ['rest', 6, 'Normal breathing'] },
+  steady:{ label: 'Steady 4-6', steps: [['in', 4, 'Inhale'], ['out', 6, 'Exhale']] }
+};
+
+const COMMON_DECK = [
+  { id: 'scap', title: 'Scap band prep', dose: '10 pull-aparts · 8 ER each arm', cue: 'Blades back and down', why: 'Wakes up the rotator cuff and scapular muscles before overhead hitting, serving and setting.' },
+  { id: 'pogo', title: 'Pogo hops', dose: '2 × 10 fast hops', cue: 'Stiff ankles, quick ground', why: 'Short, springy contacts prime the ankle’s stretch-shortening cycle for jumping without tiring the legs.' },
+  { id: 'split', title: 'Split-step reaction drops', dose: '5 reps on the GO flash', cue: 'Split on contact, drop and go', why: 'Couples a visual trigger to the first step. Tap Reaction cue: the screen flashes GO at random moments.', react: true }
+];
+
+/* ---------- state ---------- */
+const S = {
+  pos: store.get('pos', null), st: null, win: store.get('win', 10),
+  cue: null, phys: null, breathMode: null,
+  startAt: 0, endAt: 0, faded: false, step: 0, muted: false
+};
+const STEP_IDS = ['prime', 'drills', 'viz', 'deck', 'lock'];
+
+/* ---------- audio engine (synthesized, works offline) ---------- */
+const Audio = {
+  ctx: null, master: null, music: null, sfx: null, pad: null, padFilter: null, timer: null,
+  bpm: 100, next: 0, step16: 0, pattern: null, playing: false,
+  init() {
+    if (this.ctx) { this.ctx.resume && this.ctx.resume(); return; }
+    const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+    const c = this.ctx = new AC();
+    const comp = c.createDynamicsCompressor(); comp.threshold.value = -14; comp.ratio.value = 4; comp.connect(c.destination);
+    this.master = c.createGain(); this.master.gain.value = 0.9; this.master.connect(comp);
+    this.music = c.createGain(); this.music.gain.value = 0; this.music.connect(this.master);
+    this.sfx = c.createGain(); this.sfx.gain.value = 0.6; this.sfx.connect(this.master);
+    const n = c.sampleRate; const buf = c.createBuffer(1, n, n); const d = buf.getChannelData(0);
+    for (let i = 0; i < n; i++) d[i] = Math.random() * 2 - 1; this.noise = buf;
+  },
+  noiseHit(t, type, freq, dur, vol) {
+    const c = this.ctx, s = c.createBufferSource(); s.buffer = this.noise;
+    const f = c.createBiquadFilter(); f.type = type; f.frequency.value = freq; f.Q.value = 0.8;
+    const g = c.createGain(); g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+    s.connect(f); f.connect(g); g.connect(this.music); s.start(t, Math.random() * 0.5); s.stop(t + dur + 0.02);
+  },
+  kick(t, vol, hi = 140, lo = 45, dur = 0.35) {
+    const c = this.ctx, o = c.createOscillator(), g = c.createGain();
+    o.frequency.setValueAtTime(hi, t); o.frequency.exponentialRampToValueAtTime(lo, t + dur * 0.6);
+    g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+    o.connect(g); g.connect(this.music); o.start(t); o.stop(t + dur + 0.02);
+  },
+  startPad(base) {
+    const c = this.ctx; this.stopPad();
+    const f = this.padFilter = c.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 400; f.Q.value = 2;
+    const g = c.createGain(); g.gain.value = 0.07; f.connect(g); g.connect(this.music);
+    this.pad = [base, base * 1.5, base * 2.005].map((fr, i) => { const o = c.createOscillator(); o.type = i ? 'sawtooth' : 'triangle'; o.frequency.value = fr; o.detune.value = i * 4; o.connect(f); o.start(); return o; });
+    this.padGain = g;
+  },
+  stopPad() { if (this.pad) { this.pad.forEach(o => { try { o.stop(); } catch {} }); this.pad = null; } },
+  breath(kind, dur) { // pad opens on inhale, closes on exhale
+    if (!this.padFilter) return; const t = this.ctx.currentTime, p = this.padFilter.frequency;
+    p.cancelScheduledValues(t); p.setValueAtTime(p.value, t);
+    const target = kind.startsWith('in') ? 1400 : kind.startsWith('out') ? 300 : p.value;
+    p.linearRampToValueAtTime(target, t + Math.max(0.1, dur));
+  },
+  start(stateKey) {
+    this.init(); if (!this.ctx || this.playing) return;
+    const P = {
+      // 16 steps per bar: K kick, S snare, H hat, P soft pulse
+      anx:   { bpm: 72,  K: [1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0].map(v => v * 0.35), H: [0,0,0,0, 0,0,1,0, 0,0,0,0, 0,0,1,0].map(v => v * 0.05), S: [], pad: 110, soft: true },
+      flat:  { bpm: 138, K: [1,0,0,0, 0,0,0,0.7, 1,0,1,0, 0,0,0,0], S: [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0.4], H: [.5,.2,.5,.2, .5,.2,.5,.3, .5,.2,.5,.2, .5,.2,.5,.3].map(v => v * 0.22), pad: 0 },
+      ready: { bpm: 104, K: [1,0,0,0, 0,0,0,0, 1,0,0,0.5, 0,0,0,0].map(v => v * 0.7), S: [0,0,0,0, .6,0,0,0, 0,0,0,0, .6,0,0,0], H: [.4,0,.4,0, .4,0,.4,0, .4,0,.4,0, .4,0,.4,.2].map(v => v * 0.18), pad: 98 }
+    }[stateKey];
+    this.pattern = P; this.bpm = P.bpm; this.step16 = 0; this.next = this.ctx.currentTime + 0.1; this.playing = true;
+    if (P.pad) this.startPad(P.pad);
+    const t = this.ctx.currentTime; this.music.gain.cancelScheduledValues(t); this.music.gain.setValueAtTime(0, t); this.music.gain.linearRampToValueAtTime(S.muted ? 0 : 0.85, t + 3);
+    this.timer = setInterval(() => this.tick(), 25);
+  },
+  tick() {
+    const c = this.ctx, P = this.pattern, spb = 60 / this.bpm / 4;
+    while (this.next < c.currentTime + 0.12) {
+      const i = this.step16 % 16, t = this.next;
+      if (P.K[i]) P.soft ? this.kick(t, P.K[i], 90, 40, 0.6) : this.kick(t, P.K[i]);
+      if (P.S[i]) { this.noiseHit(t, 'bandpass', 1900, 0.16, 0.35 * P.S[i]); this.kick(t, 0.15 * P.S[i], 220, 180, 0.1); }
+      if (P.H[i]) this.noiseHit(t, 'highpass', 7500, 0.045, P.H[i]);
+      this.next += spb; this.step16++;
+    }
+  },
+  setMuted(m) { if (!this.ctx) return; const t = this.ctx.currentTime; this.master.gain.cancelScheduledValues(t); this.master.gain.setTargetAtTime(m ? 0 : 0.9, t, 0.1); },
+  fadeOut(sec) {
+    if (!this.ctx || !this.playing) return; const t = this.ctx.currentTime, g = this.music.gain;
+    g.cancelScheduledValues(t); g.setValueAtTime(g.value, t); g.linearRampToValueAtTime(0, t + sec);
+    setTimeout(() => this.stop(), sec * 1000 + 200);
+  },
+  stop() { clearInterval(this.timer); this.timer = null; this.playing = false; this.stopPad(); },
+  blip(freq = 880, dur = 0.08, vol = 0.25) {
+    if (!this.ctx || S.faded) return; const c = this.ctx, t = c.currentTime, o = c.createOscillator(), g = c.createGain();
+    o.type = 'sine'; o.frequency.value = freq; g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+    o.connect(g); g.connect(this.sfx); o.start(t); o.stop(t + dur + 0.02);
+  }
+};
+
+/* ---------- wake lock ---------- */
+let wake = null;
+async function keepAwake() { try { if ('wakeLock' in navigator) { wake = await navigator.wakeLock.request('screen'); } } catch {} }
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && S.startAt && !wake) keepAwake(); });
+
+/* ---------- UI helpers ---------- */
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.hidden = s.id !== id);
+  const idx = STEP_IDS.indexOf(id);
+  $('#sbar').hidden = idx < 0;
+  if (idx >= 0) { S.step = idx; renderSteps(); }
+  window.scrollTo(0, 0);
+}
+function renderSteps() {
+  const el = $('#steps'); el.replaceChildren(...STEP_IDS.map((_, i) => h('i', { class: i < S.step ? 'done' : i === S.step ? 'now' : '' })));
+}
+let toastT;
+function toast(msg, cls = '', ms = 4000) {
+  document.querySelectorAll('.toast').forEach(t => t.remove());
+  const t = h('div', { class: 'toast ' + cls, role: 'status' }, msg); document.body.append(t);
+  clearTimeout(toastT); toastT = setTimeout(() => t.remove(), ms);
+}
+
+/* ---------- HUB ---------- */
+function renderHub() {
+  const wl = store.get('waitlist', {});
+  $('#sports').replaceChildren(...SPORTS.map(sp => {
+    if (sp.live) return h('button', { class: 'sport active', onclick: () => show('checkin') },
+      h('span', { class: 'badge live' }, 'Active'), h('span', { class: 'name' }, sp.name), h('span', { class: 'go' }, 'Start check-in →'));
+    const sw = h('button', { class: 'switch', role: 'switch', 'aria-checked': String(!!wl[sp.id]), 'aria-label': 'Notify me when ' + sp.name + ' launches' });
+    sw.addEventListener('click', () => { wl[sp.id] = !wl[sp.id]; store.set('waitlist', wl); sw.setAttribute('aria-checked', String(!!wl[sp.id])); if (wl[sp.id]) toast('On the ' + sp.name + ' waitlist', 'cyan', 2000); });
+    return h('div', { class: 'sport locked' },
+      h('span', { class: 'badge' }, 'Coming soon'), h('span', { class: 'name' }, sp.name),
+      h('span', { class: 'wl' }, 'Waitlist', sw));
+  }));
+}
+
+/* ---------- CHECK-IN ---------- */
+function choiceBtn(key, cur, t, s, cls, on) {
+  return h('button', { class: 'choice ' + (cls || ''), 'aria-pressed': String(cur === key), onclick: on }, h('span', { class: 't' }, t), s ? h('span', { class: 's' }, s) : null);
+}
+function renderCheckin() {
+  $('#posChoices').replaceChildren(...Object.entries(POS).map(([k, p]) => choiceBtn(k, S.pos, p.name, p.sub, '', () => { S.pos = k; store.set('pos', k); renderCheckin(); })));
+  $('#stateChoices').replaceChildren(...Object.entries(STATES).map(([k, s]) => choiceBtn(k, S.st, s.name, s.sub, s.cls, () => { S.st = k; renderCheckin(); })));
+  $('#winChoices').replaceChildren(...[5, 10, 15].map(m => choiceBtn(m, S.win, String(m), 'min', '', () => { S.win = m; store.set('win', m); renderCheckin(); })));
+  const ch = $('#amesChips');
+  if (S.st) {
+    const st = STATES[S.st];
+    ch.replaceChildren(h('span', { class: 'chip' }, 'Mental energy read:'),
+      ...st.low.map(x => h('span', { class: 'chip low' }, x + ' ↓')), ...st.ok.map(x => h('span', { class: 'chip ok' }, x + ' ✓')));
+  } else ch.replaceChildren();
+  $('#startBtn').disabled = !(S.pos && S.st && S.win);
+}
+
+/* ---------- SESSION CLOCK ---------- */
+let clockT = null;
+function startSession() {
+  Audio.init();
+  S.startAt = Date.now(); S.endAt = S.startAt + S.win * 60000; S.faded = false; S.cue = null;
+  S.phys = store.get('phys', null);
+  keepAwake();
+  Audio.start(S.st);
+  clearInterval(clockT); clockT = setInterval(tickClock, 250); tickClock();
+  startPrime();
+}
+function tickClock() {
+  const rem = (S.endAt - Date.now()) / 1000, total = S.win * 60;
+  $('#clockV').textContent = fmt(rem);
+  setRing($('#clockRing'), rem / total);
+  if (!S.faded && rem <= 180) {
+    S.faded = true; Audio.fadeOut(10);
+    $('#clockL').textContent = 'headphones off';
+    toast('Headphones off. Tune in to the court: calls, contact, the whistle.', 'cyan', 7000); buzz([60, 80, 60]);
+  }
+  if (rem <= 0) {
+    clearInterval(clockT); $('#clockL').textContent = 'first serve';
+    if (STEP_IDS.indexOf(currentScreen()) < 4) { stopAll(); goLock(); }
+  }
+}
+function currentScreen() { const s = [...document.querySelectorAll('.screen')].find(x => !x.hidden); return s && s.id; }
+
+/* ---------- PRIME (breath + audio) ---------- */
+let primeT = null, breathT = null;
+function primeSeconds() { return { 5: 40, 10: 90, 15: 150 }[S.win]; }
+function startPrime() {
+  show('prime');
+  const st = STATES[S.st];
+  $('#primeTitle').textContent = st.title;
+  $('#bpmV').textContent = st.bpm;
+  $('#primeNote').textContent = st.note + ' Beat: ' + st.tempoRange + ' BPM.';
+  $('#primeNote').className = 'note' + (S.st === 'flat' ? ' warn' : '');
+  $('#orb').className = 'orb' + (S.st === 'flat' ? ' flat' : '');
+  drawCurve();
+  const seg = $('#breathSeg');
+  if (S.st === 'anx') {
+    S.breathMode = S.breathMode && ['sigh', 'box'].includes(S.breathMode) ? S.breathMode : 'sigh';
+    seg.hidden = false;
+    seg.replaceChildren(...['sigh', 'box'].map(k => h('button', { 'aria-pressed': String(S.breathMode === k), onclick: () => { S.breathMode = k; seg.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.textContent === BREATHS[k].label))); runBreath(); } }, BREATHS[k].label)));
+  } else { seg.hidden = true; S.breathMode = S.st === 'flat' ? 'power' : 'steady'; }
+  runBreath();
+  const dur = primeSeconds(), t0 = Date.now();
+  clearInterval(primeT);
+  primeT = setInterval(() => {
+    const el = (Date.now() - t0) / 1000;
+    setRing($('#primeRing'), 1 - el / dur);
+    if (el >= dur) { clearInterval(primeT); stopBreath(); startDrills(); }
+  }, 200);
+}
+function runBreath() {
+  stopBreath();
+  const B = BREATHS[S.breathMode], orb = $('#orb'), lbl = $('#breathLbl'), cnt = $('#breathCnt');
+  let i = 0, round = 0, scale = 0.8;
+  const seq = () => {
+    let step;
+    if (B.rounds && round >= B.rounds) { step = B.rest; round = -1; }
+    else step = B.steps[i % B.steps.length];
+    const [kind, dur, text] = step;
+    lbl.textContent = text;
+    cnt.textContent = B.rounds ? (round >= 0 ? 'Breath ' + (round + 1) + ' / ' + B.rounds : '') : '';
+    orb.style.transitionDuration = dur + 's';
+    scale = kind === 'in' ? 1.25 : kind === 'in2' ? 1.4 : kind.startsWith('out') ? 0.7 : kind === 'rest' ? 0.9 : scale;
+    orb.style.transform = 'scale(' + scale + ')';
+    if (kind.startsWith('in') || kind.startsWith('out')) buzz(kind.startsWith('in') ? 18 : 8);
+    Audio.breath(kind, dur);
+    if (kind === 'rest') { i = 0; round = 0; }
+    else { i++; if (B.rounds && i % B.steps.length === 0) round++; }
+    breathT = setTimeout(seq, dur * 1000);
+  };
+  seq();
+}
+function stopBreath() { clearTimeout(breathT); }
+function drawCurve() {
+  // Inverted-U (Yerkes–Dodson style) sketch: x = activation, y = performance
+  const svg = $('#curve'), W = 320, H = 96, pad = 14;
+  const y = x => H - 18 - (H - 34) * Math.exp(-Math.pow((x - 0.55) / 0.24, 2));
+  let d = ''; for (let i = 0; i <= 40; i++) { const x = i / 40; d += (i ? 'L' : 'M') + (pad + x * (W - 2 * pad)).toFixed(1) + ' ' + y(x).toFixed(1); }
+  const posX = { flat: 0.16, anx: 0.9, ready: 0.62 }[S.st];
+  const px = pad + posX * (W - 2 * pad), zx0 = pad + 0.43 * (W - 2 * pad), zx1 = pad + 0.67 * (W - 2 * pad);
+  svg.innerHTML =
+    '<rect x="' + zx0 + '" y="6" width="' + (zx1 - zx0) + '" height="' + (H - 24) + '" rx="6" fill="rgba(228,255,58,.10)"/>' +
+    '<text x="' + ((zx0 + zx1) / 2) + '" y="18" fill="#e4ff3a" font-size="10" text-anchor="middle" font-family="Inter, system-ui" font-weight="600">YOUR ZONE</text>' +
+    '<path d="' + d + '" fill="none" stroke="#8b9aab" stroke-width="2"/>' +
+    '<circle cx="' + px + '" cy="' + y(posX) + '" r="7" fill="' + (S.st === 'anx' ? '#2ee6ff' : '#e4ff3a') + '"/>' +
+    '<text x="' + px + '" y="' + (y(posX) - 12) + '" fill="#eef3f7" font-size="10" text-anchor="middle" font-family="Inter, system-ui" font-weight="600">YOU</text>' +
+    '<text x="' + pad + '" y="' + (H - 3) + '" fill="#8b9aab" font-size="10" font-family="Inter, system-ui">Low activation</text>' +
+    '<text x="' + (W - pad) + '" y="' + (H - 3) + '" fill="#8b9aab" font-size="10" text-anchor="end" font-family="Inter, system-ui">High activation</text>';
+}
+
+/* ---------- DRILLS ---------- */
+let drillIdx = 0, drillCleanup = null;
+const drillDur = () => S.win === 5 ? 22 : 32; // 3 drills ≤ ~96 s active time
+const DRILLS = [
+  { title: 'Saccade jumps', intro: ['Phone at eye level, arm’s length.', 'Head still. Only your eyes move.', 'Tap each target the moment it lights.'], run: runSaccade },
+  { title: 'Peripheral read', intro: ['Lock your eyes on the center anchor.', 'A seam opens left or right for a split second.', 'Don’t look at it. Tap the side you sensed.'], run: runPeripheral },
+  { title: 'Near-far focus', intro: ['Pick a far target now: antenna, back-wall line, scoreboard.', 'NEAR: read the small word on screen.', 'FAR: snap your focus to your far target until the tone.'], run: runNearFar }
+];
+function startDrills() { drillIdx = 0; show('drills'); loadDrill(); }
+function loadDrill() {
+  const D = DRILLS[drillIdx];
+  $('#drillEyebrow').textContent = 'Step 2 · Eyes · Drill ' + (drillIdx + 1) + ' of 3';
+  $('#drillTitle').textContent = D.title;
+  $('#drillSec').textContent = drillDur(); setRing($('#drillRing'), 1);
+  $('#drillResult').replaceChildren();
+  const arena = $('#arena'); arena.replaceChildren();
+  const go = h('button', { class: 'btn btn-primary' }, 'Go');
+  const skip = h('button', { class: 'btn btn-ghost' }, drillIdx < 2 ? 'Skip drill' : 'Skip to visualization');
+  arena.append(h('div', { class: 'intro' }, h('h3', {}, D.title), h('ul', {}, D.intro.map(t => h('li', {}, t))), go, skip));
+  go.onclick = () => { arena.querySelector('.intro').remove(); timedDrill(D); };
+  skip.onclick = () => nextDrill();
+}
+function timedDrill(D) {
+  const dur = drillDur(), t0 = Date.now();
+  const stats = D.run($('#arena'));
+  drillCleanup = stats.stop;
+  const iv = setInterval(() => {
+    const el = (Date.now() - t0) / 1000;
+    $('#drillSec').textContent = Math.max(0, Math.ceil(dur - el));
+    setRing($('#drillRing'), 1 - el / dur);
+    if (el >= dur) {
+      clearInterval(iv); stats.stop(); drillCleanup = null; buzz([30, 40, 30]); Audio.blip(660, .15);
+      $('#drillResult').replaceChildren(...stats.summary().map(([v, l]) => h('div', { class: 'stat' }, h('div', { class: 'v' }, v), h('div', { class: 'l' }, l))));
+      setTimeout(nextDrill, 1800);
+    }
+  }, 100);
+  const prevStop = stats.stop; stats.stop = () => { clearInterval(iv); prevStop(); };
+  drillCleanup = stats.stop;
+}
+function nextDrill() { if (drillCleanup) { drillCleanup(); drillCleanup = null; } drillIdx++; if (drillIdx < DRILLS.length) loadDrill(); else startViz(); }
+
+function runSaccade(arena) {
+  const labels = POS[S.pos].tri;
+  const spots = [[20, 80], [50, 18], [80, 62]];
+  const tg = labels.map((l, i) => { const b = h('button', { class: 'tgt', style: 'left:' + spots[i][0] + '%;top:' + spots[i][1] + '%', 'aria-label': l }, h('span', {}, l)); arena.append(b); return b; });
+  let cur = -1, litAt = 0, hits = 0, misses = 0, rts = [], to = null, alive = true, n = 0;
+  const interval = () => Math.max(480, 950 - n * 22);
+  const light = () => {
+    if (!alive) return;
+    cur = (cur + 1) % 3; n++;
+    tg.forEach(t => t.classList.remove('lit', 'hit'));
+    tg[cur].classList.add('lit'); litAt = performance.now(); Audio.blip(720 + cur * 140, .05, .15);
+    to = setTimeout(() => { misses++; tg[cur].classList.remove('lit'); setTimeout(light, 120); }, interval());
+  };
+  tg.forEach((t, i) => t.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    if (i !== cur || !t.classList.contains('lit')) return;
+    clearTimeout(to); hits++; rts.push(performance.now() - litAt); buzz(15);
+    t.classList.remove('lit'); t.classList.add('hit'); setTimeout(light, 120);
+  }));
+  setTimeout(light, 400);
+  return {
+    stop() { alive = false; clearTimeout(to); },
+    summary() { const avg = rts.length ? Math.round(rts.reduce((a, b) => a + b, 0) / rts.length) : 0; return [[hits, 'Hits'], [misses, 'Missed'], [avg ? avg + 'ms' : '–', 'Avg reaction']]; }
+  };
+}
+function runPeripheral(arena) {
+  const anchorTxt = { setter: 'S', hitter: 'H', middle: 'H', libero: 'H' }[S.pos];
+  arena.append(h('div', { class: 'anchor' }, h('b', {}, S.pos === 'setter' ? 'THEIR BLOCK' : 'SETTER / HITTER'), anchorTxt));
+  const blip = h('div', { class: 'blip' }); arena.append(blip);
+  const L = h('button', {}, '◀ Left seam'), R = h('button', {}, 'Right seam ▶');
+  arena.append(h('div', { class: 'sides' }, L, R));
+  let side = null, ok = 0, bad = 0, missed = 0, alive = true, t1, t2, answered = true;
+  const fire = () => {
+    if (!alive) return;
+    if (!answered) missed++;
+    side = Math.random() < .5 ? 'L' : 'R'; answered = false;
+    blip.style.left = side === 'L' ? '4%' : 'calc(96% - 46px)';
+    blip.style.top = (12 + Math.random() * 40) + '%';
+    blip.classList.add('on');
+    t1 = setTimeout(() => blip.classList.remove('on'), 200);
+    t2 = setTimeout(fire, 1100 + Math.random() * 700);
+  };
+  const ans = (s, btn) => {
+    if (answered || !side) return; answered = true;
+    const good = s === side; good ? ok++ : bad++; buzz(good ? 15 : [10, 40, 10]);
+    btn.classList.add(good ? 'ok' : 'no'); setTimeout(() => btn.classList.remove('ok', 'no'), 220);
+  };
+  L.addEventListener('pointerdown', e => { e.preventDefault(); ans('L', L); });
+  R.addEventListener('pointerdown', e => { e.preventDefault(); ans('R', R); });
+  setTimeout(fire, 700);
+  return { stop() { alive = false; clearTimeout(t1); clearTimeout(t2); blip.classList.remove('on'); },
+           summary() { const tot = ok + bad + missed; return [[ok, 'Correct'], [bad + missed, 'Wrong / missed'], [tot ? Math.round(ok / tot * 100) + '%' : '–', 'Read rate']]; } };
+}
+function runNearFar(arena) {
+  const words = ['SEAM', 'LINE', 'TOSS', 'FLOAT', 'TIP', 'DEEP', 'CROSS', 'SHORT', 'ZONE 1', 'ZONE 5', 'ROLL', 'TOOL'];
+  const box = h('div', { class: 'nf' }); arena.append(box);
+  let near = true, alive = true, t, cycles = 0;
+  const flip = () => {
+    if (!alive) return;
+    box.className = 'nf ' + (near ? 'near' : 'far');
+    if (near) box.replaceChildren(h('div', { class: 'big' }, 'NEAR'), h('div', { class: 'tiny' }, words[Math.floor(Math.random() * words.length)]), h('div', { class: 'note' }, 'Read the small word'));
+    else { box.replaceChildren(h('div', { class: 'big' }, 'FAR ↑'), h('div', { class: 'note' }, 'Focus on your far target. Sharpen it.')); cycles++; }
+    Audio.blip(near ? 440 : 990, .12, .25); buzz(near ? 25 : [15, 30, 15]);
+    near = !near; t = setTimeout(flip, 3000);
+  };
+  flip();
+  return { stop() { alive = false; clearTimeout(t); }, summary() { return [[cycles, 'Near-far cycles'], ['3s', 'Per focus']]; } };
+}
+
+/* ---------- VIZ ---------- */
+let vizT = null, vizRunning = false, voice = false;
+function vizSeconds() { return S.win === 5 ? 42 : 60; }
+function startViz() {
+  show('viz');
+  const p = POS[S.pos];
+  $('#vizTitle').textContent = p.name;
+  $('#vizSec').textContent = vizSeconds(); setRing($('#vizRing'), 1);
+  $('#vizLine').textContent = 'Tap Play. Read each line, then close your eyes and see it in first person.';
+  $('#vizN').textContent = p.script.length + ' scenes · ' + vizSeconds() + ' seconds';
+  $('#vizPlay').textContent = 'Play';
+  if (!S.cue) S.cue = p.cues[0];
+  renderCues();
+}
+function renderCues() {
+  const p = POS[S.pos], custom = $('#customCue').value.trim();
+  $('#cueChoices').replaceChildren(...p.cues.map(c => h('button', { class: 'cue', 'aria-pressed': String(!custom && S.cue === c), onclick: () => { S.cue = c; $('#customCue').value = ''; renderCues(); } }, c)));
+}
+function playViz() {
+  if (vizRunning) { stopViz(); $('#vizPlay').textContent = 'Play'; return; }
+  const p = POS[S.pos], dur = vizSeconds(), per = dur / p.script.length, t0 = Date.now();
+  let shown = -1; vizRunning = true; $('#vizPlay').textContent = 'Pause';
+  vizT = setInterval(() => {
+    const el = (Date.now() - t0) / 1000, i = Math.min(p.script.length - 1, Math.floor(el / per));
+    $('#vizSec').textContent = Math.max(0, Math.ceil(dur - el)); setRing($('#vizRing'), 1 - el / dur);
+    if (i !== shown) {
+      shown = i; const line = $('#vizLine'); line.style.opacity = 0;
+      setTimeout(() => { line.textContent = p.script[i]; line.style.opacity = 1; }, 250);
+      $('#vizN').textContent = 'Scene ' + (i + 1) + ' of ' + p.script.length;
+      if (voice) speak(p.script[i]);
+    }
+    if (el >= dur) { stopViz(); $('#vizPlay').textContent = 'Replay'; $('#vizN').textContent = 'Now pick your cue'; buzz(30); }
+  }, 200);
+}
+function stopViz() { clearInterval(vizT); vizRunning = false; try { speechSynthesis.cancel(); } catch {} }
+function speak(t) { try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.rate = 0.95; speechSynthesis.speak(u); } catch {} }
+
+/* ---------- DECK ---------- */
+let deckI = 0, cards = [];
+function buildDeck() { cards = [...COMMON_DECK, Object.assign({ id: 'move' }, POS[S.pos].move)]; if (!S.phys || !cards.find(c => c.id === S.phys)) S.phys = 'move'; }
+function startDeck() { buildDeck(); deckI = 0; show('deck'); renderDeck(); }
+function renderDeck() {
+  const el = $('#deckEl');
+  el.replaceChildren(...cards.map((c, i) => {
+    const star = h('button', { 'aria-pressed': String(S.phys === c.id), onclick: () => { S.phys = c.id; store.set('phys', c.id); renderDeck(); } }, S.phys === c.id ? '★ My physical cue' : '☆ Use this cue');
+    const acts = [star];
+    if (c.react) acts.push(h('button', { onclick: reactionDrill }, 'Reaction cue'));
+    else acts.push(h('button', { onclick: (e) => cardTimer(e.currentTarget) }, 'Start 30s'));
+    const card = h('div', { class: 'card', 'aria-hidden': String(i !== deckI) },
+      h('div', { class: 'eyebrow' }, 'Card ' + (i + 1) + ' of ' + cards.length),
+      h('h3', {}, c.title), h('div', { class: 'dose' }, c.dose), h('div', { class: 'cuebox' }, c.cue), h('div', { class: 'why' }, c.why),
+      h('div', { class: 'acts' }, acts));
+    const off = i - deckI;
+    card.style.transform = off === 0 ? 'none' : off > 0 ? 'translateX(' + (off === 1 ? 8 : 16) + 'px) scale(' + (1 - off * .04) + ')' : 'translateX(-120%) rotate(-8deg)';
+    card.style.opacity = off < 0 ? 0 : off > 2 ? 0 : 1 - off * .3;
+    card.style.zIndex = 10 - Math.abs(off);
+    card.style.pointerEvents = off === 0 ? 'auto' : 'none';
+    if (off === 0) attachSwipe(card);
+    return card;
+  }).reverse());
+  $('#deckDots').replaceChildren(...cards.map((_, i) => h('i', { class: i === deckI ? 'on' : '' })));
+  $('#deckPrev').disabled = deckI === 0; $('#deckNext').disabled = deckI === cards.length - 1;
+}
+function attachSwipe(card) {
+  let x0 = null, dx = 0;
+  card.addEventListener('pointerdown', e => { if (e.target.closest('button')) return; x0 = e.clientX; dx = 0; card.classList.add('dragging'); card.setPointerCapture(e.pointerId); });
+  card.addEventListener('pointermove', e => { if (x0 == null) return; dx = e.clientX - x0; card.style.transform = 'translateX(' + dx + 'px) rotate(' + dx / 30 + 'deg)'; });
+  const end = () => { if (x0 == null) return; x0 = null; card.classList.remove('dragging');
+    if (dx < -70 && deckI < cards.length - 1) { deckI++; buzz(10); } else if (dx > 70 && deckI > 0) { deckI--; buzz(10); }
+    renderDeck(); };
+  card.addEventListener('pointerup', end); card.addEventListener('pointercancel', end);
+}
+function cardTimer(btn) {
+  if (btn._t) { clearInterval(btn._t); btn._t = null; btn.textContent = 'Start 30s'; return; }
+  let s = 30; btn.textContent = s + 's';
+  btn._t = setInterval(() => { s--; btn.textContent = s > 0 ? s + 's' : 'Done ✓'; if (s <= 0) { clearInterval(btn._t); btn._t = null; buzz([40, 60, 40]); Audio.blip(880, .2); } }, 1000);
+}
+function reactionDrill() {
+  const f = h('div', { class: 'flash', role: 'button', 'aria-label': 'Reaction drill, tap to exit' }, 'READY'); document.body.append(f);
+  let n = 0, t; const reps = 5;
+  const cycle = () => {
+    if (n >= reps) { f.remove(); toast('5 reactions done', 'cyan', 1800); return; }
+    f.className = 'flash'; f.textContent = 'SPLIT';
+    t = setTimeout(() => { f.className = 'flash go'; f.textContent = 'GO'; buzz(60); Audio.blip(1200, .12, .3); n++;
+      t = setTimeout(cycle, 1200); }, 1200 + Math.random() * 2200);
+  };
+  f.addEventListener('click', () => { clearTimeout(t); f.remove(); });
+  t = setTimeout(cycle, 800);
+}
+
+/* ---------- LOCK ---------- */
+function goLock() {
+  stopAll();
+  if (!cards.length) buildDeck();
+  const p = POS[S.pos], phys = cards.find(c => c.id === S.phys) || cards[cards.length - 1];
+  const cue = S.cue || p.cues[0];
+  $('#lockPos').textContent = p.name;
+  $('#lockCue').textContent = cue;
+  $('#lockVis').textContent = p.vis;
+  $('#lockPhys').textContent = phys.cue;
+  $('#lockReset').textContent = 'Nose in · long exhale · eyes on one fixed point · say “' + cue + '”';
+  store.set('last', { pos: S.pos, cue, vis: p.vis, phys: phys.cue, at: Date.now() });
+  show('lock');
+}
+function practiceReset() {
+  const cue = $('#lockCue').textContent;
+  const o = h('div', { class: 'reset-run' }, h('div', { class: 'dotfix' }), h('div', { class: 'big' }, 'Breathe in'), h('div', { class: 'note' }, 'Eyes on the dot'));
+  document.body.append(o);
+  const big = o.querySelector('.big');
+  buzz(20);
+  setTimeout(() => { big.textContent = 'Long out…'; buzz(10); }, 1000);
+  setTimeout(() => { big.textContent = cue; big.style.color = 'var(--optic)'; buzz([20, 40, 20]); }, 2400);
+  setTimeout(() => o.remove(), 3600);
+  o.addEventListener('click', () => o.remove());
+}
+function stopAll() {
+  clearInterval(primeT); stopBreath(); stopViz(); if (drillCleanup) { drillCleanup(); drillCleanup = null; }
+}
+function endSession() {
+  stopAll(); clearInterval(clockT); if (Audio.playing) Audio.fadeOut(1.5);
+  try { wake && wake.release(); } catch {} wake = null;
+  S.startAt = 0; S.st = null; S.cue = null; $('#clockL').textContent = 'to first serve'; $('#customCue').value = '';
+  renderCheckin(); show('checkin');
+}
+
+/* ---------- science sheet ---------- */
+const SCIENCE = [
+  ['Flow in sport', 'm', 'Csikszentmihalyi’s flow model, applied to athletes by Jackson & Csikszentmihalyi (Flow in Sports, 1999). The routine targets conditions linked to flow: clear immediate goals (one cue), challenge matched to skill, and attention on action instead of self-evaluation. Nothing reliably switches flow on; this sets up the conditions.', null],
+  ['Athletic mental energy', 'm', 'The Athletic Mental Energy Scale has six factors: motivation, vigor, concentration, calm, confidence and tirelessness. In a field test with 81 male college volleyball players, all six correlated with match performance, and mental energy predicted receivers’ performance (R² = .23). One correlational study; the app’s check-in is a 1-tap shortcut, not the validated scale.', 'https://peerj.com/articles/15109'],
+  ['Volleyball gaze', 'm', 'Eye-tracking work (Vansteenkiste et al., 2014) found elite, intermediate and novice players use a similar gaze strategy, with elite players using it more consistently; experienced players look more at the setter. The on-screen drills rehearse that sequence. Whether generic screen-based eye drills transfer to on-court reading is not established, so treat them as attention priming.', 'https://pmc.ncbi.nlm.nih.gov/articles/PMC4296842'],
+  ['Breathing to downshift', 'm', 'In a randomized study (Balban et al., 2023, Cell Reports Medicine), 5 minutes a day of cyclic sighing for a month improved mood and lowered resting breathing rate more than mindfulness meditation. Effects of a single pre-match session were not what that study tested.', 'https://pmc.ncbi.nlm.nih.gov/articles/PMC9873947'],
+  ['Self-talk', 'm', 'A meta-analysis of 32 studies (Hatzigeorgiadis et al., 2011) found a moderate positive effect of self-talk on sport performance (ES = 0.48), larger when athletes practiced their cues beforehand. That is why you pick one cue and rehearse it in the reset.', 'https://www.psychologicalscience.org/journals/perspectives/1745691611413136/'],
+  ['Music tempo & arousal', 'l', 'Faster music is commonly used to raise arousal and slower music to lower it, and arousal follows an inverted-U relationship with performance. The specific BPM ranges here are sensible starting points, not tested thresholds.', null],
+  ['Activation finishers', 'l', 'Short, specific drills (band work, pogo hops, reaction steps) are common in volleyball warm-up practice. They are finishers for after your team warm-up, not a replacement for it.', null]
+];
+function openScience() {
+  const panel = h('div', { class: 'panel', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'The science' },
+    h('div', { class: 'row', style: 'align-items:center' }, h('h2', {}, 'The science'), h('button', { class: 'btn btn-ghost', style: 'flex:none;width:auto;padding:0 18px;min-height:48px', onclick: () => sheet.remove() }, 'Close')),
+    h('p', { class: 'note' }, 'What each part of the routine is based on, and how strong that evidence is.'),
+    ...SCIENCE.map(([t, lv, body, url]) => h('div', { class: 'sci' }, h('h3', {}, t),
+      h('span', { class: 'ev ' + lv }, lv === 'm' ? 'Published research' : 'Practice-based / limited evidence'),
+      h('p', {}, body), url ? h('p', {}, h('a', { href: url, target: '_blank', rel: 'noopener' }, 'Source')) : null)));
+  const sheet = h('div', { class: 'sheet', onclick: e => { if (e.target === sheet) sheet.remove(); } }, panel);
+  document.body.append(sheet);
+}
+
+/* ---------- wiring ---------- */
+document.addEventListener('click', e => { const b = e.target.closest('[data-sheet]'); if (b) openScience(); });
+$('#backHub').onclick = () => show('hub');
+$('#startBtn').onclick = startSession;
+$('#primeSkip').onclick = () => { clearInterval(primeT); stopBreath(); startDrills(); };
+$('#vizPlay').onclick = () => { Audio.init(); playViz(); };
+$('#vizVoice').onclick = (e) => { voice = !voice; e.currentTarget.setAttribute('aria-pressed', String(voice)); e.currentTarget.textContent = voice ? 'Voice on' : 'Voice off'; if (!voice) try { speechSynthesis.cancel(); } catch {} };
+$('#customCue').addEventListener('input', e => { const v = e.target.value.trim(); if (v) S.cue = v; else S.cue = POS[S.pos].cues[0]; renderCues(); });
+$('#vizNext').onclick = () => { stopViz(); const v = $('#customCue').value.trim(); if (v) S.cue = v; startDeck(); };
+$('#deckPrev').onclick = () => { if (deckI > 0) { deckI--; renderDeck(); } };
+$('#deckNext').onclick = () => { if (deckI < cards.length - 1) { deckI++; renderDeck(); } };
+$('#deckDone').onclick = goLock;
+$('#resetPractice').onclick = practiceReset;
+$('#lockAgain').onclick = endSession;
+$('#muteBtn').onclick = () => { S.muted = !S.muted; Audio.setMuted(S.muted); $('#muteWave').style.display = S.muted ? 'none' : ''; $('#muteBtn').setAttribute('aria-label', S.muted ? 'Unmute audio' : 'Mute audio'); };
+
+renderHub(); renderCheckin(); renderSteps();
+
+/* Offline: register the service worker when hosted as a standalone app (ignored where not allowed). */
+try {
+  if ('serviceWorker' in navigator && location.protocol === 'https:' && document.querySelector('link[rel=manifest]')) {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  }
+} catch {}
+})();
+</script>
