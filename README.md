@@ -1,6 +1,6 @@
-# LockIn: Volleyball
+# Flow of Ace
 
-Mobile web app for a 5–15 minute pre-match routine: arousal tuning (synthesized audio + paced breathing), three short visual drills, position-specific visualization and cue selection, an activation card deck, and a lock-in summary screen.
+Mobile web app for a 5–15 minute pre-match routine: arousal tuning (synthesized audio + paced breathing), three short visual drills, position-specific visualization and cue selection, an activation card deck, and an "In the zone" summary screen.
 
 - Source: `src/app.html` (all CSS/JS inline, no dependencies).
 - Build: `./build.sh` writes `index.html` with the PWA manifest and service worker hooks.

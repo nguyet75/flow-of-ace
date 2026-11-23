@@ -4,7 +4,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
 </head><body>
-<title>LockIn: Volleyball</title>
+<title>Flow of Ace</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#0b0f14">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -59,7 +59,7 @@ h1, h2, h3 { font-family: var(--font-display); text-transform: uppercase; letter
 .brand { display: flex; align-items: baseline; gap: 10px; padding-top: 8px; }
 .brand h1 { font-size: 46px; font-weight: 800; }
 .brand h1 b { color: var(--optic); }
-.brand .colon { color: var(--cyan); }
+.brand .colon { color: var(--cyan); font-size: .6em; }
 .tag { color: var(--muted); max-width: 40ch; }
 .sports { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .sport { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px; min-height: 112px;
@@ -266,7 +266,7 @@ input[type=text]::placeholder { color: var(--muted); }
 
   <!-- HUB -->
   <section class="screen" id="hub">
-    <div class="brand"><h1>Lock<b>In</b><span class="colon">:</span></h1></div>
+    <div class="brand"><h1>Flow <span class="colon">of</span> <b>Ace</b></h1></div>
     <p class="tag">A 5 to 15 minute pre-match routine: settle your arousal level, prime your eyes, rehearse your role, and walk on court with one cue.</p>
     <div class="sports" id="sports"></div>
     <button class="link" data-sheet="science">How this works and what the research supports</button>
@@ -292,7 +292,7 @@ input[type=text]::placeholder { color: var(--muted); }
       <h2>Minutes to first serve</h2>
       <div class="choices three" id="winChoices"></div>
     </div>
-    <button class="btn btn-primary" id="startBtn" disabled>Start lock-in</button>
+    <button class="btn btn-primary" id="startBtn" disabled>Start my flow</button>
     <p class="note">Start audio with headphones in. Do this after your team warm-up, not instead of it.</p>
   </section>
 
@@ -360,7 +360,7 @@ input[type=text]::placeholder { color: var(--muted); }
       <button class="btn btn-ghost" id="deckPrev">Back</button>
       <button class="btn btn-ghost" id="deckNext">Next</button>
     </div>
-    <button class="btn btn-primary" id="deckDone">Lock in</button>
+    <button class="btn btn-primary" id="deckDone">Enter the zone</button>
   </section>
 
   <!-- LOCK -->
