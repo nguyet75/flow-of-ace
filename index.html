@@ -240,6 +240,55 @@ input[type=text]::placeholder { color: var(--muted); }
   font-family: var(--font-display); font-weight: 800; font-size: 20px; text-transform: uppercase; padding: 14px 20px; border-radius: 14px; width: min(480px, calc(100% - 32px)); text-align: center; }
 .toast.cyan { background: var(--cyan); }
 
+/* Eye-drill stage (full screen, landscape-first) */
+.dlist { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; counter-reset: d; }
+.dlist li { counter-increment: d; display: grid; grid-template-columns: 34px 1fr auto; gap: 4px 10px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px; }
+.dlist li::before { content: counter(d); font-family: var(--font-display); font-weight: 800; font-size: 26px; color: var(--cyan); grid-row: span 2; }
+.dlist .dt { font-family: var(--font-display); font-weight: 800; font-size: 21px; text-transform: uppercase; }
+.dlist .dh { grid-column: 2; color: var(--muted); font-size: 13px; }
+.dlist .dr { grid-row: 1 / span 2; grid-column: 3; text-align: right; font-family: var(--font-display); font-weight: 800; font-size: 20px; color: var(--optic); font-variant-numeric: tabular-nums; }
+.dlist .dr small { display: block; font-family: var(--font-body); font-weight: 500; font-size: 11px; color: var(--muted); }
+#stage { position: fixed; inset: 0; z-index: 20; background: var(--bg); touch-action: none; user-select: none; -webkit-user-select: none; }
+#field { position: absolute; inset: 0; overflow: hidden; }
+.hud { position: absolute; top: 0; left: 0; right: 0; z-index: 3; display: flex; align-items: center; gap: 10px; pointer-events: none;
+  padding: calc(6px + env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) 0 max(12px, env(safe-area-inset-left, 0px)); }
+.hud > * { pointer-events: auto; }
+.hud .mini-ring { width: 40px; height: 40px; }
+.hud-t { flex: 1; display: flex; gap: 10px; align-items: baseline; min-width: 0; }
+.hud-t b { font-family: var(--font-display); font-weight: 800; font-size: 20px; text-transform: uppercase; white-space: nowrap; }
+.hud-t span { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hud-b { min-width: 48px; min-height: 40px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); font-weight: 600; padding: 0 12px; }
+.ov { position: absolute; inset: 0; z-index: 4; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; padding: 24px; background: rgba(11,15,20,.94); }
+.ov h3 { font-size: 34px; color: var(--optic); }
+.ov p { margin: 0; max-width: 46ch; }
+.ov .count { font-family: var(--font-display); font-weight: 800; font-size: 64px; color: var(--fg); line-height: 1; font-variant-numeric: tabular-nums; }
+.ov.fb { background: transparent; pointer-events: none; }
+.ov.fb .count { font-size: 40px; color: var(--cyan); }
+.dot, .zone, .m { position: absolute; border: 0; padding: 0; background: transparent; border-radius: 50%; }
+.dot { width: 72px; height: 72px; margin: -36px 0 0 -36px; }
+.dot::after { content: ""; position: absolute; inset: 22px; border-radius: 50%; background: var(--optic); box-shadow: 0 0 18px rgba(228,255,58,.75); }
+.fix { position: absolute; width: 28px; height: 28px; margin: -14px 0 0 -14px; }
+.fix::before, .fix::after { content: ""; position: absolute; background: var(--fg); }
+.fix::before { left: 12px; top: 0; width: 4px; height: 28px; }
+.fix::after { top: 12px; left: 0; height: 4px; width: 28px; }
+.zone { width: 64px; height: 64px; margin: -32px 0 0 -32px; border: 2px solid var(--line); }
+.zone.ok { background: var(--good); border-color: var(--good); }
+.zone.no { background: var(--warn); border-color: var(--warn); }
+.zone.ans { border-color: var(--cyan); border-width: 4px; }
+.fdot { position: absolute; width: 26px; height: 26px; margin: -13px 0 0 -13px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 16px rgba(46,230,255,.8); }
+.m { width: 60px; height: 60px; margin: -30px 0 0 -30px; }
+.m::after { content: ""; position: absolute; inset: 16px; border-radius: 50%; background: var(--fg); }
+.m.t::after { background: var(--cyan); box-shadow: 0 0 16px rgba(46,230,255,.8); }
+.m.sel::after { background: var(--optic); }
+.m.good::after { background: var(--good); }
+.m.bad::after { background: var(--warn); }
+.m.missed { box-shadow: inset 0 0 0 3px var(--cyan); }
+.track { position: absolute; left: 6%; right: 6%; height: 2px; background: var(--line); }
+.tline { position: absolute; width: 4px; margin-left: -2px; background: var(--optic); border-radius: 2px; }
+.shade { position: absolute; background: repeating-linear-gradient(135deg, var(--surface-2) 0 10px, var(--surface) 10px 20px); border-radius: 8px; }
+.tdot { position: absolute; width: 24px; height: 24px; margin: -12px 0 0 -12px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 14px rgba(46,230,255,.8); }
+.tdot.ghost { background: transparent; box-shadow: inset 0 0 0 3px var(--cyan); }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: 0s !important; animation-duration: 0s !important; }
 }
@@ -316,15 +365,11 @@ input[type=text]::placeholder { color: var(--muted); }
 
   <!-- DRILLS -->
   <section class="screen" id="drills" hidden>
-    <div class="drill-head">
-      <div><div class="eyebrow" id="drillEyebrow">Step 2 · Eyes · Drill 1 of 3</div><h2 id="drillTitle">Saccade jumps</h2></div>
-      <div class="mini-ring" aria-hidden="true">
-        <svg viewBox="0 0 52 52" class="ring"><circle class="trk" cx="26" cy="26" r="22" fill="none" stroke-width="5"/><circle id="drillRing" class="bar" cx="26" cy="26" r="22" fill="none" stroke-width="5"/></svg>
-        <span id="drillSec">0</span>
-      </div>
-    </div>
-    <div class="arena" id="arena"></div>
-    <div class="result" id="drillResult"></div>
+    <div><div class="eyebrow" id="drillEyebrow">Step 2 · Eyes · about 100 seconds</div><h2 style="font-size:30px">Eye drills</h2></div>
+    <p class="note">Turn your phone sideways for a wider field. Keep your head still and let your eyes do the work.</p>
+    <ol class="dlist" id="drillList"></ol>
+    <button class="btn btn-primary" id="drillStart">Rotate &amp; start</button>
+    <button class="btn btn-ghost" id="drillSkip">Skip eye drills</button>
   </section>
 
   <!-- VIZ -->
@@ -376,6 +421,24 @@ input[type=text]::placeholder { color: var(--muted); }
       <button class="btn btn-ghost" data-sheet="science">The science</button>
     </div>
   </section>
+</div>
+
+<div id="stage" hidden>
+  <div id="field"></div>
+  <div class="hud">
+    <div class="mini-ring" aria-hidden="true">
+      <svg viewBox="0 0 52 52" class="ring"><circle class="trk" cx="26" cy="26" r="22" fill="none" stroke-width="5"/><circle id="stRing" class="bar" cx="26" cy="26" r="22" fill="none" stroke-width="5"/></svg>
+    </div>
+    <div class="hud-t"><b id="stTitle"></b><span id="stInfo"></span></div>
+    <button class="hud-b" id="stSkip">Skip</button>
+    <button class="hud-b" id="stExit" aria-label="Exit eye drills">✕</button>
+  </div>
+  <div class="ov" id="rotate" hidden>
+    <svg viewBox="0 0 64 64" width="72" height="72" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><rect x="20" y="8" width="24" height="44" rx="4"/><path d="M8 40a24 24 0 0 0 20 16M8 40l-2 6M8 40l6 1"/></svg>
+    <h3>Turn your phone sideways</h3>
+    <p class="note">A wider screen gives your eyes more ground to cover.</p>
+    <button class="btn btn-ghost" id="usePortrait" style="max-width:320px">Stay in portrait</button>
+  </div>
 </div>
 
 <script>
@@ -735,114 +798,234 @@ function drawCurve() {
     '<text x="' + (W - pad) + '" y="' + (H - 3) + '" fill="#8b9aab" font-size="10" text-anchor="end" font-family="Inter, system-ui">High activation</text>';
 }
 
-/* ---------- DRILLS ---------- */
-let drillIdx = 0, drillCleanup = null;
-const drillDur = () => S.win === 5 ? 22 : 32; // 3 drills ≤ ~96 s active time
+/* ---------- DRILLS (abstract stimuli, landscape-first) ---------- */
 const DRILLS = [
-  { title: 'Saccade jumps', intro: ['Phone at eye level, arm’s length.', 'Head still. Only your eyes move.', 'Tap each target the moment it lights.'], run: runSaccade },
-  { title: 'Peripheral read', intro: ['Lock your eyes on the center anchor.', 'A seam opens left or right for a split second.', 'Don’t look at it. Tap the side you sensed.'], run: runPeripheral },
-  { title: 'Near-far focus', intro: ['Pick a far target now: antenna, back-wall line, scoreboard.', 'NEAR: read the small word on screen.', 'FAR: snap your focus to your far target until the tone.'], run: runNearFar }
+  { title: 'Saccade jumps', how: 'Head still. A dot jumps across the screen. Tap it the instant it appears.', base: 20, run: runSaccade },
+  { title: 'Peripheral flash', how: 'Eyes on the center cross. A dot flashes too fast to look at. Tap where it was. The flash gets shorter as you get it right.', base: 25, run: runPeripheral },
+  { title: 'Track 3', how: '3 dots light up, then all 8 move. Follow your 3 without moving your head. Tap them when they stop.', base: 0, run: runMOT },
+  { title: 'Timing', how: 'A dot slides toward the yellow line and disappears into the shade. Tap anywhere at the moment it hits the line.', base: 25, run: runTiming }
 ];
-function startDrills() { drillIdx = 0; show('drills'); loadDrill(); }
-function loadDrill() {
-  const D = DRILLS[drillIdx];
-  $('#drillEyebrow').textContent = 'Step 2 · Eyes · Drill ' + (drillIdx + 1) + ' of 3';
-  $('#drillTitle').textContent = D.title;
-  $('#drillSec').textContent = drillDur(); setRing($('#drillRing'), 1);
-  $('#drillResult').replaceChildren();
-  const arena = $('#arena'); arena.replaceChildren();
-  const go = h('button', { class: 'btn btn-primary' }, 'Go');
-  const skip = h('button', { class: 'btn btn-ghost' }, drillIdx < 2 ? 'Skip drill' : 'Skip to visualization');
-  arena.append(h('div', { class: 'intro' }, h('h3', {}, D.title), h('ul', {}, D.intro.map(t => h('li', {}, t))), go, skip));
-  go.onclick = () => { arena.querySelector('.intro').remove(); timedDrill(D); };
-  skip.onclick = () => nextDrill();
-}
-function timedDrill(D) {
-  const dur = drillDur(), t0 = Date.now();
-  const stats = D.run($('#arena'));
-  drillCleanup = stats.stop;
-  const iv = setInterval(() => {
-    const el = (Date.now() - t0) / 1000;
-    $('#drillSec').textContent = Math.max(0, Math.ceil(dur - el));
-    setRing($('#drillRing'), 1 - el / dur);
-    if (el >= dur) {
-      clearInterval(iv); stats.stop(); drillCleanup = null; buzz([30, 40, 30]); Audio.blip(660, .15);
-      $('#drillResult').replaceChildren(...stats.summary().map(([v, l]) => h('div', { class: 'stat' }, h('div', { class: 'v' }, v), h('div', { class: 'l' }, l))));
-      setTimeout(nextDrill, 1800);
-    }
-  }, 100);
-  const prevStop = stats.stop; stats.stop = () => { clearInterval(iv); prevStop(); };
-  drillCleanup = stats.stop;
-}
-function nextDrill() { if (drillCleanup) { drillCleanup(); drillCleanup = null; } drillIdx++; if (drillIdx < DRILLS.length) loadDrill(); else startViz(); }
+const dscale = () => S.win === 5 ? 0.75 : 1;
+let drillIdx = 0, drillStop = null, drillResults = [], drillsDone = false, portraitOK = false, rotWait = null, stageTimers = [];
+const later = (fn, ms) => { const t = setTimeout(fn, ms); stageTimers.push(t); return t; };
+const avg = a => a.reduce((x, y) => x + y, 0) / a.length;
 
-function runSaccade(arena) {
-  const labels = POS[S.pos].tri;
-  const spots = [[20, 80], [50, 18], [80, 62]];
-  const tg = labels.map((l, i) => { const b = h('button', { class: 'tgt', style: 'left:' + spots[i][0] + '%;top:' + spots[i][1] + '%', 'aria-label': l }, h('span', {}, l)); arena.append(b); return b; });
-  let cur = -1, litAt = 0, hits = 0, misses = 0, rts = [], to = null, alive = true, n = 0;
-  const interval = () => Math.max(480, 950 - n * 22);
-  const light = () => {
-    if (!alive) return;
-    cur = (cur + 1) % 3; n++;
-    tg.forEach(t => t.classList.remove('lit', 'hit'));
-    tg[cur].classList.add('lit'); litAt = performance.now(); Audio.blip(720 + cur * 140, .05, .15);
-    to = setTimeout(() => { misses++; tg[cur].classList.remove('lit'); setTimeout(light, 120); }, interval());
-  };
-  tg.forEach((t, i) => t.addEventListener('pointerdown', (e) => {
-    e.preventDefault();
-    if (i !== cur || !t.classList.contains('lit')) return;
-    clearTimeout(to); hits++; rts.push(performance.now() - litAt); buzz(15);
-    t.classList.remove('lit'); t.classList.add('hit'); setTimeout(light, 120);
+function startDrills() { drillResults = []; drillsDone = false; show('drills'); renderDrillMenu(); }
+function renderDrillMenu() {
+  $('#drillList').replaceChildren(...DRILLS.map((D, i) => {
+    const r = drillResults[i];
+    return h('li', {}, h('span', { class: 'dt' }, D.title), h('span', { class: 'dh' }, D.how),
+      r ? h('span', { class: 'dr' }, r[0][0], h('small', {}, r[0][1])) : null);
   }));
-  setTimeout(light, 400);
-  return {
-    stop() { alive = false; clearTimeout(to); },
-    summary() { const avg = rts.length ? Math.round(rts.reduce((a, b) => a + b, 0) / rts.length) : 0; return [[hits, 'Hits'], [misses, 'Missed'], [avg ? avg + 'ms' : '–', 'Avg reaction']]; }
-  };
+  $('#drillStart').textContent = drillsDone ? 'Continue' : drillResults.length ? 'Resume' : 'Rotate & start';
+  $('#drillSkip').hidden = drillsDone;
 }
-function runPeripheral(arena) {
-  const anchorTxt = { setter: 'S', hitter: 'H', middle: 'H', libero: 'H' }[S.pos];
-  arena.append(h('div', { class: 'anchor' }, h('b', {}, S.pos === 'setter' ? 'THEIR BLOCK' : 'SETTER / HITTER'), anchorTxt));
-  const blip = h('div', { class: 'blip' }); arena.append(blip);
-  const L = h('button', {}, '◀ Left seam'), R = h('button', {}, 'Right seam ▶');
-  arena.append(h('div', { class: 'sides' }, L, R));
-  let side = null, ok = 0, bad = 0, missed = 0, alive = true, t1, t2, answered = true;
-  const fire = () => {
-    if (!alive) return;
-    if (!answered) missed++;
-    side = Math.random() < .5 ? 'L' : 'R'; answered = false;
-    blip.style.left = side === 'L' ? '4%' : 'calc(96% - 46px)';
-    blip.style.top = (12 + Math.random() * 40) + '%';
-    blip.classList.add('on');
-    t1 = setTimeout(() => blip.classList.remove('on'), 200);
-    t2 = setTimeout(fire, 1100 + Math.random() * 700);
-  };
-  const ans = (s, btn) => {
-    if (answered || !side) return; answered = true;
-    const good = s === side; good ? ok++ : bad++; buzz(good ? 15 : [10, 40, 10]);
-    btn.classList.add(good ? 'ok' : 'no'); setTimeout(() => btn.classList.remove('ok', 'no'), 220);
-  };
-  L.addEventListener('pointerdown', e => { e.preventDefault(); ans('L', L); });
-  R.addEventListener('pointerdown', e => { e.preventDefault(); ans('R', R); });
-  setTimeout(fire, 700);
-  return { stop() { alive = false; clearTimeout(t1); clearTimeout(t2); blip.classList.remove('on'); },
-           summary() { const tot = ok + bad + missed; return [[ok, 'Correct'], [bad + missed, 'Wrong / missed'], [tot ? Math.round(ok / tot * 100) + '%' : '–', 'Read rate']]; } };
+async function enterStage() {
+  $('#stage').hidden = false;
+  try { const el = document.documentElement; if (el.requestFullscreen && !document.fullscreenElement) await el.requestFullscreen({ navigationUI: 'hide' }); } catch {}
+  try { if (screen.orientation && screen.orientation.lock) await screen.orientation.lock('landscape'); } catch {}
+  drillIdx = drillResults.length; runStageDrill();
 }
-function runNearFar(arena) {
-  const words = ['SEAM', 'LINE', 'TOSS', 'FLOAT', 'TIP', 'DEEP', 'CROSS', 'SHORT', 'ZONE 1', 'ZONE 5', 'ROLL', 'TOOL'];
-  const box = h('div', { class: 'nf' }); arena.append(box);
-  let near = true, alive = true, t, cycles = 0;
-  const flip = () => {
+function exitStage() {
+  stopDrill();
+  if (rotWait) { removeEventListener('resize', rotWait); rotWait = null; }
+  $('#stage').hidden = true; $('#rotate').hidden = true;
+  try { screen.orientation && screen.orientation.unlock && screen.orientation.unlock(); } catch {}
+  try { if (document.fullscreenElement) document.exitFullscreen(); } catch {}
+}
+function stopDrill() { if (drillStop) { drillStop(); drillStop = null; } stageTimers.forEach(clearTimeout); stageTimers = []; }
+const isPortrait = () => innerHeight > innerWidth;
+function waitLandscape(cb) {
+  const ok = () => !isPortrait() || portraitOK;
+  if (ok()) { $('#rotate').hidden = true; cb(); return; }
+  $('#rotate').hidden = false;
+  rotWait = () => { if (ok()) { removeEventListener('resize', rotWait); rotWait = null; $('#rotate').hidden = true; later(cb, 300); } };
+  addEventListener('resize', rotWait);
+  $('#usePortrait').onclick = () => { portraitOK = true; rotWait && rotWait(); };
+}
+function stProgress(f, info) { setRing($('#stRing'), f); if (info != null) $('#stInfo').textContent = info; }
+function runStageDrill() {
+  stopDrill();
+  if (drillIdx >= DRILLS.length) { finishDrills(); return; }
+  const D = DRILLS[drillIdx], field = $('#field');
+  field.replaceChildren(); $('#stTitle').textContent = (drillIdx + 1) + '/' + DRILLS.length + ' ' + D.title; stProgress(1, '');
+  waitLandscape(() => {
+    const cnt = h('div', { class: 'count' }, '3');
+    const ov = h('div', { class: 'ov' }, h('h3', {}, D.title), h('p', {}, D.how), cnt);
+    field.append(ov);
+    let n = 3; const tick = () => { n--; if (n > 0) { cnt.textContent = n; Audio.blip(520, .06, .15); later(tick, 900); } else { ov.remove(); go(); } };
+    later(tick, 1400);
+  });
+  function go() {
+    drillStop = D.run({ field, dur: D.base * dscale(), progress: stProgress, done: (summary) => {
+      drillStop = null; drillResults[drillIdx] = summary; buzz([30, 40, 30]); Audio.blip(660, .15);
+      field.append(h('div', { class: 'ov' }, h('h3', {}, D.title + ' done'), h('div', { class: 'row', style: 'gap:18px;flex:none' },
+        ...summary.map(([v, l]) => h('div', {}, h('div', { class: 'count', style: 'font-size:40px' }, v), h('div', { class: 'note' }, l))))));
+      later(() => { drillIdx++; runStageDrill(); }, 2000);
+    } });
+  }
+}
+function finishDrills() { drillsDone = true; exitStage(); renderDrillMenu(); }
+function fieldPt(field, e) { const r = field.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
+const TOP = 60; // keep stimuli clear of the HUD
+
+// 1. Saccade jumps: large random jumps, tap to confirm the eyes landed.
+function runSaccade({ field, dur, progress, done }) {
+  let alive = true, hits = 0, miss = 0, rts = [], to, last = { x: field.clientWidth / 2, y: field.clientHeight / 2 }, dot;
+  const t0 = performance.now();
+  const spawn = () => {
     if (!alive) return;
-    box.className = 'nf ' + (near ? 'near' : 'far');
-    if (near) box.replaceChildren(h('div', { class: 'big' }, 'NEAR'), h('div', { class: 'tiny' }, words[Math.floor(Math.random() * words.length)]), h('div', { class: 'note' }, 'Read the small word'));
-    else { box.replaceChildren(h('div', { class: 'big' }, 'FAR ↑'), h('div', { class: 'note' }, 'Focus on your far target. Sharpen it.')); cycles++; }
-    Audio.blip(near ? 440 : 990, .12, .25); buzz(near ? 25 : [15, 30, 15]);
-    near = !near; t = setTimeout(flip, 3000);
+    const W = field.clientWidth, H = field.clientHeight; let x, y, k = 0;
+    do { x = 44 + Math.random() * (W - 88); y = TOP + 20 + Math.random() * (H - TOP - 64); k++; }
+    while (Math.hypot(x - last.x, y - last.y) < 0.45 * Math.max(W, H) && k < 40);
+    last = { x, y };
+    dot = h('button', { class: 'dot', style: 'left:' + x + 'px;top:' + y + 'px', 'aria-label': 'Dot' });
+    const at = performance.now();
+    dot.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); if (!alive) return; clearTimeout(to); hits++; rts.push(performance.now() - at); buzz(12); Audio.blip(900, .04, .12); dot.remove(); to = setTimeout(spawn, 120 + Math.random() * 260); });
+    field.append(dot);
+    to = setTimeout(() => { miss++; dot.remove(); spawn(); }, 1300);
   };
-  flip();
-  return { stop() { alive = false; clearTimeout(t); }, summary() { return [[cycles, 'Near-far cycles'], ['3s', 'Per focus']]; } };
+  const iv = setInterval(() => {
+    const el = (performance.now() - t0) / 1000; progress(1 - el / dur, hits + ' hits');
+    if (el >= dur) { stop(); done([[rts.length ? Math.round(avg(rts)) + 'ms' : '–', 'Avg reaction'], [hits, 'Hits'], [miss, 'Missed']]); }
+  }, 100);
+  function stop() { alive = false; clearTimeout(to); clearInterval(iv); dot && dot.remove(); }
+  spawn(); return stop;
+}
+
+// 2. Peripheral flash (useful-field-of-view style): brief flash, then mask, adaptive duration.
+function runPeripheral({ field, dur, progress, done }) {
+  let alive = true, ms = 200, streak = 0, right = 0, total = 0, tmr = [], best = 999;
+  const W = field.clientWidth, H = field.clientHeight, cx = W / 2, cy = TOP / 2 + H / 2;
+  const rx = W / 2 - 46, ry = (H - TOP) / 2 - 40;
+  const pts = Array.from({ length: 8 }, (_, i) => { const a = i * Math.PI / 4 + Math.PI / 8; return { x: cx + rx * Math.cos(a), y: cy + ry * Math.sin(a) }; });
+  const fix = h('div', { class: 'fix', style: 'left:' + cx + 'px;top:' + cy + 'px' }); field.append(fix);
+  const zones = pts.map((p, i) => { const z = h('button', { class: 'zone', style: 'left:' + p.x + 'px;top:' + p.y + 'px;visibility:hidden', 'aria-label': 'Zone ' + (i + 1) }); field.append(z); return z; });
+  let target = -1, answering = false;
+  const t0 = performance.now();
+  const T = (fn, d) => { const t = setTimeout(fn, d); tmr.push(t); return t; };
+  const trial = () => {
+    if (!alive) return;
+    if ((performance.now() - t0) / 1000 >= dur && total > 0) return finish();
+    zones.forEach(z => { z.style.visibility = 'hidden'; z.className = 'zone'; });
+    T(() => {
+      target = Math.floor(Math.random() * 8);
+      const fd = h('div', { class: 'fdot', style: 'left:' + pts[target].x + 'px;top:' + pts[target].y + 'px' }); field.append(fd);
+      T(() => { fd.remove(); zones.forEach(z => z.style.visibility = 'visible'); answering = true; T(() => answer(-1), 2500); }, ms);
+    }, 500 + Math.random() * 700);
+  };
+  const answer = (i) => {
+    if (!answering) return; answering = false; tmr.forEach(clearTimeout); tmr = [];
+    total++; const ok = i === target;
+    if (ok) { right++; streak++; buzz(12); if (streak >= 2) { best = Math.min(best, ms); ms = Math.max(33, Math.round(ms * 0.8)); streak = 0; } }
+    else { streak = 0; buzz([10, 40, 10]); ms = Math.min(500, Math.round(ms * 1.25)); }
+    zones[target].classList.add(ok ? 'ok' : 'ans'); if (!ok && i >= 0) zones[i].classList.add('no');
+    progress(Math.max(0, 1 - (performance.now() - t0) / 1000 / dur), 'Flash ' + ms + 'ms · ' + right + '/' + total);
+    T(trial, 550);
+  };
+  zones.forEach((z, i) => z.addEventListener('pointerdown', e => { e.preventDefault(); answer(i); }));
+  const iv = setInterval(() => progress(Math.max(0, 1 - (performance.now() - t0) / 1000 / dur)), 150);
+  const finish = () => { stop(); done([[best < 999 ? best + 'ms' : ms + 'ms', 'Shortest flash read'], [total ? Math.round(right / total * 100) + '%' : '–', 'Accuracy'], [total, 'Flashes']]); };
+  function stop() { alive = false; clearInterval(iv); tmr.forEach(clearTimeout); }
+  progress(1, 'Flash ' + ms + 'ms'); trial(); return stop;
+}
+
+// 3. Multiple object tracking: 8 dots, track 3, adaptive speed.
+function runMOT({ field, progress, done }) {
+  const trials = S.win === 5 ? 2 : 3; let t = 0, lvl = store.get('motLvl', 1), got = 0, alive = true, raf, tmr = [];
+  const T = (fn, d) => { const x = setTimeout(fn, d); tmr.push(x); return x; };
+  const trial = () => {
+    if (!alive) return;
+    field.querySelectorAll('.m').forEach(n => n.remove());
+    const W = field.clientWidth, H = field.clientHeight, R = 30, sp = lvl * Math.min(W, H) * 0.32;
+    const ds = [];
+    for (let i = 0; i < 8; i++) {
+      let x, y, k = 0; do { x = R + 10 + Math.random() * (W - 2 * R - 20); y = TOP + R + Math.random() * (H - TOP - 2 * R - 10); k++; } while (ds.some(d => Math.hypot(d.x - x, d.y - y) < 2.4 * R) && k < 60);
+      const a = Math.random() * Math.PI * 2, el = h('button', { class: 'm' + (i < 3 ? ' t' : ''), 'aria-label': 'Dot' });
+      ds.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, el, tgt: i < 3 }); field.append(el);
+    }
+    const place = () => ds.forEach(d => { d.el.style.left = d.x + 'px'; d.el.style.top = d.y + 'px'; }); place();
+    progress(1 - t / trials, 'Trial ' + (t + 1) + ' of ' + trials + ' · speed ' + lvl.toFixed(2) + '×');
+    T(() => {
+      ds.forEach(d => d.el.classList.remove('t'));
+      let last = performance.now(); const end = last + 5000;
+      const step = (now) => {
+        if (!alive) return; const dt = Math.min(0.05, (now - last) / 1000); last = now;
+        for (const d of ds) {
+          d.x += d.vx * dt; d.y += d.vy * dt;
+          if (d.x < R) { d.x = R; d.vx = Math.abs(d.vx); } if (d.x > W - R) { d.x = W - R; d.vx = -Math.abs(d.vx); }
+          if (d.y < TOP + R / 2) { d.y = TOP + R / 2; d.vy = Math.abs(d.vy); } if (d.y > H - R) { d.y = H - R; d.vy = -Math.abs(d.vy); }
+        }
+        for (let i = 0; i < ds.length; i++) for (let j = i + 1; j < ds.length; j++) {
+          const a = ds[i], b = ds[j], dx = b.x - a.x, dy = b.y - a.y, dist = Math.hypot(dx, dy);
+          if (dist < 2 * R * 0.8 && dist > 0) { const nx = dx / dist, ny = dy / dist, va = a.vx * nx + a.vy * ny, vb = b.vx * nx + b.vy * ny;
+            if (va - vb > 0) { a.vx += (vb - va) * nx; a.vy += (vb - va) * ny; b.vx += (va - vb) * nx; b.vy += (va - vb) * ny; } }
+        }
+        place();
+        if (now < end) raf = requestAnimationFrame(step); else respond();
+      };
+      raf = requestAnimationFrame(step);
+    }, 2000);
+    const respond = () => {
+      let picks = 0; Audio.blip(700, .08, .15); progress(1 - t / trials, 'Tap your 3 dots');
+      ds.forEach(d => d.el.addEventListener('pointerdown', e => {
+        e.preventDefault(); if (picks >= 3 || d.el.classList.contains('sel')) return;
+        d.el.classList.add('sel'); picks++; buzz(10);
+        if (picks === 3) {
+          let ok = 0; ds.forEach(x => { const s = x.el.classList.contains('sel'); if (s) { x.el.classList.remove('sel'); x.el.classList.add(x.tgt ? 'good' : 'bad'); if (x.tgt) ok++; } else if (x.tgt) x.el.classList.add('missed'); });
+          got += ok; lvl = ok === 3 ? Math.min(3, lvl * 1.15) : Math.max(0.5, lvl * (ok === 2 ? 0.95 : 0.85)); store.set('motLvl', lvl);
+          field.append(Object.assign(h('div', { class: 'ov fb' }, h('div', { class: 'count' }, ok + ' / 3')), {}));
+          T(() => { field.querySelectorAll('.ov.fb').forEach(n => n.remove()); t++; t < trials ? trial() : finish(); }, 1300);
+        }
+      }));
+    };
+  };
+  const finish = () => { stop(); progress(0); done([[got + '/' + trials * 3, 'Tracked'], [lvl.toFixed(2) + '×', 'Next speed']]); };
+  function stop() { alive = false; cancelAnimationFrame(raf); tmr.forEach(clearTimeout); }
+  trial(); return stop;
+}
+
+// 4. Coincidence-anticipation timing: occluded approach, tap on arrival.
+function runTiming({ field, dur, progress, done }) {
+  const W = field.clientWidth, H = field.clientHeight, y = TOP / 2 + H / 2, x0 = W * 0.08, xT = W * 0.86, xS = W * 0.55;
+  field.append(h('div', { class: 'track', style: 'top:' + y + 'px' }),
+    h('div', { class: 'shade', style: 'left:' + xS + 'px;width:' + (xT - xS) + 'px;top:' + (y - 40) + 'px;height:80px' }),
+    h('div', { class: 'tline', style: 'left:' + xT + 'px;top:' + (y - 56) + 'px;height:112px' }));
+  const dot = h('div', { class: 'tdot', style: 'left:' + x0 + 'px;top:' + y + 'px;visibility:hidden' }); field.append(dot);
+  const fb = h('div', { class: 'ov fb', style: 'justify-content:flex-start;padding-top:' + (TOP + 10) + 'px' }, h('div', { class: 'count' }, '')); field.append(fb);
+  let alive = true, raf, tmr = [], errs = [], state = 'idle', start = 0, arrive = 0, speed = 0;
+  const T = (fn, d) => { const t = setTimeout(fn, d); tmr.push(t); return t; };
+  const t0 = performance.now();
+  const trial = () => {
+    if (!alive) return;
+    if ((performance.now() - t0) / 1000 >= dur && errs.length) return finish();
+    dot.className = 'tdot'; dot.style.left = x0 + 'px'; dot.style.visibility = 'visible'; fb.firstChild.textContent = '';
+    speed = W * (0.42 + Math.random() * 0.5); state = 'wait';
+    T(() => {
+      start = performance.now(); arrive = start + (xT - x0) / speed * 1000; state = 'run';
+      const step = (now) => { if (!alive || state !== 'run') return; const x = x0 + (now - start) / 1000 * speed;
+        dot.style.left = Math.min(x, xT) + 'px'; dot.style.visibility = x < xS ? 'visible' : 'hidden';
+        if (now > arrive + 700) { state = 'idle'; reveal(null); T(trial, 900); return; }
+        raf = requestAnimationFrame(step); };
+      raf = requestAnimationFrame(step);
+    }, 600 + Math.random() * 800);
+  };
+  const reveal = (err) => {
+    dot.className = 'tdot ghost'; dot.style.visibility = 'visible'; dot.style.left = xT + 'px';
+    fb.firstChild.textContent = err == null ? 'No tap' : Math.abs(err) < 20 ? 'On time · ' + Math.round(Math.abs(err)) + 'ms' : Math.round(Math.abs(err)) + 'ms ' + (err < 0 ? 'early' : 'late');
+  };
+  const tap = (e) => {
+    if (e.target.closest('.hud')) return;
+    if (state !== 'run') return; const err = performance.now() - arrive; state = 'idle'; cancelAnimationFrame(raf);
+    errs.push(Math.abs(err)); buzz(Math.abs(err) < 40 ? 20 : [10, 30, 10]); reveal(err);
+    progress(Math.max(0, 1 - (performance.now() - t0) / 1000 / dur), 'Avg error ' + Math.round(avg(errs)) + 'ms');
+    T(trial, 1000);
+  };
+  field.addEventListener('pointerdown', tap);
+  const iv = setInterval(() => progress(Math.max(0, 1 - (performance.now() - t0) / 1000 / dur)), 150);
+  const finish = () => { stop(); done([[Math.round(avg(errs)) + 'ms', 'Avg timing error'], [Math.round(Math.min(...errs)) + 'ms', 'Best'], [errs.length, 'Reps']]); };
+  function stop() { alive = false; cancelAnimationFrame(raf); clearInterval(iv); tmr.forEach(clearTimeout); field.removeEventListener('pointerdown', tap); }
+  trial(); return stop;
 }
 
 /* ---------- VIZ ---------- */
@@ -961,7 +1144,7 @@ function practiceReset() {
   o.addEventListener('click', () => o.remove());
 }
 function stopAll() {
-  clearInterval(primeT); stopBreath(); stopViz(); if (drillCleanup) { drillCleanup(); drillCleanup = null; }
+  clearInterval(primeT); stopBreath(); stopViz(); exitStage();
 }
 function endSession() {
   stopAll(); clearInterval(clockT); if (Audio.playing) Audio.fadeOut(1.5);
@@ -974,7 +1157,7 @@ function endSession() {
 const SCIENCE = [
   ['Flow in sport', 'm', 'Csikszentmihalyi’s flow model, applied to athletes by Jackson & Csikszentmihalyi (Flow in Sports, 1999). The routine targets conditions linked to flow: clear immediate goals (one cue), challenge matched to skill, and attention on action instead of self-evaluation. Nothing reliably switches flow on; this sets up the conditions.', null],
   ['Athletic mental energy', 'm', 'The Athletic Mental Energy Scale has six factors: motivation, vigor, concentration, calm, confidence and tirelessness. In a field test with 81 male college volleyball players, all six correlated with match performance, and mental energy predicted receivers’ performance (R² = .23). One correlational study; the app’s check-in is a 1-tap shortcut, not the validated scale.', 'https://peerj.com/articles/15109'],
-  ['Volleyball gaze', 'm', 'Eye-tracking work (Vansteenkiste et al., 2014) found elite, intermediate and novice players use a similar gaze strategy, with elite players using it more consistently; experienced players look more at the setter. The on-screen drills rehearse that sequence. Whether generic screen-based eye drills transfer to on-court reading is not established, so treat them as attention priming.', 'https://pmc.ncbi.nlm.nih.gov/articles/PMC4296842'],
+  ['Eye drills', 'l', 'The four drills are standard lab tasks: saccade jumps, a useful-field-of-view style peripheral flash, multiple object tracking, and coincidence-anticipation timing. Elite volleyball players use a more consistent gaze strategy (Vansteenkiste et al., 2014). Tracking training improved soccer passing decisions in one small study (Romeas et al., 2016), but a later study did not replicate it, and reviews find gains on these tasks often do not carry over to the field. Use them as a short focus warm-up, not as proven performance training.', 'https://www.frontiersin.org/articles/10.3389/fphys.2025.1664572/full'],
   ['Breathing to downshift', 'm', 'In a randomized study (Balban et al., 2023, Cell Reports Medicine), 5 minutes a day of cyclic sighing for a month improved mood and lowered resting breathing rate more than mindfulness meditation. Effects of a single pre-match session were not what that study tested.', 'https://pmc.ncbi.nlm.nih.gov/articles/PMC9873947'],
   ['Self-talk', 'm', 'A meta-analysis of 32 studies (Hatzigeorgiadis et al., 2011) found a moderate positive effect of self-talk on sport performance (ES = 0.48), larger when athletes practiced their cues beforehand. That is why you pick one cue and rehearse it in the reset.', 'https://www.psychologicalscience.org/journals/perspectives/1745691611413136/'],
   ['Music tempo & arousal', 'l', 'Faster music is commonly used to raise arousal and slower music to lower it, and arousal follows an inverted-U relationship with performance. The specific BPM ranges here are sensible starting points, not tested thresholds.', null],
@@ -995,6 +1178,10 @@ function openScience() {
 document.addEventListener('click', e => { const b = e.target.closest('[data-sheet]'); if (b) openScience(); });
 $('#backHub').onclick = () => show('hub');
 $('#startBtn').onclick = startSession;
+$('#drillStart').onclick = () => { if (drillsDone) startViz(); else enterStage(); };
+$('#drillSkip').onclick = () => { exitStage(); startViz(); };
+$('#stSkip').onclick = () => { stopDrill(); drillResults[drillIdx] = drillResults[drillIdx] || [['–', 'Skipped']]; drillIdx++; runStageDrill(); };
+$('#stExit').onclick = () => { exitStage(); renderDrillMenu(); };
 $('#primeSkip').onclick = () => { clearInterval(primeT); stopBreath(); startDrills(); };
 $('#vizPlay').onclick = () => { Audio.init(); playViz(); };
 $('#vizVoice').onclick = (e) => { voice = !voice; e.currentTarget.setAttribute('aria-pressed', String(voice)); e.currentTarget.textContent = voice ? 'Voice on' : 'Voice off'; if (!voice) try { speechSynthesis.cancel(); } catch {} };
