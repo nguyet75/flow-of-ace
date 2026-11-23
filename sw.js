@@ -1,5 +1,5 @@
 // Offline-first cache for Flow of Ace. Bump VERSION when files change.
-const VERSION = 'flowoface-v3';
+const VERSION = 'flowoface-v4';
 const CORE = ['./', 'index.html', 'manifest.webmanifest', 'icon.svg'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(VERSION).then(c => c.addAll(CORE)).then(() => self.skipWaiting()));

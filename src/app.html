@@ -5,16 +5,16 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600&display=swap">
 <style>
-/* Layout: one-column, thumb-first sideline app. Fixed top status bar during a session, big tap zones, full-bleed drill arenas. Single committed dark "court at night" look. */
+/* Layout: one-column, thumb-first sideline app. Sticky session bar during prep, big tap zones, full-screen overlays for in-match tools. Single committed dark "court at night" look. */
 :root {
-  --bg: #0b0f14;          /* obsidian */
-  --surface: #131a22;     /* slate panel */
+  --bg: #0b0f14;
+  --surface: #131a22;
   --surface-2: #1b2430;
   --line: #2a3644;
   --fg: #eef3f7;
   --muted: #8b9aab;
-  --optic: #e4ff3a;       /* optic yellow */
-  --cyan: #2ee6ff;        /* electric cyan */
+  --optic: #e4ff3a;
+  --cyan: #2ee6ff;
   --warn: #ff9f43;
   --good: #3ddc97;
   --on-accent: #0b0f14;
@@ -25,10 +25,8 @@
 }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body { height: 100%; }
-body {
-  background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 15px; line-height: 1.45;
-  overscroll-behavior: none;
-}
+body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 15px; line-height: 1.45; overscroll-behavior: none; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
 button { font: inherit; color: inherit; cursor: pointer; }
 button:focus-visible, input:focus-visible { outline: 3px solid var(--cyan); outline-offset: 2px; }
 h1, h2, h3 { font-family: var(--font-display); text-transform: uppercase; letter-spacing: .02em; line-height: 1; margin: 0; text-wrap: balance; }
@@ -37,34 +35,35 @@ h1, h2, h3 { font-family: var(--font-display); text-transform: uppercase; letter
   padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
 .screen { display: flex; flex-direction: column; gap: 18px; padding-block: 16px 28px; flex: 1; }
 .screen[hidden] { display: none !important; }
-
-/* Buttons */
-.btn { display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 64px; border-radius: var(--r); border: 0;
-  font-family: var(--font-display); font-weight: 800; font-size: 24px; text-transform: uppercase; letter-spacing: .04em; width: 100%; }
-.btn-primary { background: var(--optic); color: var(--on-accent); }
-.btn-primary:active { transform: scale(.98); }
-.btn-ghost { background: var(--surface); border: 1px solid var(--line); color: var(--fg); font-size: 20px; min-height: 56px; }
-.btn[disabled] { opacity: .35; }
+.note { font-size: 13px; color: var(--muted); margin: 0; }
+.note.warn { color: var(--warn); }
 .row { display: flex; gap: 10px; }
 .row > * { flex: 1; min-width: 0; }
 .link { background: none; border: 0; color: var(--cyan); font-weight: 600; padding: 8px 0; text-align: left; }
 
+.btn { display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 64px; border-radius: var(--r); border: 0; padding: 0 16px;
+  font-family: var(--font-display); font-weight: 800; font-size: 24px; text-transform: uppercase; letter-spacing: .04em; width: 100%; text-align: center; }
+.btn-primary { background: var(--optic); color: var(--on-accent); }
+.btn-primary:active { transform: scale(.98); }
+.btn-cyan { background: var(--cyan); color: var(--on-accent); }
+.btn-ghost { background: var(--surface); border: 1px solid var(--line); color: var(--fg); font-size: 20px; min-height: 56px; }
+.btn[disabled] { opacity: .35; }
+
 /* Hub */
-.brand { display: flex; align-items: baseline; gap: 10px; padding-top: 8px; }
-.brand h1 { font-size: 46px; font-weight: 800; }
+.brand h1 { font-size: 50px; font-weight: 800; }
 .brand h1 b { color: var(--optic); }
-.brand .colon { color: var(--cyan); font-size: .6em; }
-.tag { color: var(--muted); max-width: 40ch; }
+.brand h1 .of { color: var(--cyan); font-size: .55em; vertical-align: .2em; }
+.tag { color: var(--muted); max-width: 42ch; margin: 0; }
 .sports { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.sport { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px; min-height: 112px;
-  display: flex; flex-direction: column; justify-content: space-between; text-align: left; }
+.sport { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px; min-height: 104px;
+  display: flex; flex-direction: column; justify-content: space-between; text-align: left; gap: 6px; }
 .sport .name { font-family: var(--font-display); font-weight: 800; font-size: 24px; text-transform: uppercase; }
-.sports > .sport:last-child:nth-child(even) { grid-column: 1 / -1; min-height: 96px; }
 .sport.active { grid-column: 1 / -1; min-height: 150px; border: 2px solid var(--optic);
   background: radial-gradient(120% 140% at 100% 0%, rgba(228,255,58,.18), transparent 60%), var(--surface); }
 .sport.active .name { font-size: 40px; color: var(--optic); }
-.sport.active .go { font-family: var(--font-display); font-weight: 700; font-size: 18px; color: var(--fg); text-transform: uppercase; letter-spacing: .08em; }
+.sport.active .go { font-family: var(--font-display); font-weight: 700; font-size: 18px; text-transform: uppercase; letter-spacing: .08em; }
 .sport.locked .name { color: var(--muted); }
+.sports > .sport:last-child:nth-child(even) { grid-column: 1 / -1; min-height: 96px; }
 .badge { display: inline-block; font-family: var(--font-display); font-weight: 700; font-size: 12px; letter-spacing: .1em; text-transform: uppercase;
   padding: 3px 8px; border-radius: 99px; border: 1px solid var(--cyan); color: var(--cyan); width: max-content; }
 .badge.live { border-color: var(--optic); color: var(--on-accent); background: var(--optic); }
@@ -73,29 +72,44 @@ h1, h2, h3 { font-family: var(--font-display); text-transform: uppercase; letter
 .switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: var(--muted); transition: transform .2s; }
 .switch[aria-checked="true"] { background: var(--cyan); border-color: var(--cyan); }
 .switch[aria-checked="true"]::after { transform: translateX(18px); background: var(--on-accent); }
-.foot { color: var(--muted); font-size: 12px; }
+.pending { border: 2px solid var(--cyan); border-radius: var(--r); padding: 14px; display: grid; gap: 10px; background: var(--surface); }
+.pending b { font-family: var(--font-display); font-size: 22px; text-transform: uppercase; color: var(--cyan); }
+.hub-links { display: flex; flex-wrap: wrap; gap: 4px 18px; }
 
-/* Check-in */
+/* Form bits */
 .q { display: flex; flex-direction: column; gap: 10px; }
 .q h2 { font-size: 26px; }
 .choices { display: grid; gap: 10px; }
 .choices.two { grid-template-columns: 1fr 1fr; }
 .choices.three { grid-template-columns: repeat(3, 1fr); }
-.choice { background: var(--surface); border: 2px solid var(--line); border-radius: var(--r); padding: 14px 12px; min-height: 76px; text-align: left;
+.choice { background: var(--surface); border: 2px solid var(--line); border-radius: var(--r); padding: 12px; min-height: 68px; text-align: left;
   display: flex; flex-direction: column; justify-content: center; gap: 2px; }
-.choice .t { font-family: var(--font-display); font-weight: 800; font-size: 22px; text-transform: uppercase; line-height: 1.05; }
+.choice .t { font-family: var(--font-display); font-weight: 800; font-size: 21px; text-transform: uppercase; line-height: 1.05; }
 .choice .s { color: var(--muted); font-size: 12.5px; }
 .choice[aria-pressed="true"] { border-color: var(--optic); background: var(--surface-2); }
 .choice[aria-pressed="true"] .t { color: var(--optic); }
 .choices.three .choice { text-align: center; align-items: center; }
-.choices.three .t { font-size: 34px; }
-.state-flat[aria-pressed="true"] { border-color: var(--optic); }
-.state-anx[aria-pressed="true"] { border-color: var(--cyan); }
-.state-anx[aria-pressed="true"] .t { color: var(--cyan); }
-.ames { display: flex; flex-wrap: wrap; gap: 6px; }
-.chip { font-size: 12px; padding: 4px 10px; border-radius: 99px; background: var(--surface-2); color: var(--muted); border: 1px solid var(--line); }
-.chip.low { color: var(--warn); border-color: rgba(255,159,67,.5); }
-.chip.ok { color: var(--good); border-color: rgba(61,220,151,.5); }
+.choices.three .t { font-size: 30px; }
+.slider { display: grid; gap: 6px; }
+.slider .top { display: flex; justify-content: space-between; align-items: baseline; }
+.slider .val { font-family: var(--font-display); font-weight: 800; font-size: 34px; color: var(--optic); font-variant-numeric: tabular-nums; line-height: 1; }
+.slider .ends { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
+input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 44px; background: transparent; margin: 0; }
+input[type=range]::-webkit-slider-runnable-track { height: 10px; border-radius: 5px; background: linear-gradient(90deg, var(--cyan), var(--optic) 55%, var(--warn)); }
+input[type=range]::-moz-range-track { height: 10px; border-radius: 5px; background: linear-gradient(90deg, var(--cyan), var(--optic) 55%, var(--warn)); }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 36px; height: 36px; border-radius: 50%; background: var(--fg); border: 4px solid var(--bg); margin-top: -13px; box-shadow: 0 0 0 2px var(--fg); }
+input[type=range]::-moz-range-thumb { width: 30px; height: 30px; border-radius: 50%; background: var(--fg); border: 4px solid var(--bg); }
+input[type=text] { width: 100%; min-height: 54px; border-radius: 14px; border: 2px solid var(--line); background: var(--surface); color: var(--fg); padding: 0 14px; font-size: 16px; }
+input[type=text]::placeholder { color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { font-size: 14px; padding: 10px 14px; min-height: 44px; border-radius: 99px; background: var(--surface); color: var(--fg); border: 2px solid var(--line); text-align: left; }
+.chip[aria-pressed="true"] { border-color: var(--optic); color: var(--optic); background: var(--surface-2); }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; display: grid; gap: 10px; }
+.card h3 { font-size: 24px; }
+.card .why { font-size: 12.5px; color: var(--muted); margin: 0; }
+.done-tick { font-family: var(--font-display); font-weight: 800; color: var(--good); text-transform: uppercase; letter-spacing: .06em; }
+.adapt { border-left: 4px solid var(--cyan); padding: 6px 0 6px 12px; font-size: 13px; color: var(--fg); margin: 0; }
+.adapt b { color: var(--cyan); font-weight: 600; }
 
 /* Session bar */
 .sbar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); display: flex; align-items: center; gap: 12px; padding-block: 10px; border-bottom: 1px solid var(--line); }
@@ -109,119 +123,114 @@ h1, h2, h3 { font-family: var(--font-display); text-transform: uppercase; letter
 .steps i.now { background: var(--optic); }
 .iconbtn { width: 44px; height: 44px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); display: grid; place-items: center; flex: none; padding: 0; }
 .iconbtn svg { width: 22px; height: 22px; }
-body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
-
-/* Ring */
 .ring { transform: rotate(-90deg); }
 .ring .trk { stroke: var(--surface-2); }
 .ring .bar { stroke: var(--optic); stroke-linecap: round; transition: stroke-dashoffset .25s linear; }
-
-/* Prime */
-.prime-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; }
-.prime-head h2 { font-size: 34px; }
-.bpm { text-align: right; }
-.bpm .v { font-family: var(--font-display); font-weight: 800; font-size: 40px; line-height: 1; color: var(--optic); font-variant-numeric: tabular-nums; }
-.bpm .l { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; }
-.breath { position: relative; display: grid; place-items: center; aspect-ratio: 1; max-width: 100%; width: min(320px, 82vw); margin: 0 auto; }
-.breath svg.ring { position: absolute; inset: 0; width: 100%; height: 100%; }
-.orb { width: 46%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 35% 30%, var(--cyan), rgba(46,230,255,.15) 70%);
-  box-shadow: 0 0 60px rgba(46,230,255,.35); transform: scale(.7); transition-property: transform; transition-timing-function: ease-in-out; }
-.orb.flat { background: radial-gradient(circle at 35% 30%, var(--optic), rgba(228,255,58,.12) 70%); box-shadow: 0 0 60px rgba(228,255,58,.35); }
-.breath .lbl { position: absolute; bottom: 14%; font-family: var(--font-display); font-weight: 800; font-size: 26px; text-transform: uppercase; text-align: center; }
-.breath .cnt { position: absolute; top: 16%; font-family: var(--font-display); font-weight: 700; font-size: 18px; color: var(--muted); font-variant-numeric: tabular-nums; }
-.seg { display: flex; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 4px; gap: 4px; }
-.seg button { flex: 1; min-height: 44px; border: 0; border-radius: 10px; background: transparent; color: var(--muted); font-weight: 600; }
-.seg button[aria-pressed="true"] { background: var(--surface-2); color: var(--fg); }
-.note { font-size: 13px; color: var(--muted); }
-.note.warn { color: var(--warn); }
-.curve { width: 100%; height: auto; display: block; }
-
-/* Drills */
-.drill-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-.drill-head h2 { font-size: 28px; }
 .mini-ring { position: relative; width: 52px; height: 52px; flex: none; }
 .mini-ring svg { width: 100%; height: 100%; }
 .mini-ring span { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--font-display); font-weight: 800; font-size: 18px; font-variant-numeric: tabular-nums; }
-.arena { position: relative; height: min(58vh, 460px); border-radius: var(--r); background:
-  linear-gradient(var(--line), var(--line)) center 34% / 100% 2px no-repeat,
-  repeating-linear-gradient(90deg, transparent 0 calc(50% - 1px), rgba(42,54,68,.6) calc(50% - 1px) calc(50% + 1px), transparent calc(50% + 1px) 100%),
-  var(--surface); overflow: hidden; touch-action: manipulation; user-select: none; }
-.arena .intro { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; gap: 14px; padding: 22px; background: rgba(11,15,20,.88); z-index: 3; }
-.arena .intro h3 { font-size: 30px; color: var(--optic); }
-.arena .intro ul { margin: 0; padding-left: 18px; color: var(--fg); display: grid; gap: 6px; }
-.tgt { position: absolute; width: 104px; height: 104px; margin: -52px 0 0 -52px; border-radius: 50%; border: 2px dashed var(--line);
-  display: grid; place-items: center; text-align: center; background: transparent; padding: 6px; }
-.tgt span { font-family: var(--font-display); font-weight: 700; font-size: 13px; letter-spacing: .06em; color: var(--muted); line-height: 1.05; text-transform: uppercase; }
-.tgt.lit { border: 0; background: var(--optic); box-shadow: 0 0 40px rgba(228,255,58,.55); }
-.tgt.lit span { color: var(--on-accent); }
-.tgt.hit { background: var(--cyan); box-shadow: 0 0 30px rgba(46,230,255,.6); }
-.anchor { position: absolute; left: 50%; top: 45%; width: 70px; height: 70px; margin: -35px 0 0 -35px; border-radius: 50%; border: 3px solid var(--optic);
-  display: grid; place-items: center; font-family: var(--font-display); font-weight: 800; font-size: 34px; color: var(--optic); }
-.anchor::after { content: ""; position: absolute; width: 8px; height: 8px; border-radius: 50%; background: var(--optic); }
-.anchor b { position: absolute; top: -26px; font-size: 13px; letter-spacing: .1em; color: var(--muted); white-space: nowrap; }
-.blip { position: absolute; width: 46px; height: 46px; border-radius: 10px; background: var(--cyan); box-shadow: 0 0 30px rgba(46,230,255,.7); opacity: 0; }
-.blip.on { opacity: 1; }
-.sides { position: absolute; left: 0; right: 0; bottom: 0; display: flex; gap: 2px; }
-.sides button { flex: 1; min-height: 96px; border: 0; background: rgba(27,36,48,.92); font-family: var(--font-display); font-weight: 800; font-size: 22px; text-transform: uppercase; letter-spacing: .06em; }
-.sides button.ok { background: var(--good); color: var(--on-accent); }
-.sides button.no { background: var(--warn); color: var(--on-accent); }
-.nf { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; padding: 20px; transition: background .3s; }
-.nf .big { font-family: var(--font-display); font-weight: 800; font-size: 56px; line-height: 1; }
-.nf .tiny { font-family: var(--font-body); font-weight: 600; font-size: 13px; letter-spacing: .02em; color: var(--fg); background: var(--bg); padding: 4px 8px; border-radius: 6px; }
-.nf.near .big { color: var(--cyan); }
-.nf.far { background: #05070a; }
-.nf.far .big { color: var(--optic); }
-.result { display: flex; gap: 10px; }
-.stat { flex: 1; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; }
-.stat .v { font-family: var(--font-display); font-weight: 800; font-size: 28px; font-variant-numeric: tabular-nums; }
-.stat .l { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
 
-/* Viz */
-.viz-stage { position: relative; min-height: 230px; background: var(--surface); border-radius: var(--r); border: 1px solid var(--line); padding: 22px; display: flex; flex-direction: column; justify-content: center; gap: 14px; }
-.viz-line { font-family: var(--font-display); font-weight: 700; font-size: 30px; line-height: 1.1; text-transform: none; transition: opacity .5s; }
+/* Tune */
+.head { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; }
+.head h2 { font-size: 34px; }
+.bpm { text-align: right; }
+.bpm .v { font-family: var(--font-display); font-weight: 800; font-size: 40px; line-height: 1; color: var(--optic); font-variant-numeric: tabular-nums; }
+.bpm .l { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; }
+.breath { position: relative; display: grid; place-items: center; aspect-ratio: 1; max-width: 100%; width: min(290px, 74vw); margin: 0 auto; }
+.breath svg.ring { position: absolute; inset: 0; width: 100%; height: 100%; }
+.orb { width: 46%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 35% 30%, var(--cyan), rgba(46,230,255,.15) 70%);
+  box-shadow: 0 0 60px rgba(46,230,255,.35); transform: scale(.8); transition-property: transform; transition-timing-function: ease-in-out; }
+.orb.up { background: radial-gradient(circle at 35% 30%, var(--optic), rgba(228,255,58,.12) 70%); box-shadow: 0 0 60px rgba(228,255,58,.35); }
+.breath .lbl { position: absolute; bottom: 12%; font-family: var(--font-display); font-weight: 800; font-size: 26px; text-transform: uppercase; text-align: center; }
+.breath .cnt { position: absolute; top: 15%; font-family: var(--font-display); font-weight: 700; font-size: 17px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.seg { display: flex; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 4px; gap: 4px; }
+.seg button { flex: 1; min-height: 44px; border: 0; border-radius: 10px; background: transparent; color: var(--muted); font-weight: 600; }
+.seg button[aria-pressed="true"] { background: var(--surface-2); color: var(--fg); }
+.curve { width: 100%; height: auto; display: block; }
+
+/* See */
+.viz-stage { min-height: 210px; background: var(--surface); border-radius: var(--r); border: 1px solid var(--line); padding: 22px; display: flex; flex-direction: column; justify-content: center; gap: 14px; }
+.viz-line { font-family: var(--font-display); font-weight: 700; font-size: 29px; line-height: 1.12; transition: opacity .5s; }
 .viz-n { font-size: 12px; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; font-family: var(--font-display); font-weight: 700; }
-.cues { display: grid; gap: 10px; }
-.cue { text-align: left; background: var(--surface); border: 2px solid var(--line); border-radius: 14px; min-height: 60px; padding: 12px 14px;
-  font-family: var(--font-display); font-weight: 800; font-size: 22px; text-transform: uppercase; }
-.cue[aria-pressed="true"] { border-color: var(--optic); color: var(--optic); }
-input[type=text] { width: 100%; min-height: 56px; border-radius: 14px; border: 2px solid var(--line); background: var(--surface); color: var(--fg);
-  padding: 0 14px; font-size: 17px; }
-input[type=text]::placeholder { color: var(--muted); }
 
 /* Deck */
-.deck { position: relative; height: 400px; touch-action: pan-y; }
-.card { position: absolute; inset: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 22px; padding: 20px; display: flex; flex-direction: column; gap: 12px;
+.deck { position: relative; height: 380px; touch-action: pan-y; }
+.dcard { position: absolute; inset: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 22px; padding: 20px; display: flex; flex-direction: column; gap: 12px;
   transition: transform .3s ease, opacity .3s ease; will-change: transform; }
-.card.dragging { transition: none; }
-.card h3 { font-size: 32px; }
-.card .dose { font-family: var(--font-display); font-weight: 700; font-size: 20px; color: var(--cyan); text-transform: uppercase; }
-.card .cuebox { border-left: 4px solid var(--optic); padding: 4px 0 4px 12px; font-weight: 600; font-size: 17px; }
-.card .why { color: var(--muted); font-size: 13.5px; }
-.card .acts { margin-top: auto; display: flex; gap: 8px; }
-.card .acts button { flex: 1; min-height: 52px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface-2); font-weight: 600; }
-.card .acts button[aria-pressed="true"] { background: var(--optic); color: var(--on-accent); border-color: var(--optic); }
+.dcard.dragging { transition: none; }
+.dcard h3 { font-size: 30px; }
+.dcard .dose { font-family: var(--font-display); font-weight: 700; font-size: 20px; color: var(--cyan); text-transform: uppercase; }
+.dcard .cuebox { border-left: 4px solid var(--optic); padding: 4px 0 4px 12px; font-weight: 600; font-size: 17px; }
+.dcard .acts { margin-top: auto; display: flex; gap: 8px; }
+.dcard .acts button { flex: 1; min-height: 52px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface-2); font-weight: 600; }
+.dcard .acts button[aria-pressed="true"] { background: var(--optic); color: var(--on-accent); border-color: var(--optic); }
 .dots { display: flex; justify-content: center; gap: 8px; }
 .dots i { width: 9px; height: 9px; border-radius: 50%; background: var(--surface-2); }
 .dots i.on { background: var(--optic); }
+
+/* Lock */
+.zone { font-family: var(--font-display); font-weight: 800; font-size: 18px; letter-spacing: .2em; color: var(--cyan); text-transform: uppercase; }
+.anchor-big { font-family: var(--font-display); font-weight: 800; font-size: clamp(46px, 14vw, 72px); line-height: .92; text-transform: uppercase; color: var(--optic); overflow-wrap: anywhere; }
+.lk { display: grid; gap: 2px; padding: 12px 0; border-top: 1px solid var(--line); }
+.lk .k { font-family: var(--font-display); font-weight: 700; letter-spacing: .14em; font-size: 13px; color: var(--muted); text-transform: uppercase; }
+.lk .v { font-family: var(--font-display); font-weight: 800; font-size: 25px; line-height: 1.08; text-transform: uppercase; }
+.lk.goal .v { color: var(--cyan); }
+.tools { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+/* Overlays */
+.full { position: fixed; inset: 0; z-index: 30; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; text-align: center;
+  padding: calc(24px + env(safe-area-inset-top, 0px)) max(20px, env(safe-area-inset-right, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) max(20px, env(safe-area-inset-left, 0px)); overflow: auto; }
+.full .big { font-family: var(--font-display); font-weight: 800; font-size: 54px; text-transform: uppercase; line-height: 1; }
+.full .dotfix { width: 18px; height: 18px; border-radius: 50%; background: var(--optic); box-shadow: 0 0 30px var(--optic); }
+.full .inner { width: 100%; max-width: 480px; display: grid; gap: 16px; text-align: left; }
 .flash { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; background: var(--bg); font-family: var(--font-display); font-weight: 800; font-size: 120px; color: var(--surface-2); }
 .flash.go { background: var(--optic); color: var(--on-accent); }
 
-/* Lock-in */
-#lock { gap: 14px; }
-.lock-top { display: flex; justify-content: space-between; align-items: center; }
-.zone { font-family: var(--font-display); font-weight: 800; font-size: 18px; letter-spacing: .2em; color: var(--cyan); text-transform: uppercase; }
-.anchor-big { font-family: var(--font-display); font-weight: 800; font-size: clamp(48px, 15vw, 76px); line-height: .92; text-transform: uppercase; color: var(--optic); overflow-wrap: anywhere; }
-.lk { display: grid; gap: 2px; padding: 14px 0; border-top: 1px solid var(--line); }
-.lk .k { font-family: var(--font-display); font-weight: 700; letter-spacing: .14em; font-size: 13px; color: var(--muted); text-transform: uppercase; }
-.lk .v { font-family: var(--font-display); font-weight: 800; font-size: 28px; line-height: 1.05; text-transform: uppercase; }
-.lk.vis .v { color: var(--cyan); }
-.reset-run { position: fixed; inset: 0; z-index: 30; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; text-align: center; padding: 24px; }
-.reset-run .big { font-family: var(--font-display); font-weight: 800; font-size: 54px; text-transform: uppercase; line-height: 1; }
-.reset-run .dotfix { width: 18px; height: 18px; border-radius: 50%; background: var(--optic); box-shadow: 0 0 30px var(--optic); }
+/* Post-match */
+.likert { display: grid; gap: 6px; padding: 12px 0; border-top: 1px solid var(--line); }
+.likert .it { font-weight: 600; }
+.likert .dim { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+.likert .scale { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.likert .scale button { min-height: 46px; border-radius: 12px; border: 2px solid var(--line); background: var(--surface); font-family: var(--font-display); font-weight: 800; font-size: 20px; }
+.likert .scale button[aria-pressed="true"] { background: var(--optic); border-color: var(--optic); color: var(--on-accent); }
+.likert .ends { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); }
+
+/* Profile */
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.stat { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; min-width: 0; }
+.stat .v { font-family: var(--font-display); font-weight: 800; font-size: 28px; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.stat .l { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.bars { display: grid; gap: 8px; }
+.bar-row { display: grid; grid-template-columns: 9.5em 1fr 2.4em; gap: 8px; align-items: center; font-size: 13px; }
+.bar-row .track { height: 10px; border-radius: 5px; background: var(--surface-2); overflow: hidden; }
+.bar-row .fill { height: 100%; border-radius: 5px; background: var(--cyan); }
+.bar-row.low .fill { background: var(--warn); }
+.bar-row .n { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+.spark { width: 100%; height: auto; display: block; }
+.hist { display: grid; gap: 6px; }
+.hist div { display: flex; justify-content: space-between; gap: 10px; font-size: 13px; padding: 8px 0; border-top: 1px solid var(--line); }
+.hist span:last-child { font-variant-numeric: tabular-nums; color: var(--optic); font-weight: 600; }
+.example { font-size: 11px; color: var(--warn); text-transform: uppercase; letter-spacing: .1em; font-weight: 600; }
+
+/* Eye primer stage */
+#stage { position: fixed; inset: 0; z-index: 35; background: var(--bg); touch-action: none; user-select: none; -webkit-user-select: none; }
+#field { position: absolute; inset: 0; overflow: hidden; }
+.hud { position: absolute; top: 0; left: 0; right: 0; z-index: 3; display: flex; align-items: center; gap: 10px; pointer-events: none;
+  padding: calc(6px + env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) 0 max(12px, env(safe-area-inset-left, 0px)); }
+.hud > * { pointer-events: auto; }
+.hud .mini-ring { width: 40px; height: 40px; }
+.hud-t { flex: 1; font-family: var(--font-display); font-weight: 800; font-size: 20px; text-transform: uppercase; }
+.hud-b { min-width: 48px; min-height: 40px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); font-weight: 600; padding: 0 12px; }
+.ov { position: absolute; inset: 0; z-index: 4; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; padding: 24px; background: rgba(11,15,20,.94); }
+.ov h3 { font-size: 34px; color: var(--optic); }
+.ov p { margin: 0; max-width: 46ch; }
+.ov .count { font-family: var(--font-display); font-weight: 800; font-size: 60px; line-height: 1; font-variant-numeric: tabular-nums; }
+.dot { position: absolute; border: 0; padding: 0; background: transparent; border-radius: 50%; width: 72px; height: 72px; margin: -36px 0 0 -36px; }
+.dot::after { content: ""; position: absolute; inset: 22px; border-radius: 50%; background: var(--optic); box-shadow: 0 0 18px rgba(228,255,58,.75); }
 
 /* Sheet & toast */
 .sheet { position: fixed; inset: 0; z-index: 50; background: rgba(5,7,10,.7); display: flex; align-items: flex-end; }
-.sheet .panel { background: var(--surface); border-radius: 22px 22px 0 0; max-height: 86vh; overflow: auto; width: 100%; max-width: 560px; margin: 0 auto;
+.sheet .panel { background: var(--surface); border-radius: 22px 22px 0 0; max-height: 88vh; overflow: auto; width: 100%; max-width: 560px; margin: 0 auto;
   padding: 20px max(18px, env(safe-area-inset-right, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) max(18px, env(safe-area-inset-left, 0px)); display: grid; gap: 14px; }
 .sheet h2 { font-size: 30px; }
 .sci { display: grid; gap: 4px; padding-top: 12px; border-top: 1px solid var(--line); }
@@ -229,76 +238,19 @@ input[type=text]::placeholder { color: var(--muted); }
 .sci p { margin: 0; color: var(--muted); font-size: 13.5px; }
 .sci a { color: var(--cyan); }
 .ev { font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
-.ev.m { color: var(--good); } .ev.l { color: var(--warn); }
+.ev.s { color: var(--good); } .ev.m { color: var(--optic); } .ev.l { color: var(--warn); }
 .toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); z-index: 60; background: var(--optic); color: var(--on-accent);
   font-family: var(--font-display); font-weight: 800; font-size: 20px; text-transform: uppercase; padding: 14px 20px; border-radius: 14px; width: min(480px, calc(100% - 32px)); text-align: center; }
 .toast.cyan { background: var(--cyan); }
 
-/* Eye-drill stage (full screen, landscape-first) */
-.dlist { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; counter-reset: d; }
-.dlist li { counter-increment: d; display: grid; grid-template-columns: 34px 1fr auto; gap: 4px 10px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px; }
-.dlist li::before { content: counter(d); font-family: var(--font-display); font-weight: 800; font-size: 26px; color: var(--cyan); grid-row: span 2; }
-.dlist .dt { font-family: var(--font-display); font-weight: 800; font-size: 21px; text-transform: uppercase; }
-.dlist .dh { grid-column: 2; color: var(--muted); font-size: 13px; }
-.dlist .dr { grid-row: 1 / span 2; grid-column: 3; text-align: right; font-family: var(--font-display); font-weight: 800; font-size: 20px; color: var(--optic); font-variant-numeric: tabular-nums; }
-.dlist .dr small { display: block; font-family: var(--font-body); font-weight: 500; font-size: 11px; color: var(--muted); }
-#stage { position: fixed; inset: 0; z-index: 20; background: var(--bg); touch-action: none; user-select: none; -webkit-user-select: none; }
-#field { position: absolute; inset: 0; overflow: hidden; }
-.hud { position: absolute; top: 0; left: 0; right: 0; z-index: 3; display: flex; align-items: center; gap: 10px; pointer-events: none;
-  padding: calc(6px + env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) 0 max(12px, env(safe-area-inset-left, 0px)); }
-.hud > * { pointer-events: auto; }
-.hud .mini-ring { width: 40px; height: 40px; }
-.hud-t { flex: 1; display: flex; gap: 10px; align-items: baseline; min-width: 0; }
-.hud-t b { font-family: var(--font-display); font-weight: 800; font-size: 20px; text-transform: uppercase; white-space: nowrap; }
-.hud-t span { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.hud-b { min-width: 48px; min-height: 40px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); font-weight: 600; padding: 0 12px; }
-.ov { position: absolute; inset: 0; z-index: 4; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; padding: 24px; background: rgba(11,15,20,.94); }
-.ov h3 { font-size: 34px; color: var(--optic); }
-.ov p { margin: 0; max-width: 46ch; }
-.ov .count { font-family: var(--font-display); font-weight: 800; font-size: 64px; color: var(--fg); line-height: 1; font-variant-numeric: tabular-nums; }
-.ov.fb { background: transparent; pointer-events: none; }
-.ov.fb .count { font-size: 40px; color: var(--cyan); }
-.dot, .zone, .m { position: absolute; border: 0; padding: 0; background: transparent; border-radius: 50%; }
-.dot { width: 72px; height: 72px; margin: -36px 0 0 -36px; }
-.dot::after { content: ""; position: absolute; inset: 22px; border-radius: 50%; background: var(--optic); box-shadow: 0 0 18px rgba(228,255,58,.75); }
-.fix { position: absolute; width: 28px; height: 28px; margin: -14px 0 0 -14px; }
-.fix::before, .fix::after { content: ""; position: absolute; background: var(--fg); }
-.fix::before { left: 12px; top: 0; width: 4px; height: 28px; }
-.fix::after { top: 12px; left: 0; height: 4px; width: 28px; }
-.zone { width: 64px; height: 64px; margin: -32px 0 0 -32px; border: 2px solid var(--line); }
-.zone.ok { background: var(--good); border-color: var(--good); }
-.zone.no { background: var(--warn); border-color: var(--warn); }
-.zone.ans { border-color: var(--cyan); border-width: 4px; }
-.fdot { position: absolute; width: 26px; height: 26px; margin: -13px 0 0 -13px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 16px rgba(46,230,255,.8); }
-.m { width: 60px; height: 60px; margin: -30px 0 0 -30px; }
-.m::after { content: ""; position: absolute; inset: 16px; border-radius: 50%; background: var(--fg); }
-.m.t::after { background: var(--cyan); box-shadow: 0 0 16px rgba(46,230,255,.8); }
-.m.sel::after { background: var(--optic); }
-.m.good::after { background: var(--good); }
-.m.bad::after { background: var(--warn); }
-.m.missed { box-shadow: inset 0 0 0 3px var(--cyan); }
-.track { position: absolute; left: 6%; right: 6%; height: 2px; background: var(--line); }
-.tline { position: absolute; width: 4px; margin-left: -2px; background: var(--optic); border-radius: 2px; }
-.shade { position: absolute; background: repeating-linear-gradient(135deg, var(--surface-2) 0 10px, var(--surface) 10px 20px); border-radius: 8px; }
-.tdot { position: absolute; width: 24px; height: 24px; margin: -12px 0 0 -12px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 14px rgba(46,230,255,.8); }
-.tdot.ghost { background: transparent; box-shadow: inset 0 0 0 3px var(--cyan); }
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { transition-duration: 0s !important; animation-duration: 0s !important; }
-}
-@media (max-width: 360px) {
-  .choices.three .t { font-size: 28px; }
-  .brand h1 { font-size: 38px; }
-}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: 0s !important; animation-duration: 0s !important; } }
+@media (max-width: 360px) { .choices.three .t { font-size: 26px; } .brand h1 { font-size: 42px; } .bar-row { grid-template-columns: 8em 1fr 2.2em; } }
 </style>
 
 <div class="app" id="app">
-  <!-- Session bar -->
   <div class="sbar" id="sbar" hidden>
     <div class="clock">
-      <div class="mini-ring" aria-hidden="true">
-        <svg viewBox="0 0 52 52" class="ring"><circle class="trk" cx="26" cy="26" r="22" fill="none" stroke-width="5"/><circle id="clockRing" class="bar" cx="26" cy="26" r="22" fill="none" stroke-width="5"/></svg>
-      </div>
+      <div class="mini-ring" aria-hidden="true"><svg viewBox="0 0 52 52" class="ring"><circle class="trk" cx="26" cy="26" r="22" fill="none" stroke-width="5"/><circle id="clockRing" class="bar" cx="26" cy="26" r="22" fill="none" stroke-width="5"/></svg></div>
       <div><div class="v" id="clockV">10:00</div><div class="l" id="clockL">to first serve</div></div>
     </div>
     <div class="steps" id="steps" aria-label="Progress"></div>
@@ -309,129 +261,157 @@ input[type=text]::placeholder { color: var(--muted); }
 
   <!-- HUB -->
   <section class="screen" id="hub">
-    <div class="brand"><h1>Flow <span class="colon">of</span> <b>Ace</b></h1></div>
-    <p class="tag">A 5 to 15 minute pre-match routine: settle your arousal level, prime your eyes, rehearse your role, and walk on court with one cue.</p>
+    <div class="brand"><h1>Flow <span class="of">of</span> <b>Ace</b></h1></div>
+    <p class="tag">Get your energy right, set your mindset, and walk on court with one goal and one cue. Log each match and the app learns what puts you in flow.</p>
+    <div id="pendingBox"></div>
     <div class="sports" id="sports"></div>
-    <button class="link" data-sheet="science">How this works and what the research supports</button>
-    <p class="foot">Works offline once loaded. Waitlist choices are saved on this device only.</p>
+    <div class="hub-links">
+      <button class="link" id="openProfile">My flow profile</button>
+      <button class="link" data-sheet="science">The science</button>
+    </div>
+    <p class="note">Works offline once loaded. Your matches and waitlist choices are saved on this device only.</p>
   </section>
 
   <!-- CHECK-IN -->
   <section class="screen" id="checkin" hidden>
-    <div class="row" style="align-items:center">
-      <div class="eyebrow">Check-in · 15 seconds</div>
-      <button class="link" style="flex:none;text-align:right" id="backHub">Sports</button>
+    <div class="row" style="align-items:center"><div class="eyebrow">Check-in · 15 seconds</div><button class="link" style="flex:none;text-align:right" id="backHub">Home</button></div>
+    <div class="q"><h2>Your position</h2><div class="choices two" id="posChoices"></div></div>
+    <div class="q slider">
+      <div class="top"><h2>Energy right now</h2><span class="val" id="energyV">5</span></div>
+      <input type="range" id="energyIn" min="1" max="10" step="1" value="5" aria-label="Energy right now, 1 to 10">
+      <div class="ends"><span>Flat, heavy legs</span><span>Buzzing, wired</span></div>
     </div>
-    <div class="q">
-      <h2>Your position</h2>
-      <div class="choices two" id="posChoices"></div>
+    <div class="q slider">
+      <div class="top"><h2>Nerves</h2><span class="val" id="nervesV">3</span></div>
+      <input type="range" id="nervesIn" min="1" max="10" step="1" value="3" aria-label="Nerves right now, 1 to 10">
+      <div class="ends"><span>Calm</span><span>Tight, overthinking</span></div>
     </div>
-    <div class="q">
-      <h2>How do you feel right now?</h2>
-      <div class="choices" id="stateChoices"></div>
-      <div class="ames" id="amesChips" aria-live="polite"></div>
-    </div>
-    <div class="q">
-      <h2>Minutes to first serve</h2>
-      <div class="choices three" id="winChoices"></div>
-    </div>
+    <div class="q"><h2>Minutes to first serve</h2><div class="choices three" id="winChoices"></div></div>
+    <p class="adapt" id="zoneHint"></p>
     <button class="btn btn-primary" id="startBtn" disabled>Start my flow</button>
-    <p class="note">Start audio with headphones in. Do this after your team warm-up, not instead of it.</p>
   </section>
 
-  <!-- PRIME -->
-  <section class="screen" id="prime" hidden>
-    <div class="prime-head">
-      <div><div class="eyebrow" id="primeEyebrow">Step 1 · Arousal tune</div><h2 id="primeTitle">Calm the engine</h2></div>
+  <!-- TUNE -->
+  <section class="screen" id="tune" hidden>
+    <div class="head">
+      <div><div class="eyebrow">Step 1 · Tune your energy</div><h2 id="tuneTitle">Settle in</h2></div>
       <div class="bpm"><div class="v" id="bpmV">72</div><div class="l">BPM</div></div>
     </div>
     <div class="seg" id="breathSeg" hidden></div>
     <div class="breath">
-      <svg class="ring" viewBox="0 0 100 100" aria-hidden="true"><circle class="trk" cx="50" cy="50" r="46" fill="none" stroke-width="3"/><circle id="primeRing" class="bar" cx="50" cy="50" r="46" fill="none" stroke-width="3"/></svg>
+      <svg class="ring" viewBox="0 0 100 100" aria-hidden="true"><circle class="trk" cx="50" cy="50" r="46" fill="none" stroke-width="3"/><circle id="tuneRing" class="bar" cx="50" cy="50" r="46" fill="none" stroke-width="3"/></svg>
       <div class="orb" id="orb"></div>
       <div class="cnt" id="breathCnt"></div>
       <div class="lbl" id="breathLbl">Ready</div>
     </div>
-    <p class="note" id="primeNote"></p>
-    <svg class="curve" id="curve" viewBox="0 0 320 96" role="img" aria-label="Arousal curve showing where you are and the target zone"></svg>
-    <button class="btn btn-ghost" id="primeSkip">Skip to eye drills</button>
-  </section>
-
-  <!-- DRILLS -->
-  <section class="screen" id="drills" hidden>
-    <div><div class="eyebrow" id="drillEyebrow">Step 2 · Eyes · about 100 seconds</div><h2 style="font-size:30px">Eye drills</h2></div>
-    <p class="note">Turn your phone sideways for a wider field. Keep your head still and let your eyes do the work.</p>
-    <ol class="dlist" id="drillList"></ol>
-    <button class="btn btn-primary" id="drillStart">Rotate &amp; start</button>
-    <button class="btn btn-ghost" id="drillSkip">Skip eye drills</button>
-  </section>
-
-  <!-- VIZ -->
-  <section class="screen" id="viz" hidden>
-    <div class="drill-head">
-      <div><div class="eyebrow">Step 3 · See it, say it</div><h2 id="vizTitle">Your role</h2></div>
-      <div class="mini-ring" aria-hidden="true">
-        <svg viewBox="0 0 52 52" class="ring"><circle class="trk" cx="26" cy="26" r="22" fill="none" stroke-width="5"/><circle id="vizRing" class="bar" cx="26" cy="26" r="22" fill="none" stroke-width="5"/></svg>
-        <span id="vizSec">60</span>
-      </div>
+    <p class="adapt" id="tuneWhy"></p>
+    <p class="note" id="tuneNote"></p>
+    <svg class="curve" id="curve" viewBox="0 0 320 96" role="img" aria-label="Energy curve showing where you are and your target zone"></svg>
+    <div class="q slider">
+      <div class="top"><h3 style="font-size:22px">Energy now</h3><span class="val" id="energy2V">5</span></div>
+      <input type="range" id="energy2In" min="1" max="10" step="1" value="5" aria-label="Energy now after tuning, 1 to 10">
     </div>
-    <div class="viz-stage"><div class="viz-n" id="vizN">Eyes closed if you like</div><div class="viz-line" id="vizLine">Tap Play. Read each line, then close your eyes and see it.</div></div>
+    <button class="btn btn-ghost" id="tuneNext">Next · Mindset</button>
+  </section>
+
+  <!-- MINDSET -->
+  <section class="screen" id="mindset" hidden>
+    <div><div class="eyebrow">Step 2 · Set your mindset</div><h2 style="font-size:32px">Challenge, not threat</h2></div>
+    <div class="card" id="reframeCard"></div>
+    <div class="card">
+      <h3>One process goal</h3>
+      <p class="why">Something you control on every ball, not the score.</p>
+      <div class="chips" id="goalChips"></div>
+      <input type="text" id="goalCustom" maxlength="40" placeholder="Or write your own" autocomplete="off">
+    </div>
+    <div class="card">
+      <h3>Your action cue</h3>
+      <p class="why">A short phrase you'll say in the reset between points.</p>
+      <div class="chips" id="cueChips"></div>
+      <input type="text" id="cueCustom" maxlength="32" placeholder="Or write your own" autocomplete="off">
+    </div>
+    <div class="card">
+      <h3>If-then plan</h3>
+      <p class="why">Decide now what you'll do when it goes wrong, so you don't have to think then.</p>
+      <div class="eyebrow">If…</div>
+      <div class="chips" id="ifChips"></div>
+      <div class="eyebrow">…then</div>
+      <p style="margin:0;font-weight:600" id="thenText"></p>
+    </div>
+    <div class="card">
+      <h3>Remember a good one</h3>
+      <p class="why">Picture one rally or match where you played free. Hold it for a breath.</p>
+      <input type="text" id="bestMemory" maxlength="60" placeholder="e.g. 3 aces in a row vs North" autocomplete="off">
+    </div>
+    <button class="btn btn-primary" id="mindNext">Next · See it</button>
+  </section>
+
+  <!-- SEE -->
+  <section class="screen" id="see" hidden>
+    <div class="head">
+      <div><div class="eyebrow">Step 3 · See it</div><h2 id="seeTitle">Your role</h2></div>
+      <div class="mini-ring" aria-hidden="true"><svg viewBox="0 0 52 52" class="ring"><circle class="trk" cx="26" cy="26" r="22" fill="none" stroke-width="5"/><circle id="seeRing" class="bar" cx="26" cy="26" r="22" fill="none" stroke-width="5"/></svg><span id="seeSec">60</span></div>
+    </div>
+    <div class="viz-stage"><div class="viz-n" id="seeN">First person, real speed</div><div class="viz-line" id="seeLine">Tap Play. Read each line, then close your eyes and see it from your own eyes.</div></div>
     <div class="row">
-      <button class="btn btn-ghost" id="vizPlay">Play</button>
-      <button class="btn btn-ghost" id="vizVoice" aria-pressed="false">Voice off</button>
+      <button class="btn btn-ghost" id="seePlay">Play</button>
+      <button class="btn btn-ghost" id="seeVoice" aria-pressed="false">Voice off</button>
     </div>
-    <div class="q" style="margin-top:6px">
-      <h2>Pick your action cue</h2>
-      <p class="note">One short, positive phrase you'll say between points.</p>
-      <div class="cues" id="cueChoices"></div>
-      <label class="eyebrow" for="customCue">Or write your own</label>
-      <input type="text" id="customCue" maxlength="32" placeholder="e.g. Ball to target" autocomplete="off">
-    </div>
-    <button class="btn btn-primary" id="vizNext">Lock cue · Activate</button>
+    <button class="btn btn-primary" id="seeNext">Next · Body</button>
   </section>
 
-  <!-- DECK -->
-  <section class="screen" id="deck" hidden>
-    <div><div class="eyebrow">Step 4 · Activation finishers</div><h2 style="font-size:30px">Swipe the deck</h2></div>
+  <!-- BODY -->
+  <section class="screen" id="body" hidden>
+    <div><div class="eyebrow">Step 4 · Body, eyes off the screen</div><h2 style="font-size:30px">Activation finishers</h2></div>
+    <p class="note">Do these after your team warm-up. Put the phone down for each card.</p>
     <div class="deck" id="deckEl"></div>
     <div class="dots" id="deckDots"></div>
-    <div class="row">
-      <button class="btn btn-ghost" id="deckPrev">Back</button>
-      <button class="btn btn-ghost" id="deckNext">Next</button>
-    </div>
-    <button class="btn btn-primary" id="deckDone">Enter the zone</button>
+    <div class="row"><button class="btn btn-ghost" id="deckPrev">Back</button><button class="btn btn-ghost" id="deckNext">Next</button></div>
+    <button class="btn btn-primary" id="bodyDone">Lock in</button>
   </section>
 
   <!-- LOCK -->
   <section class="screen" id="lock" hidden>
-    <div class="lock-top"><span class="zone">In the zone</span><span class="eyebrow" id="lockPos"></span></div>
-    <div class="anchor-big" id="lockCue">Next ball</div>
-    <div class="lk vis"><span class="k">Visual cue</span><span class="v" id="lockVis"></span></div>
-    <div class="lk"><span class="k">Physical cue</span><span class="v" id="lockPhys"></span></div>
-    <div class="lk"><span class="k">Reset routine · 3 seconds, between every point</span><span class="v" id="lockReset" style="font-size:22px"></span></div>
+    <div class="row" style="align-items:center"><span class="zone">Locked in</span><span class="eyebrow" id="lockPos" style="text-align:right"></span></div>
+    <div class="anchor-big" id="lockCue"></div>
+    <div class="lk goal"><span class="k">Process goal</span><span class="v" id="lockGoal"></span></div>
+    <div class="lk"><span class="k">If-then</span><span class="v" id="lockIf" style="font-size:20px"></span></div>
+    <div class="lk"><span class="k">Reset · 3 seconds between points</span><span class="v" id="lockReset" style="font-size:20px"></span></div>
     <button class="btn btn-primary" id="resetPractice">Practice the reset</button>
-    <div class="row">
-      <button class="btn btn-ghost" id="lockAgain">New session</button>
-      <button class="btn btn-ghost" data-sheet="science">The science</button>
+    <div class="eyebrow">During the match</div>
+    <div class="tools">
+      <button class="btn btn-cyan" id="midBtn" style="font-size:20px">Between sets</button>
+      <button class="btn btn-ghost" id="clutchBtn" style="font-size:20px">Clutch serve</button>
     </div>
+    <button class="btn btn-ghost" id="postBtn">Match over · Log it</button>
+    <button class="link" id="lockHome">Back to home</button>
+  </section>
+
+  <!-- POST -->
+  <section class="screen" id="post" hidden>
+    <div><div class="eyebrow">After the match · about 60 seconds</div><h2 style="font-size:32px">How did it feel?</h2></div>
+    <p class="note">Rate how much you agree, thinking about the match as a whole. This is how the app learns what gets you into flow.</p>
+    <div id="flowItems"></div>
+    <div class="q"><h2 style="font-size:22px">How well did you play?</h2><div class="likert" style="border:0;padding:0"><div class="scale" id="perfScale"></div><div class="ends"><span>Poor</span><span>Best level</span></div></div></div>
+    <div class="q"><h2 style="font-size:22px">Your energy at first serve was…</h2><div class="choices three" id="fitChoices"></div></div>
+    <button class="btn btn-primary" id="postSave" disabled>Save match</button>
+    <button class="link" id="postSkip">Not now</button>
+  </section>
+
+  <!-- PROFILE -->
+  <section class="screen" id="profile" hidden>
+    <div class="row" style="align-items:center"><div class="eyebrow">My flow profile</div><button class="link" style="flex:none;text-align:right" id="profileHome">Home</button></div>
+    <h2 style="font-size:36px" id="profTitle">What gets you in flow</h2>
+    <div id="profBody" style="display:grid;gap:18px"></div>
   </section>
 </div>
 
 <div id="stage" hidden>
   <div id="field"></div>
   <div class="hud">
-    <div class="mini-ring" aria-hidden="true">
-      <svg viewBox="0 0 52 52" class="ring"><circle class="trk" cx="26" cy="26" r="22" fill="none" stroke-width="5"/><circle id="stRing" class="bar" cx="26" cy="26" r="22" fill="none" stroke-width="5"/></svg>
-    </div>
-    <div class="hud-t"><b id="stTitle"></b><span id="stInfo"></span></div>
-    <button class="hud-b" id="stSkip">Skip</button>
-    <button class="hud-b" id="stExit" aria-label="Exit eye drills">✕</button>
-  </div>
-  <div class="ov" id="rotate" hidden>
-    <svg viewBox="0 0 64 64" width="72" height="72" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><rect x="20" y="8" width="24" height="44" rx="4"/><path d="M8 40a24 24 0 0 0 20 16M8 40l-2 6M8 40l6 1"/></svg>
-    <h3>Turn your phone sideways</h3>
-    <p class="note">A wider screen gives your eyes more ground to cover.</p>
-    <button class="btn btn-ghost" id="usePortrait" style="max-width:320px">Stay in portrait</button>
+    <div class="mini-ring" aria-hidden="true"><svg viewBox="0 0 52 52" class="ring"><circle class="trk" cx="26" cy="26" r="22" fill="none" stroke-width="5"/><circle id="stRing" class="bar" cx="26" cy="26" r="22" fill="none" stroke-width="5"/></svg></div>
+    <div class="hud-t" id="stTitle">Eye primer</div>
+    <button class="hud-b" id="stExit" aria-label="Close eye primer">✕</button>
   </div>
 </div>
 
@@ -439,10 +419,11 @@ input[type=text]::placeholder { color: var(--muted); }
 (() => {
 'use strict';
 
-/* ---------- storage (best-effort) ---------- */
+/* ---------- utilities ---------- */
+const NS = 'flowoface.';
 const store = {
-  get(k, d) { try { const v = localStorage.getItem('lockin.' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
-  set(k, v) { try { localStorage.setItem('lockin.' + k, JSON.stringify(v)); } catch {} }
+  get(k, d) { try { const v = localStorage.getItem(NS + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(NS + k, JSON.stringify(v)); } catch {} }
 };
 const $ = (s, r = document) => r.querySelector(s);
 const h = (tag, attrs = {}, ...kids) => {
@@ -457,128 +438,140 @@ const h = (tag, attrs = {}, ...kids) => {
 };
 const buzz = (p) => { try { navigator.vibrate && navigator.vibrate(p); } catch {} };
 const fmt = (s) => { s = Math.max(0, Math.ceil(s)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
-const setRing = (el, frac) => { const r = +el.getAttribute('r'); const c = 2 * Math.PI * r; el.style.strokeDasharray = c; el.style.strokeDashoffset = c * (1 - Math.max(0, Math.min(1, frac))); };
+const setRing = (el, f) => { const c = 2 * Math.PI * +el.getAttribute('r'); el.style.strokeDasharray = c; el.style.strokeDashoffset = c * (1 - Math.max(0, Math.min(1, f))); };
+const avg = a => a.length ? a.reduce((x, y) => x + y, 0) / a.length : 0;
+const r1 = x => Math.round(x * 10) / 10;
 
 /* ---------- content ---------- */
-const SPORTS = [
-  { id: 'volleyball', name: 'Volleyball', live: true },
-  { id: 'basketball', name: 'Basketball' }, { id: 'soccer', name: 'Soccer' },
-  { id: 'tennis', name: 'Tennis' }, { id: 'track', name: 'Track' }, { id: 'esports', name: 'Esports' }
-];
+const SPORTS = [{ id: 'volleyball', name: 'Volleyball', live: true }, { id: 'basketball', name: 'Basketball' }, { id: 'soccer', name: 'Soccer' }, { id: 'tennis', name: 'Tennis' }, { id: 'track', name: 'Track' }, { id: 'esports', name: 'Esports' }];
 
 const POS = {
-  setter: {
-    name: 'Setter', sub: 'Tempo & distribution',
-    tri: ['PASS', 'MIDDLE BLOCKER', 'PIN HITTER'],
-    vis: 'Pass → their middle → my hitter',
-    cues: ['Feet first, hands high', 'Own the tempo', 'Quiet hands', 'Next ball'],
-    script: [
-      'Ball is served. Release to target early. You beat the pass there.',
-      'Pass coming. Feet set, right foot slightly forward, hands high.',
-      'Quick glance at their middle. Where is the block starting?',
-      'Soft hands. Same shape on every set. The tempo is yours.',
-      'The set leaves your hands on rhythm. Your hitter gets a clean swing.',
-      'Cover. Eyes back to the ball. Calm and in charge.',
-      'You set the pace of this match. Next ball.'
-    ],
-    move: { title: 'Release & jump-set shadow', dose: '×5 from base to target', cue: 'Beat the ball to the spot', why: 'Rehearses the run from defense to target and a balanced jump-set posture at match tempo.' }
-  },
-  hitter: {
-    name: 'Outside / Opp', sub: 'Pin attack & passing',
-    tri: ['PASS', 'SETTER HANDS', 'BLOCKER HANDS'],
-    vis: 'Setter hands → block → seam',
-    cues: ['High snap, swing free', 'See the block, hit the seam', 'Fast arm', 'Next ball'],
-    script: [
-      'You are passing. Platform quiet, ball to target.',
-      'Transition off the net and out wide. Eyes on the setter’s hands.',
-      'Ball is up. Read the set and start your approach. Slow, then fast.',
-      'Both arms back, big swing up. Jump tall.',
-      'At the top, see the block. Find the seam or the line.',
-      'High contact, fast arm, wrist snap. Swing free.',
-      'Land balanced. Back to cover. Next ball.'
-    ],
-    move: { title: '3-step approach, no ball', dose: '×4, full speed', cue: 'Slow, fast, arms back', why: 'Grooves approach rhythm and arm swing timing at full speed without the fatigue of a full hitting line.' }
-  },
-  middle: {
-    name: 'Middle Blocker', sub: 'Block & quick attack',
-    tri: ['PASS', 'SETTER HANDS', 'HITTER SHOULDER'],
-    vis: 'Setter release → hitter shoulder',
-    cues: ['Eyes on the release', 'Close and press', 'Read, step, seal', 'Next ball'],
-    script: [
-      'Base position at the net. Hands up, eyes on their pass.',
-      'Pass goes up. Eyes jump to the setter’s hands.',
-      'Watch the release. The ball leaving the hands is your trigger.',
-      'Eyes to the hitter’s shoulder and arm. Step, crossover, plant.',
-      'Close the block. Seal the gap with your outside blocker.',
-      'Press over the net. Hands strong, thumbs up.',
-      'Land, transition off, call for the quick. Next ball.'
-    ],
-    move: { title: 'Block slide + quick approach', dose: '×3 each side + ×3 quick', cue: 'Step, cross, plant, press', why: 'Primes lateral footwork and a fast two-step approach for the quick set.' }
-  },
-  libero: {
-    name: 'Libero / DS', sub: 'Serve receive & defense',
-    tri: ['SERVER TOSS', 'SETTER HANDS', 'HITTER SHOULDER'],
-    vis: 'Toss → contact → platform angle',
-    cues: ['Early eyes, quiet platform', 'Feet beat the ball', 'Angle to target', 'Next ball'],
-    script: [
-      'Serve receive. Feet set, weight forward, platform relaxed.',
-      'Eyes on the server. Watch the toss leave the hand.',
-      'Contact. Read the hand: float or topspin. Track it early.',
-      'Feet move first. Get behind the ball before your arms do anything.',
-      'Quiet platform. Angle it to the target. The ball lands soft.',
-      'Defense. Eyes jump to their setter’s hands, then the hitter’s shoulder.',
-      'Dig it high and to the middle. Next ball.'
-    ],
-    move: { title: 'Shuffle-drop to platform', dose: '×4 each side', cue: 'Low, wide, still at contact', why: 'Rehearses getting to the ball and stopping before contact, so the platform is set early.' }
-  }
+  setter: { name: 'Setter', sub: 'Tempo & distribution',
+    goals: ['Feet to the target early', 'Same hands every set', 'See their middle before I set', 'Talk on every ball'],
+    cues: ['Own the tempo', 'Quiet hands', 'Feet first', 'Next ball'],
+    script: ['Ball is served. Release to target early. You beat the pass there.', 'Pass coming. Feet set, hands high, body square.', 'A quick look at their middle. You already know where it goes.', 'Soft hands, same shape. The set leaves on rhythm.', 'Your hitter gets a clean swing. You feel the tempo you created.', 'Cover, eyes back on the ball, calm and in charge.'],
+    move: { title: 'Release & jump-set shadow', dose: '×5 from base to target', cue: 'Beat the ball to the spot', why: 'Rehearses the run to target and a balanced jump-set posture at match tempo.' } },
+  hitter: { name: 'Outside / Opp', sub: 'Pin attack & passing',
+    goals: ['Full approach every time', 'See the block before I swing', 'Platform still at contact', 'Call the ball early'],
+    cues: ['Swing free', 'High and fast', 'See it, hit it', 'Next ball'],
+    script: ['You are passing. Platform quiet, ball to target.', 'Transition out wide. Eyes on the setter’s hands.', 'Ball is up. Slow, then fast. Arms back, big swing up.', 'At the top you see the block. The seam is open.', 'High contact, fast arm, full snap. Swing free.', 'Land balanced, back to cover, ready for the next one.'],
+    move: { title: '3-step approach, no ball', dose: '×4, full speed', cue: 'Slow, fast, arms back', why: 'Grooves approach rhythm and arm swing at full speed without the fatigue of a hitting line.' } },
+  middle: { name: 'Middle Blocker', sub: 'Block & quick attack',
+    goals: ['Eyes on the setter’s release', 'Close the block every time', 'Get off the net fast', 'Be up for every quick'],
+    cues: ['Read, step, seal', 'Close and press', 'Fast feet', 'Next ball'],
+    script: ['Base at the net, hands up, eyes on their pass.', 'Ball goes to the setter. Your eyes go to their hands.', 'Release. That is your trigger. Step, cross, plant.', 'You close the gap and press over. Strong hands.', 'Land, turn, transition off. Call for the quick.', 'The setter finds you. Fast arm. Down.'],
+    move: { title: 'Block slide + quick approach', dose: '×3 each side + ×3 quick', cue: 'Step, cross, plant, press', why: 'Primes lateral footwork and a fast two-step approach.' } },
+  libero: { name: 'Libero / DS', sub: 'Serve receive & defense',
+    goals: ['Feet to the ball first', 'Platform angle to target', 'Talk on every serve', 'Low and ready on defense'],
+    cues: ['Early eyes, quiet platform', 'Feet first', 'Angle to target', 'Next ball'],
+    script: ['Serve receive. Weight forward, platform relaxed.', 'The toss goes up. Your eyes are already there.', 'Contact. You read float or spin. Feet are moving.', 'Behind the ball, quiet platform, angled to the setter.', 'Defense. Eyes on their setter, then the hitter’s shoulder.', 'Dig it high to the middle. You love this.'],
+    move: { title: 'Shuffle-drop to platform', dose: '×4 each side', cue: 'Low, wide, still at contact', why: 'Rehearses getting there early and stopping before contact.' } }
 };
 
-const STATES = {
-  flat:  { name: 'Flat / Heavy legs', sub: 'Low energy, slow', cls: 'state-flat', bpm: 138, tempoRange: '130–145',
-           title: 'Turn it up', low: ['Vigor', 'Motivation', 'Tirelessness'], ok: ['Calm'],
-           note: 'Driving beat and power breathing to raise activation. Stop and breathe normally if you feel dizzy or tingly.' },
-  anx:   { name: 'Anxious / Overthinking', sub: 'Tight, racing thoughts', cls: 'state-anx', bpm: 72, tempoRange: '65–80',
-           title: 'Calm the engine', low: ['Calm', 'Confidence', 'Concentration'], ok: ['Vigor'],
-           note: 'Slow pulse and long exhales to bring activation down. Let the exhale be longer than the inhale.' },
-  ready: { name: 'Wired & ready', sub: 'Up, but in control', cls: 'state-ready', bpm: 104, tempoRange: '~100–110',
-           title: 'Hold the line', low: [], ok: ['Vigor', 'Calm', 'Confidence'],
-           note: 'You are near your best zone. Steady breathing to stay there, without adding more energy.' }
-};
+const IFS = [
+  { id: 'error', t: 'I make an error', then: 'Long breath out, say my cue, eyes to the next server. Next ball.' },
+  { id: 'run', t: 'They go on a run', then: 'Huddle, one breath, say our process goal out loud, play the next ball only.' },
+  { id: 'call', t: 'A bad call goes against us', then: 'Turn away, breathe out, eyes on the ball. Let it go with the exhale.' },
+  { id: 'nerves', t: 'I feel tight before I serve', then: 'Breathe out longer than in, pick one spot, hold my eyes on it, then serve.' },
+  { id: 'bench', t: 'I get subbed out', then: 'Stay in it: track the setter’s hands from the bench and be ready to go back in.' }
+];
 
 const BREATHS = {
-  sigh: { label: 'Cyclic sigh', steps: [['in', 2, 'Inhale · nose'], ['in2', 1, 'Top-up sip'], ['out', 6, 'Long exhale']] },
-  box:  { label: 'Box 4-4-4-4', steps: [['in', 4, 'Inhale'], ['hold', 4, 'Hold'], ['out', 4, 'Exhale'], ['hold2', 4, 'Hold']] },
-  power:{ label: 'Power breaths', steps: [['in', 1.2, 'Sharp in'], ['out', 0.9, 'Strong out']], rounds: 12, rest: ['rest', 6, 'Normal breathing'] },
-  steady:{ label: 'Steady 4-6', steps: [['in', 4, 'Inhale'], ['out', 6, 'Exhale']] }
+  sigh:   { label: 'Cyclic sigh', steps: [['in', 2, 'Inhale · nose'], ['in2', 1, 'Top-up sip'], ['out', 6, 'Long exhale']] },
+  box:    { label: 'Box 4-4-4-4', steps: [['in', 4, 'Inhale'], ['hold', 4, 'Hold'], ['out', 4, 'Exhale'], ['hold2', 4, 'Hold']] },
+  slow:   { label: 'Slow 4-6', steps: [['in', 4, 'Inhale'], ['out', 6, 'Exhale']] },
+  power:  { label: 'Power breaths', steps: [['in', 1.2, 'Sharp in'], ['out', 0.9, 'Strong out']], rounds: 12, rest: ['rest', 6, 'Normal breathing'] },
+  steady: { label: 'Steady 4-4', steps: [['in', 4, 'Inhale'], ['out', 4, 'Exhale']] }
 };
+// Options the app chooses between and learns from, per direction.
+const METHODS = {
+  down:   [{ id: 'sigh', breath: 'sigh', bpm: 72 }, { id: 'slow', breath: 'slow', bpm: 66 }, { id: 'box', breath: 'box', bpm: 72 }],
+  up:     [{ id: 'power132', breath: 'power', bpm: 132, label: 'Power breaths · 132 BPM' }, { id: 'power145', breath: 'power', bpm: 145, label: 'Power breaths · 145 BPM' }],
+  steady: [{ id: 'steady', breath: 'steady', bpm: 104 }]
+};
+const methodLabel = id => { for (const k in METHODS) for (const m of METHODS[k]) if (m.id === id) return m.label || BREATHS[m.breath].label; return id; };
 
-const COMMON_DECK = [
-  { id: 'scap', title: 'Scap band prep', dose: '10 pull-aparts · 8 ER each arm', cue: 'Blades back and down', why: 'Wakes up the rotator cuff and scapular muscles before overhead hitting, serving and setting.' },
-  { id: 'pogo', title: 'Pogo hops', dose: '2 × 10 fast hops', cue: 'Stiff ankles, quick ground', why: 'Short, springy contacts prime the ankle’s stretch-shortening cycle for jumping without tiring the legs.' },
-  { id: 'split', title: 'Split-step reaction drops', dose: '5 reps on the GO flash', cue: 'Split on contact, drop and go', why: 'Couples a visual trigger to the first step. Tap Reaction cue: the screen flashes GO at random moments.', react: true }
+const FLOW_ITEMS = [
+  ['Challenge–skill balance', 'The challenge matched my skills.'],
+  ['Action–awareness', 'I did things automatically, without thinking it through.'],
+  ['Clear goals', 'I knew exactly what I wanted to do.'],
+  ['Feedback', 'I could tell how I was doing while I played.'],
+  ['Concentration', 'My attention stayed on the ball and the play.'],
+  ['Control', 'I felt in control of what I was doing.'],
+  ['Self-consciousness', 'I wasn’t worried about how I looked to others.'],
+  ['Time', 'Time felt different: it sped up or slowed down.'],
+  ['Enjoyment', 'I really enjoyed playing.']
 ];
+const DIM_TIPS = {
+  0: 'Challenge felt off. Before the match, pick a process goal that stretches you a little, not one you already own.',
+  1: 'You were thinking through movements. Keep cues short and outward ("ball to target"), not technique checklists.',
+  2: 'Goals felt fuzzy. Lock one process goal and say it in every reset.',
+  3: 'Hard to read how you were doing. Track your goal per rally: did I do it, yes or no?',
+  4: 'Focus drifted. Use the 3-second reset after every point, not just errors.',
+  5: 'You felt less in control. Write a sharper if-then plan for the situation that threw you.',
+  6: 'Worry about others crept in. Use the "I’m excited" reframe and keep eyes on the ball between points.',
+  7: 'Time sense is a sign of flow rather than a lever. It usually follows when the other items rise.',
+  8: 'Enjoyment was low. Recall a match you loved before playing, and play for the rally, not the result.'
+};
 
 /* ---------- state ---------- */
 const S = {
-  pos: store.get('pos', null), st: null, win: store.get('win', 10),
-  cue: null, phys: null, breathMode: null,
-  startAt: 0, endAt: 0, faded: false, step: 0, muted: false
+  pos: store.get('pos', null), win: store.get('win', 10), energy0: 5, nerves0: 3, energy1: 5,
+  dir: 'steady', method: null, why: '', goal: null, cue: null, ifId: store.get('ifId', 'error'), memory: '',
+  startAt: 0, endAt: 0, faded: false, step: 0, muted: false, session: null, phys: store.get('phys', null)
 };
-const STEP_IDS = ['prime', 'drills', 'viz', 'deck', 'lock'];
+const STEP_IDS = ['tune', 'mindset', 'see', 'body', 'lock'];
+const sessions = () => store.get('sessions', []);
+const saveSessions = (a) => store.set('sessions', a);
+
+/* ---------- adaptive engine ---------- */
+// Flow score = mean of 9 items (1–5). Learning uses only completed post-match logs.
+const flowScore = s => s.post ? avg(s.post.flow) : null;
+const logged = () => sessions().filter(s => s.post);
+function zone() {
+  // Personal optimal pre-match energy (after tuning) learned from logs; IZOF-style, individual not universal.
+  const L = logged().filter(s => s.energy1 != null);
+  const fit = L.map(s => s.post.fit);
+  const bins = [[1, 3], [4, 5], [6, 7], [8, 10]].map(([a, b]) => { const g = L.filter(s => s.energy1 >= a && s.energy1 <= b); return { a, b, n: g.length, f: avg(g.map(flowScore)) }; });
+  const good = bins.filter(b => b.n >= 2).sort((x, y) => y.f - x.f);
+  if (L.length >= 3 && good.length >= 2) return { lo: good[0].a, hi: good[0].b, learned: true, n: L.length, f: good[0].f };
+  // Until there is enough data, nudge the default with "too low / too high" answers.
+  const tooLow = fit.filter(x => x === 'low').length, tooHigh = fit.filter(x => x === 'high').length;
+  const shift = tooLow > tooHigh ? 1 : tooHigh > tooLow ? -1 : 0;
+  return { lo: 6 + shift, hi: 7 + shift, learned: false, n: L.length };
+}
+function pickMethod(dir) {
+  const opts = METHODS[dir];
+  if (opts.length === 1) return { m: opts[0], why: '' };
+  const L = logged();
+  const stats = opts.map(o => { const g = L.filter(s => s.method === o.id); return { o, n: g.length, f: avg(g.map(flowScore)) }; });
+  const untried = stats.filter(x => x.n < 2).sort((a, b) => a.n - b.n);
+  if (untried.length) { const x = untried[0]; return { m: x.o, why: 'Trying ' + methodLabel(x.o.id) + (x.n ? ' again' : '') + ' so the app can learn what works for you.' }; }
+  stats.sort((a, b) => b.f - a.f);
+  const best = stats[0], second = stats[1];
+  if (Math.random() < 0.15) return { m: second.o, why: 'Re-testing ' + methodLabel(second.o.id) + ' (avg flow ' + r1(second.f) + ') to keep your profile accurate.' };
+  return { m: best.o, why: 'Picked for you: your flow averaged ' + r1(best.f) + ' after ' + methodLabel(best.o.id) + ' vs ' + r1(second.f) + ' after ' + methodLabel(second.o.id) + '.' };
+}
+function direction(energy, nerves) {
+  const z = zone();
+  if (nerves >= 7) return 'down';
+  if (energy < z.lo) return 'up';
+  if (energy > z.hi) return 'down';
+  return 'steady';
+}
 
 /* ---------- audio engine (synthesized, works offline) ---------- */
 const Audio = {
-  ctx: null, master: null, music: null, sfx: null, pad: null, padFilter: null, timer: null,
-  bpm: 100, next: 0, step16: 0, pattern: null, playing: false,
+  ctx: null, master: null, music: null, sfx: null, pad: null, padFilter: null, timer: null, bpm: 100, next: 0, step16: 0, pattern: null, playing: false,
   init() {
     if (this.ctx) { this.ctx.resume && this.ctx.resume(); return; }
     const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
     const c = this.ctx = new AC();
     const comp = c.createDynamicsCompressor(); comp.threshold.value = -14; comp.ratio.value = 4; comp.connect(c.destination);
-    this.master = c.createGain(); this.master.gain.value = 0.9; this.master.connect(comp);
+    this.master = c.createGain(); this.master.gain.value = S.muted ? 0 : 0.9; this.master.connect(comp);
     this.music = c.createGain(); this.music.gain.value = 0; this.music.connect(this.master);
     this.sfx = c.createGain(); this.sfx.gain.value = 0.6; this.sfx.connect(this.master);
-    const n = c.sampleRate; const buf = c.createBuffer(1, n, n); const d = buf.getChannelData(0);
+    const n = c.sampleRate, buf = c.createBuffer(1, n, n), d = buf.getChannelData(0);
     for (let i = 0; i < n; i++) d[i] = Math.random() * 2 - 1; this.noise = buf;
   },
   noiseHit(t, type, freq, dur, vol) {
@@ -598,26 +591,24 @@ const Audio = {
     const f = this.padFilter = c.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 400; f.Q.value = 2;
     const g = c.createGain(); g.gain.value = 0.07; f.connect(g); g.connect(this.music);
     this.pad = [base, base * 1.5, base * 2.005].map((fr, i) => { const o = c.createOscillator(); o.type = i ? 'sawtooth' : 'triangle'; o.frequency.value = fr; o.detune.value = i * 4; o.connect(f); o.start(); return o; });
-    this.padGain = g;
   },
-  stopPad() { if (this.pad) { this.pad.forEach(o => { try { o.stop(); } catch {} }); this.pad = null; } },
-  breath(kind, dur) { // pad opens on inhale, closes on exhale
+  stopPad() { if (this.pad) { this.pad.forEach(o => { try { o.stop(); } catch {} }); this.pad = null; this.padFilter = null; } },
+  breath(kind, dur) {
     if (!this.padFilter) return; const t = this.ctx.currentTime, p = this.padFilter.frequency;
     p.cancelScheduledValues(t); p.setValueAtTime(p.value, t);
     const target = kind.startsWith('in') ? 1400 : kind.startsWith('out') ? 300 : p.value;
     p.linearRampToValueAtTime(target, t + Math.max(0.1, dur));
   },
-  start(stateKey) {
-    this.init(); if (!this.ctx || this.playing) return;
-    const P = {
-      // 16 steps per bar: K kick, S snare, H hat, P soft pulse
-      anx:   { bpm: 72,  K: [1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0].map(v => v * 0.35), H: [0,0,0,0, 0,0,1,0, 0,0,0,0, 0,0,1,0].map(v => v * 0.05), S: [], pad: 110, soft: true },
-      flat:  { bpm: 138, K: [1,0,0,0, 0,0,0,0.7, 1,0,1,0, 0,0,0,0], S: [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0.4], H: [.5,.2,.5,.2, .5,.2,.5,.3, .5,.2,.5,.2, .5,.2,.5,.3].map(v => v * 0.22), pad: 0 },
-      ready: { bpm: 104, K: [1,0,0,0, 0,0,0,0, 1,0,0,0.5, 0,0,0,0].map(v => v * 0.7), S: [0,0,0,0, .6,0,0,0, 0,0,0,0, .6,0,0,0], H: [.4,0,.4,0, .4,0,.4,0, .4,0,.4,0, .4,0,.4,.2].map(v => v * 0.18), pad: 98 }
-    }[stateKey];
-    this.pattern = P; this.bpm = P.bpm; this.step16 = 0; this.next = this.ctx.currentTime + 0.1; this.playing = true;
+  start(dir, bpm) {
+    this.init(); if (!this.ctx) return; if (this.playing) this.stop();
+    const P = dir === 'down'
+      ? { K: [1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0].map(v => v * 0.35), H: [0,0,0,0, 0,0,1,0, 0,0,0,0, 0,0,1,0].map(v => v * 0.05), S: [], pad: 110, soft: true }
+      : dir === 'up'
+      ? { K: [1,0,0,0, 0,0,0,0.7, 1,0,1,0, 0,0,0,0], S: [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0.4], H: [.5,.2,.5,.2, .5,.2,.5,.3, .5,.2,.5,.2, .5,.2,.5,.3].map(v => v * 0.22), pad: 0 }
+      : { K: [1,0,0,0, 0,0,0,0, 1,0,0,0.5, 0,0,0,0].map(v => v * 0.7), S: [0,0,0,0, .6,0,0,0, 0,0,0,0, .6,0,0,0], H: [.4,0,.4,0, .4,0,.4,0, .4,0,.4,0, .4,0,.4,.2].map(v => v * 0.18), pad: 98 };
+    this.pattern = P; this.bpm = bpm; this.step16 = 0; this.next = this.ctx.currentTime + 0.1; this.playing = true;
     if (P.pad) this.startPad(P.pad);
-    const t = this.ctx.currentTime; this.music.gain.cancelScheduledValues(t); this.music.gain.setValueAtTime(0, t); this.music.gain.linearRampToValueAtTime(S.muted ? 0 : 0.85, t + 3);
+    const t = this.ctx.currentTime; this.music.gain.cancelScheduledValues(t); this.music.gain.setValueAtTime(0, t); this.music.gain.linearRampToValueAtTime(0.85, t + 3);
     this.timer = setInterval(() => this.tick(), 25);
   },
   tick() {
@@ -634,31 +625,27 @@ const Audio = {
   fadeOut(sec) {
     if (!this.ctx || !this.playing) return; const t = this.ctx.currentTime, g = this.music.gain;
     g.cancelScheduledValues(t); g.setValueAtTime(g.value, t); g.linearRampToValueAtTime(0, t + sec);
-    setTimeout(() => this.stop(), sec * 1000 + 200);
+    clearTimeout(this._ft); this._ft = setTimeout(() => this.stop(), sec * 1000 + 200);
   },
   stop() { clearInterval(this.timer); this.timer = null; this.playing = false; this.stopPad(); },
   blip(freq = 880, dur = 0.08, vol = 0.25) {
-    if (!this.ctx || S.faded) return; const c = this.ctx, t = c.currentTime, o = c.createOscillator(), g = c.createGain();
+    if (!this.ctx) return; const c = this.ctx, t = c.currentTime, o = c.createOscillator(), g = c.createGain();
     o.type = 'sine'; o.frequency.value = freq; g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.001, t + dur);
     o.connect(g); g.connect(this.sfx); o.start(t); o.stop(t + dur + 0.02);
   }
 };
 
-/* ---------- wake lock ---------- */
 let wake = null;
-async function keepAwake() { try { if ('wakeLock' in navigator) { wake = await navigator.wakeLock.request('screen'); } } catch {} }
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && S.startAt && !wake) keepAwake(); });
+async function keepAwake() { try { if ('wakeLock' in navigator) wake = await navigator.wakeLock.request('screen'); } catch {} }
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && S.startAt) keepAwake(); });
 
-/* ---------- UI helpers ---------- */
+/* ---------- navigation ---------- */
 function show(id) {
   document.querySelectorAll('.screen').forEach(s => s.hidden = s.id !== id);
   const idx = STEP_IDS.indexOf(id);
-  $('#sbar').hidden = idx < 0;
-  if (idx >= 0) { S.step = idx; renderSteps(); }
+  $('#sbar').hidden = idx < 0 || !S.startAt;
+  if (idx >= 0) { S.step = idx; $('#steps').replaceChildren(...STEP_IDS.map((_, i) => h('i', { class: i < S.step ? 'done' : i === S.step ? 'now' : '' }))); }
   window.scrollTo(0, 0);
-}
-function renderSteps() {
-  const el = $('#steps'); el.replaceChildren(...STEP_IDS.map((_, i) => h('i', { class: i < S.step ? 'done' : i === S.step ? 'now' : '' })));
 }
 let toastT;
 function toast(msg, cls = '', ms = 4000) {
@@ -667,418 +654,241 @@ function toast(msg, cls = '', ms = 4000) {
   clearTimeout(toastT); toastT = setTimeout(() => t.remove(), ms);
 }
 
-/* ---------- HUB ---------- */
+/* ---------- hub ---------- */
 function renderHub() {
   const wl = store.get('waitlist', {});
   $('#sports').replaceChildren(...SPORTS.map(sp => {
-    if (sp.live) return h('button', { class: 'sport active', onclick: () => show('checkin') },
-      h('span', { class: 'badge live' }, 'Active'), h('span', { class: 'name' }, sp.name), h('span', { class: 'go' }, 'Start check-in →'));
+    if (sp.live) return h('button', { class: 'sport active', onclick: () => { renderCheckin(); show('checkin'); } },
+      h('span', { class: 'badge live' }, 'Active'), h('span', { class: 'name' }, sp.name), h('span', { class: 'go' }, 'Start pre-match →'));
     const sw = h('button', { class: 'switch', role: 'switch', 'aria-checked': String(!!wl[sp.id]), 'aria-label': 'Notify me when ' + sp.name + ' launches' });
     sw.addEventListener('click', () => { wl[sp.id] = !wl[sp.id]; store.set('waitlist', wl); sw.setAttribute('aria-checked', String(!!wl[sp.id])); if (wl[sp.id]) toast('On the ' + sp.name + ' waitlist', 'cyan', 2000); });
-    return h('div', { class: 'sport locked' },
-      h('span', { class: 'badge' }, 'Coming soon'), h('span', { class: 'name' }, sp.name),
-      h('span', { class: 'wl' }, 'Waitlist', sw));
+    return h('div', { class: 'sport locked' }, h('span', { class: 'badge' }, 'Coming soon'), h('span', { class: 'name' }, sp.name), h('span', { class: 'wl' }, 'Waitlist', sw));
   }));
+  const pend = sessions().filter(s => !s.post && !s.skipped).slice(-1)[0];
+  $('#pendingBox').replaceChildren(...(pend ? [h('div', { class: 'pending' },
+    h('b', {}, 'Log your last match'), h('p', { class: 'note' }, 'Started ' + new Date(pend.at).toLocaleString([], { weekday: 'short', hour: 'numeric', minute: '2-digit' }) + '. 60 seconds, and the app gets smarter.'),
+    h('button', { class: 'btn btn-cyan', onclick: () => openPost(pend.id) }, 'Log it now'))] : []));
 }
 
-/* ---------- CHECK-IN ---------- */
-function choiceBtn(key, cur, t, s, cls, on) {
-  return h('button', { class: 'choice ' + (cls || ''), 'aria-pressed': String(cur === key), onclick: on }, h('span', { class: 't' }, t), s ? h('span', { class: 's' }, s) : null);
+/* ---------- check-in ---------- */
+function choiceBtn(key, cur, t, s, on) {
+  return h('button', { class: 'choice', 'aria-pressed': String(cur === key), onclick: on }, h('span', { class: 't' }, t), s ? h('span', { class: 's' }, s) : null);
 }
 function renderCheckin() {
-  $('#posChoices').replaceChildren(...Object.entries(POS).map(([k, p]) => choiceBtn(k, S.pos, p.name, p.sub, '', () => { S.pos = k; store.set('pos', k); renderCheckin(); })));
-  $('#stateChoices').replaceChildren(...Object.entries(STATES).map(([k, s]) => choiceBtn(k, S.st, s.name, s.sub, s.cls, () => { S.st = k; renderCheckin(); })));
-  $('#winChoices').replaceChildren(...[5, 10, 15].map(m => choiceBtn(m, S.win, String(m), 'min', '', () => { S.win = m; store.set('win', m); renderCheckin(); })));
-  const ch = $('#amesChips');
-  if (S.st) {
-    const st = STATES[S.st];
-    ch.replaceChildren(h('span', { class: 'chip' }, 'Mental energy read:'),
-      ...st.low.map(x => h('span', { class: 'chip low' }, x + ' ↓')), ...st.ok.map(x => h('span', { class: 'chip ok' }, x + ' ✓')));
-  } else ch.replaceChildren();
-  $('#startBtn').disabled = !(S.pos && S.st && S.win);
+  $('#posChoices').replaceChildren(...Object.entries(POS).map(([k, p]) => choiceBtn(k, S.pos, p.name, p.sub, () => { S.pos = k; store.set('pos', k); renderCheckin(); })));
+  $('#winChoices').replaceChildren(...[5, 10, 15].map(m => choiceBtn(m, S.win, String(m), 'min', () => { S.win = m; store.set('win', m); renderCheckin(); })));
+  const z = zone(), zh = $('#zoneHint'); zh.replaceChildren();
+  const left = Math.max(1, 3 - z.n);
+  zh.append(z.learned
+    ? h('span', {}, h('b', {}, 'Your flow zone: energy ' + z.lo + '–' + z.hi + '. '), 'Learned from ' + z.n + ' logged matches.')
+    : h('span', {}, h('b', {}, 'Starting zone: energy ' + z.lo + '–' + z.hi + '. '), z.n ? 'Log ' + left + ' more match' + (left === 1 ? '' : 'es') + ' to personalise it.' : 'Log your matches and the app finds your own zone.'));
+  $('#startBtn').disabled = !S.pos;
 }
+$('#energyIn').addEventListener('input', e => { S.energy0 = +e.target.value; $('#energyV').textContent = S.energy0; });
+$('#nervesIn').addEventListener('input', e => { S.nerves0 = +e.target.value; $('#nervesV').textContent = S.nerves0; });
+$('#energy2In').addEventListener('input', e => { S.energy1 = +e.target.value; $('#energy2V').textContent = S.energy1; });
 
-/* ---------- SESSION CLOCK ---------- */
+/* ---------- session clock ---------- */
 let clockT = null;
 function startSession() {
   Audio.init();
-  S.startAt = Date.now(); S.endAt = S.startAt + S.win * 60000; S.faded = false; S.cue = null;
-  S.phys = store.get('phys', null);
+  S.startAt = Date.now(); S.endAt = S.startAt + S.win * 60000; S.faded = false;
+  S.dir = direction(S.energy0, S.nerves0);
+  const pick = pickMethod(S.dir); S.method = pick.m; S.why = pick.why;
+  S.energy1 = S.energy0; $('#energy2In').value = S.energy0; $('#energy2V').textContent = S.energy0;
+  S.goal = null; S.cue = null; S.memory = '';
+  S.session = { id: 's' + S.startAt, at: S.startAt, pos: S.pos, win: S.win, energy0: S.energy0, nerves0: S.nerves0, dir: S.dir, method: S.method.id, mids: [] };
+  const all = sessions(); all.push(S.session); saveSessions(all.slice(-200));
   keepAwake();
-  Audio.start(S.st);
+  Audio.start(S.dir, S.method.bpm);
   clearInterval(clockT); clockT = setInterval(tickClock, 250); tickClock();
-  startPrime();
+  startTune();
+}
+function updateSession(patch) {
+  if (!S.session) return;
+  const all = sessions(), i = all.findIndex(s => s.id === S.session.id); if (i < 0) return;
+  Object.assign(all[i], patch); S.session = all[i]; saveSessions(all);
 }
 function tickClock() {
-  const rem = (S.endAt - Date.now()) / 1000, total = S.win * 60;
-  $('#clockV').textContent = fmt(rem);
-  setRing($('#clockRing'), rem / total);
+  const rem = (S.endAt - Date.now()) / 1000;
+  $('#clockV').textContent = fmt(rem); setRing($('#clockRing'), rem / (S.win * 60));
   if (!S.faded && rem <= 180) {
-    S.faded = true; Audio.fadeOut(10);
-    $('#clockL').textContent = 'headphones off';
+    S.faded = true; Audio.fadeOut(10); $('#clockL').textContent = 'headphones off';
     toast('Headphones off. Tune in to the court: calls, contact, the whistle.', 'cyan', 7000); buzz([60, 80, 60]);
   }
-  if (rem <= 0) {
-    clearInterval(clockT); $('#clockL').textContent = 'first serve';
-    if (STEP_IDS.indexOf(currentScreen()) < 4) { stopAll(); goLock(); }
-  }
+  if (rem <= 0) { clearInterval(clockT); $('#clockL').textContent = 'first serve'; const cur = currentScreen(); if (STEP_IDS.indexOf(cur) >= 0 && cur !== 'lock') goLock(); }
 }
-function currentScreen() { const s = [...document.querySelectorAll('.screen')].find(x => !x.hidden); return s && s.id; }
+const currentScreen = () => { const s = [...document.querySelectorAll('.screen')].find(x => !x.hidden); return s && s.id; };
 
-/* ---------- PRIME (breath + audio) ---------- */
-let primeT = null, breathT = null;
-function primeSeconds() { return { 5: 40, 10: 90, 15: 150 }[S.win]; }
-function startPrime() {
-  show('prime');
-  const st = STATES[S.st];
-  $('#primeTitle').textContent = st.title;
-  $('#bpmV').textContent = st.bpm;
-  $('#primeNote').textContent = st.note + ' Beat: ' + st.tempoRange + ' BPM.';
-  $('#primeNote').className = 'note' + (S.st === 'flat' ? ' warn' : '');
-  $('#orb').className = 'orb' + (S.st === 'flat' ? ' flat' : '');
-  drawCurve();
+/* ---------- step 1: tune ---------- */
+let tuneT = null, breathT = null;
+const TUNE_TEXT = {
+  down: { title: 'Bring it down', note: 'Long exhales and a slow pulse. Aim for steady and ready, not sleepy: flow shows up at moderate energy.' },
+  up: { title: 'Turn it up', note: 'Fast beat and power breaths to lift your energy. Stop and breathe normally if you feel dizzy or tingly.' },
+  steady: { title: 'Hold your zone', note: 'You’re already in your zone. Steady breathing to stay there.' }
+};
+function startTune() {
+  show('tune');
+  const T = TUNE_TEXT[S.dir];
+  $('#tuneTitle').textContent = T.title; $('#bpmV').textContent = S.method.bpm;
+  $('#tuneNote').textContent = T.note; $('#tuneNote').className = 'note' + (S.dir === 'up' ? ' warn' : '');
+  $('#tuneWhy').textContent = S.why || (S.dir === 'steady' ? 'Energy ' + S.energy0 + ' is inside your zone.' : '');
+  $('#tuneWhy').hidden = !$('#tuneWhy').textContent;
+  $('#orb').className = 'orb' + (S.dir === 'up' ? ' up' : '');
   const seg = $('#breathSeg');
-  if (S.st === 'anx') {
-    S.breathMode = S.breathMode && ['sigh', 'box'].includes(S.breathMode) ? S.breathMode : 'sigh';
+  if (S.dir === 'down') {
     seg.hidden = false;
-    seg.replaceChildren(...['sigh', 'box'].map(k => h('button', { 'aria-pressed': String(S.breathMode === k), onclick: () => { S.breathMode = k; seg.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.textContent === BREATHS[k].label))); runBreath(); } }, BREATHS[k].label)));
-  } else { seg.hidden = true; S.breathMode = S.st === 'flat' ? 'power' : 'steady'; }
+    seg.replaceChildren(...METHODS.down.map(m => h('button', { 'aria-pressed': String(S.method.id === m.id), onclick: () => {
+      S.method = m; updateSession({ method: m.id }); seg.querySelectorAll('button').forEach((b, i) => b.setAttribute('aria-pressed', String(METHODS.down[i].id === m.id)));
+      $('#bpmV').textContent = m.bpm; Audio.start('down', m.bpm); $('#tuneWhy').hidden = true; runBreath(); } }, BREATHS[m.breath].label)));
+  } else seg.hidden = true;
+  drawCurve();
   runBreath();
-  const dur = primeSeconds(), t0 = Date.now();
-  clearInterval(primeT);
-  primeT = setInterval(() => {
-    const el = (Date.now() - t0) / 1000;
-    setRing($('#primeRing'), 1 - el / dur);
-    if (el >= dur) { clearInterval(primeT); stopBreath(); startDrills(); }
+  const dur = { 5: 40, 10: 90, 15: 150 }[S.win], t0 = Date.now();
+  clearInterval(tuneT);
+  $('#tuneNext').className = 'btn btn-ghost';
+  tuneT = setInterval(() => {
+    const el = (Date.now() - t0) / 1000; setRing($('#tuneRing'), 1 - el / dur);
+    if (el >= dur) { clearInterval(tuneT); stopBreath(); $('#breathLbl').textContent = 'Rate your energy'; $('#breathCnt').textContent = ''; $('#tuneNext').className = 'btn btn-primary'; buzz([30, 40, 30]); Audio.blip(660, .15); }
   }, 200);
 }
-function runBreath() {
+function runBreath(target, key) {
+  target = target || { orb: $('#orb'), lbl: $('#breathLbl'), cnt: $('#breathCnt') };
+  key = key || S.method.breath;
   stopBreath();
-  const B = BREATHS[S.breathMode], orb = $('#orb'), lbl = $('#breathLbl'), cnt = $('#breathCnt');
+  const B = BREATHS[key], { orb, lbl, cnt } = target;
   let i = 0, round = 0, scale = 0.8;
   const seq = () => {
     let step;
-    if (B.rounds && round >= B.rounds) { step = B.rest; round = -1; }
-    else step = B.steps[i % B.steps.length];
+    if (B.rounds && round >= B.rounds) { step = B.rest; round = -1; } else step = B.steps[i % B.steps.length];
     const [kind, dur, text] = step;
     lbl.textContent = text;
-    cnt.textContent = B.rounds ? (round >= 0 ? 'Breath ' + (round + 1) + ' / ' + B.rounds : '') : '';
-    orb.style.transitionDuration = dur + 's';
+    if (cnt) cnt.textContent = B.rounds ? (round >= 0 ? 'Breath ' + (round + 1) + ' / ' + B.rounds : '') : '';
     scale = kind === 'in' ? 1.25 : kind === 'in2' ? 1.4 : kind.startsWith('out') ? 0.7 : kind === 'rest' ? 0.9 : scale;
-    orb.style.transform = 'scale(' + scale + ')';
+    orb.style.transitionDuration = dur + 's'; orb.style.transform = 'scale(' + scale + ')';
     if (kind.startsWith('in') || kind.startsWith('out')) buzz(kind.startsWith('in') ? 18 : 8);
     Audio.breath(kind, dur);
-    if (kind === 'rest') { i = 0; round = 0; }
-    else { i++; if (B.rounds && i % B.steps.length === 0) round++; }
+    if (kind === 'rest') { i = 0; round = 0; } else { i++; if (B.rounds && i % B.steps.length === 0) round++; }
     breathT = setTimeout(seq, dur * 1000);
   };
   seq();
 }
 function stopBreath() { clearTimeout(breathT); }
 function drawCurve() {
-  // Inverted-U (Yerkes–Dodson style) sketch: x = activation, y = performance
-  const svg = $('#curve'), W = 320, H = 96, pad = 14;
-  const y = x => H - 18 - (H - 34) * Math.exp(-Math.pow((x - 0.55) / 0.24, 2));
-  let d = ''; for (let i = 0; i <= 40; i++) { const x = i / 40; d += (i ? 'L' : 'M') + (pad + x * (W - 2 * pad)).toFixed(1) + ' ' + y(x).toFixed(1); }
-  const posX = { flat: 0.16, anx: 0.9, ready: 0.62 }[S.st];
-  const px = pad + posX * (W - 2 * pad), zx0 = pad + 0.43 * (W - 2 * pad), zx1 = pad + 0.67 * (W - 2 * pad);
+  const svg = $('#curve'), W = 320, H = 96, pad = 14, z = zone();
+  const X = e => pad + (e - 1) / 9 * (W - 2 * pad);
+  const mid = (z.lo + z.hi) / 2;
+  const y = e => H - 18 - (H - 34) * Math.exp(-Math.pow((e - mid) / 2.6, 2));
+  let d = ''; for (let i = 0; i <= 45; i++) { const e = 1 + i / 5; d += (i ? 'L' : 'M') + X(e).toFixed(1) + ' ' + y(e).toFixed(1); }
+  const px = X(S.energy0), zx0 = X(z.lo - 0.5), zx1 = X(z.hi + 0.5);
   svg.innerHTML =
     '<rect x="' + zx0 + '" y="6" width="' + (zx1 - zx0) + '" height="' + (H - 24) + '" rx="6" fill="rgba(228,255,58,.10)"/>' +
-    '<text x="' + ((zx0 + zx1) / 2) + '" y="18" fill="#e4ff3a" font-size="10" text-anchor="middle" font-family="Inter, system-ui" font-weight="600">YOUR ZONE</text>' +
+    '<text x="' + ((zx0 + zx1) / 2) + '" y="18" fill="#e4ff3a" font-size="10" text-anchor="middle" font-family="Inter, system-ui" font-weight="600">' + (z.learned ? 'YOUR ZONE' : 'START ZONE') + '</text>' +
     '<path d="' + d + '" fill="none" stroke="#8b9aab" stroke-width="2"/>' +
-    '<circle cx="' + px + '" cy="' + y(posX) + '" r="7" fill="' + (S.st === 'anx' ? '#2ee6ff' : '#e4ff3a') + '"/>' +
-    '<text x="' + px + '" y="' + (y(posX) - 12) + '" fill="#eef3f7" font-size="10" text-anchor="middle" font-family="Inter, system-ui" font-weight="600">YOU</text>' +
-    '<text x="' + pad + '" y="' + (H - 3) + '" fill="#8b9aab" font-size="10" font-family="Inter, system-ui">Low activation</text>' +
-    '<text x="' + (W - pad) + '" y="' + (H - 3) + '" fill="#8b9aab" font-size="10" text-anchor="end" font-family="Inter, system-ui">High activation</text>';
+    '<circle cx="' + px + '" cy="' + y(S.energy0) + '" r="7" fill="' + (S.dir === 'down' ? '#2ee6ff' : '#e4ff3a') + '"/>' +
+    '<text x="' + Math.min(W - 24, Math.max(24, px)) + '" y="' + (y(S.energy0) - 12) + '" fill="#eef3f7" font-size="10" text-anchor="middle" font-family="Inter, system-ui" font-weight="600">YOU · ' + S.energy0 + '</text>' +
+    '<text x="' + pad + '" y="' + (H - 3) + '" fill="#8b9aab" font-size="10" font-family="Inter, system-ui">Energy 1</text>' +
+    '<text x="' + (W - pad) + '" y="' + (H - 3) + '" fill="#8b9aab" font-size="10" text-anchor="end" font-family="Inter, system-ui">10</text>';
 }
 
-/* ---------- DRILLS (abstract stimuli, landscape-first) ---------- */
-const DRILLS = [
-  { title: 'Saccade jumps', how: 'Head still. A dot jumps across the screen. Tap it the instant it appears.', base: 20, run: runSaccade },
-  { title: 'Peripheral flash', how: 'Eyes on the center cross. A dot flashes too fast to look at. Tap where it was. The flash gets shorter as you get it right.', base: 25, run: runPeripheral },
-  { title: 'Track 3', how: '3 dots light up, then all 8 move. Follow your 3 without moving your head. Tap them when they stop.', base: 0, run: runMOT },
-  { title: 'Timing', how: 'A dot slides toward the yellow line and disappears into the shade. Tap anywhere at the moment it hits the line.', base: 25, run: runTiming }
-];
-const dscale = () => S.win === 5 ? 0.75 : 1;
-let drillIdx = 0, drillStop = null, drillResults = [], drillsDone = false, portraitOK = false, rotWait = null, stageTimers = [];
-const later = (fn, ms) => { const t = setTimeout(fn, ms); stageTimers.push(t); return t; };
-const avg = a => a.reduce((x, y) => x + y, 0) / a.length;
-
-function startDrills() { drillResults = []; drillsDone = false; show('drills'); renderDrillMenu(); }
-function renderDrillMenu() {
-  $('#drillList').replaceChildren(...DRILLS.map((D, i) => {
-    const r = drillResults[i];
-    return h('li', {}, h('span', { class: 'dt' }, D.title), h('span', { class: 'dh' }, D.how),
-      r ? h('span', { class: 'dr' }, r[0][0], h('small', {}, r[0][1])) : null);
-  }));
-  $('#drillStart').textContent = drillsDone ? 'Continue' : drillResults.length ? 'Resume' : 'Rotate & start';
-  $('#drillSkip').hidden = drillsDone;
-}
-async function enterStage() {
-  $('#stage').hidden = false;
-  try { const el = document.documentElement; if (el.requestFullscreen && !document.fullscreenElement) await el.requestFullscreen({ navigationUI: 'hide' }); } catch {}
-  try { if (screen.orientation && screen.orientation.lock) await screen.orientation.lock('landscape'); } catch {}
-  drillIdx = drillResults.length; runStageDrill();
-}
-function exitStage() {
-  stopDrill();
-  if (rotWait) { removeEventListener('resize', rotWait); rotWait = null; }
-  $('#stage').hidden = true; $('#rotate').hidden = true;
-  try { screen.orientation && screen.orientation.unlock && screen.orientation.unlock(); } catch {}
-  try { if (document.fullscreenElement) document.exitFullscreen(); } catch {}
-}
-function stopDrill() { if (drillStop) { drillStop(); drillStop = null; } stageTimers.forEach(clearTimeout); stageTimers = []; }
-const isPortrait = () => innerHeight > innerWidth;
-function waitLandscape(cb) {
-  const ok = () => !isPortrait() || portraitOK;
-  if (ok()) { $('#rotate').hidden = true; cb(); return; }
-  $('#rotate').hidden = false;
-  rotWait = () => { if (ok()) { removeEventListener('resize', rotWait); rotWait = null; $('#rotate').hidden = true; later(cb, 300); } };
-  addEventListener('resize', rotWait);
-  $('#usePortrait').onclick = () => { portraitOK = true; rotWait && rotWait(); };
-}
-function stProgress(f, info) { setRing($('#stRing'), f); if (info != null) $('#stInfo').textContent = info; }
-function runStageDrill() {
-  stopDrill();
-  if (drillIdx >= DRILLS.length) { finishDrills(); return; }
-  const D = DRILLS[drillIdx], field = $('#field');
-  field.replaceChildren(); $('#stTitle').textContent = (drillIdx + 1) + '/' + DRILLS.length + ' ' + D.title; stProgress(1, '');
-  waitLandscape(() => {
-    const cnt = h('div', { class: 'count' }, '3');
-    const ov = h('div', { class: 'ov' }, h('h3', {}, D.title), h('p', {}, D.how), cnt);
-    field.append(ov);
-    let n = 3; const tick = () => { n--; if (n > 0) { cnt.textContent = n; Audio.blip(520, .06, .15); later(tick, 900); } else { ov.remove(); go(); } };
-    later(tick, 1400);
-  });
-  function go() {
-    drillStop = D.run({ field, dur: D.base * dscale(), progress: stProgress, done: (summary) => {
-      drillStop = null; drillResults[drillIdx] = summary; buzz([30, 40, 30]); Audio.blip(660, .15);
-      field.append(h('div', { class: 'ov' }, h('h3', {}, D.title + ' done'), h('div', { class: 'row', style: 'gap:18px;flex:none' },
-        ...summary.map(([v, l]) => h('div', {}, h('div', { class: 'count', style: 'font-size:40px' }, v), h('div', { class: 'note' }, l))))));
-      later(() => { drillIdx++; runStageDrill(); }, 2000);
-    } });
-  }
-}
-function finishDrills() { drillsDone = true; exitStage(); renderDrillMenu(); }
-function fieldPt(field, e) { const r = field.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
-const TOP = 60; // keep stimuli clear of the HUD
-
-// 1. Saccade jumps: large random jumps, tap to confirm the eyes landed.
-function runSaccade({ field, dur, progress, done }) {
-  let alive = true, hits = 0, miss = 0, rts = [], to, last = { x: field.clientWidth / 2, y: field.clientHeight / 2 }, dot;
-  const t0 = performance.now();
-  const spawn = () => {
-    if (!alive) return;
-    const W = field.clientWidth, H = field.clientHeight; let x, y, k = 0;
-    do { x = 44 + Math.random() * (W - 88); y = TOP + 20 + Math.random() * (H - TOP - 64); k++; }
-    while (Math.hypot(x - last.x, y - last.y) < 0.45 * Math.max(W, H) && k < 40);
-    last = { x, y };
-    dot = h('button', { class: 'dot', style: 'left:' + x + 'px;top:' + y + 'px', 'aria-label': 'Dot' });
-    const at = performance.now();
-    dot.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); if (!alive) return; clearTimeout(to); hits++; rts.push(performance.now() - at); buzz(12); Audio.blip(900, .04, .12); dot.remove(); to = setTimeout(spawn, 120 + Math.random() * 260); });
-    field.append(dot);
-    to = setTimeout(() => { miss++; dot.remove(); spawn(); }, 1300);
-  };
-  const iv = setInterval(() => {
-    const el = (performance.now() - t0) / 1000; progress(1 - el / dur, hits + ' hits');
-    if (el >= dur) { stop(); done([[rts.length ? Math.round(avg(rts)) + 'ms' : '–', 'Avg reaction'], [hits, 'Hits'], [miss, 'Missed']]); }
-  }, 100);
-  function stop() { alive = false; clearTimeout(to); clearInterval(iv); dot && dot.remove(); }
-  spawn(); return stop;
-}
-
-// 2. Peripheral flash (useful-field-of-view style): brief flash, then mask, adaptive duration.
-function runPeripheral({ field, dur, progress, done }) {
-  let alive = true, ms = 200, streak = 0, right = 0, total = 0, tmr = [], best = 999;
-  const W = field.clientWidth, H = field.clientHeight, cx = W / 2, cy = TOP / 2 + H / 2;
-  const rx = W / 2 - 46, ry = (H - TOP) / 2 - 40;
-  const pts = Array.from({ length: 8 }, (_, i) => { const a = i * Math.PI / 4 + Math.PI / 8; return { x: cx + rx * Math.cos(a), y: cy + ry * Math.sin(a) }; });
-  const fix = h('div', { class: 'fix', style: 'left:' + cx + 'px;top:' + cy + 'px' }); field.append(fix);
-  const zones = pts.map((p, i) => { const z = h('button', { class: 'zone', style: 'left:' + p.x + 'px;top:' + p.y + 'px;visibility:hidden', 'aria-label': 'Zone ' + (i + 1) }); field.append(z); return z; });
-  let target = -1, answering = false;
-  const t0 = performance.now();
-  const T = (fn, d) => { const t = setTimeout(fn, d); tmr.push(t); return t; };
-  const trial = () => {
-    if (!alive) return;
-    if ((performance.now() - t0) / 1000 >= dur && total > 0) return finish();
-    zones.forEach(z => { z.style.visibility = 'hidden'; z.className = 'zone'; });
-    T(() => {
-      target = Math.floor(Math.random() * 8);
-      const fd = h('div', { class: 'fdot', style: 'left:' + pts[target].x + 'px;top:' + pts[target].y + 'px' }); field.append(fd);
-      T(() => { fd.remove(); zones.forEach(z => z.style.visibility = 'visible'); answering = true; T(() => answer(-1), 2500); }, ms);
-    }, 500 + Math.random() * 700);
-  };
-  const answer = (i) => {
-    if (!answering) return; answering = false; tmr.forEach(clearTimeout); tmr = [];
-    total++; const ok = i === target;
-    if (ok) { right++; streak++; buzz(12); if (streak >= 2) { best = Math.min(best, ms); ms = Math.max(33, Math.round(ms * 0.8)); streak = 0; } }
-    else { streak = 0; buzz([10, 40, 10]); ms = Math.min(500, Math.round(ms * 1.25)); }
-    zones[target].classList.add(ok ? 'ok' : 'ans'); if (!ok && i >= 0) zones[i].classList.add('no');
-    progress(Math.max(0, 1 - (performance.now() - t0) / 1000 / dur), 'Flash ' + ms + 'ms · ' + right + '/' + total);
-    T(trial, 550);
-  };
-  zones.forEach((z, i) => z.addEventListener('pointerdown', e => { e.preventDefault(); answer(i); }));
-  const iv = setInterval(() => progress(Math.max(0, 1 - (performance.now() - t0) / 1000 / dur)), 150);
-  const finish = () => { stop(); done([[best < 999 ? best + 'ms' : ms + 'ms', 'Shortest flash read'], [total ? Math.round(right / total * 100) + '%' : '–', 'Accuracy'], [total, 'Flashes']]); };
-  function stop() { alive = false; clearInterval(iv); tmr.forEach(clearTimeout); }
-  progress(1, 'Flash ' + ms + 'ms'); trial(); return stop;
-}
-
-// 3. Multiple object tracking: 8 dots, track 3, adaptive speed.
-function runMOT({ field, progress, done }) {
-  const trials = S.win === 5 ? 2 : 3; let t = 0, lvl = store.get('motLvl', 1), got = 0, alive = true, raf, tmr = [];
-  const T = (fn, d) => { const x = setTimeout(fn, d); tmr.push(x); return x; };
-  const trial = () => {
-    if (!alive) return;
-    field.querySelectorAll('.m').forEach(n => n.remove());
-    const W = field.clientWidth, H = field.clientHeight, R = 30, sp = lvl * Math.min(W, H) * 0.32;
-    const ds = [];
-    for (let i = 0; i < 8; i++) {
-      let x, y, k = 0; do { x = R + 10 + Math.random() * (W - 2 * R - 20); y = TOP + R + Math.random() * (H - TOP - 2 * R - 10); k++; } while (ds.some(d => Math.hypot(d.x - x, d.y - y) < 2.4 * R) && k < 60);
-      const a = Math.random() * Math.PI * 2, el = h('button', { class: 'm' + (i < 3 ? ' t' : ''), 'aria-label': 'Dot' });
-      ds.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, el, tgt: i < 3 }); field.append(el);
-    }
-    const place = () => ds.forEach(d => { d.el.style.left = d.x + 'px'; d.el.style.top = d.y + 'px'; }); place();
-    progress(1 - t / trials, 'Trial ' + (t + 1) + ' of ' + trials + ' · speed ' + lvl.toFixed(2) + '×');
-    T(() => {
-      ds.forEach(d => d.el.classList.remove('t'));
-      let last = performance.now(); const end = last + 5000;
-      const step = (now) => {
-        if (!alive) return; const dt = Math.min(0.05, (now - last) / 1000); last = now;
-        for (const d of ds) {
-          d.x += d.vx * dt; d.y += d.vy * dt;
-          if (d.x < R) { d.x = R; d.vx = Math.abs(d.vx); } if (d.x > W - R) { d.x = W - R; d.vx = -Math.abs(d.vx); }
-          if (d.y < TOP + R / 2) { d.y = TOP + R / 2; d.vy = Math.abs(d.vy); } if (d.y > H - R) { d.y = H - R; d.vy = -Math.abs(d.vy); }
-        }
-        for (let i = 0; i < ds.length; i++) for (let j = i + 1; j < ds.length; j++) {
-          const a = ds[i], b = ds[j], dx = b.x - a.x, dy = b.y - a.y, dist = Math.hypot(dx, dy);
-          if (dist < 2 * R * 0.8 && dist > 0) { const nx = dx / dist, ny = dy / dist, va = a.vx * nx + a.vy * ny, vb = b.vx * nx + b.vy * ny;
-            if (va - vb > 0) { a.vx += (vb - va) * nx; a.vy += (vb - va) * ny; b.vx += (va - vb) * nx; b.vy += (va - vb) * ny; } }
-        }
-        place();
-        if (now < end) raf = requestAnimationFrame(step); else respond();
-      };
-      raf = requestAnimationFrame(step);
-    }, 2000);
-    const respond = () => {
-      let picks = 0; Audio.blip(700, .08, .15); progress(1 - t / trials, 'Tap your 3 dots');
-      ds.forEach(d => d.el.addEventListener('pointerdown', e => {
-        e.preventDefault(); if (picks >= 3 || d.el.classList.contains('sel')) return;
-        d.el.classList.add('sel'); picks++; buzz(10);
-        if (picks === 3) {
-          let ok = 0; ds.forEach(x => { const s = x.el.classList.contains('sel'); if (s) { x.el.classList.remove('sel'); x.el.classList.add(x.tgt ? 'good' : 'bad'); if (x.tgt) ok++; } else if (x.tgt) x.el.classList.add('missed'); });
-          got += ok; lvl = ok === 3 ? Math.min(3, lvl * 1.15) : Math.max(0.5, lvl * (ok === 2 ? 0.95 : 0.85)); store.set('motLvl', lvl);
-          field.append(Object.assign(h('div', { class: 'ov fb' }, h('div', { class: 'count' }, ok + ' / 3')), {}));
-          T(() => { field.querySelectorAll('.ov.fb').forEach(n => n.remove()); t++; t < trials ? trial() : finish(); }, 1300);
-        }
-      }));
-    };
-  };
-  const finish = () => { stop(); progress(0); done([[got + '/' + trials * 3, 'Tracked'], [lvl.toFixed(2) + '×', 'Next speed']]); };
-  function stop() { alive = false; cancelAnimationFrame(raf); tmr.forEach(clearTimeout); }
-  trial(); return stop;
-}
-
-// 4. Coincidence-anticipation timing: occluded approach, tap on arrival.
-function runTiming({ field, dur, progress, done }) {
-  const W = field.clientWidth, H = field.clientHeight, y = TOP / 2 + H / 2, x0 = W * 0.08, xT = W * 0.86, xS = W * 0.55;
-  field.append(h('div', { class: 'track', style: 'top:' + y + 'px' }),
-    h('div', { class: 'shade', style: 'left:' + xS + 'px;width:' + (xT - xS) + 'px;top:' + (y - 40) + 'px;height:80px' }),
-    h('div', { class: 'tline', style: 'left:' + xT + 'px;top:' + (y - 56) + 'px;height:112px' }));
-  const dot = h('div', { class: 'tdot', style: 'left:' + x0 + 'px;top:' + y + 'px;visibility:hidden' }); field.append(dot);
-  const fb = h('div', { class: 'ov fb', style: 'justify-content:flex-start;padding-top:' + (TOP + 10) + 'px' }, h('div', { class: 'count' }, '')); field.append(fb);
-  let alive = true, raf, tmr = [], errs = [], state = 'idle', start = 0, arrive = 0, speed = 0;
-  const T = (fn, d) => { const t = setTimeout(fn, d); tmr.push(t); return t; };
-  const t0 = performance.now();
-  const trial = () => {
-    if (!alive) return;
-    if ((performance.now() - t0) / 1000 >= dur && errs.length) return finish();
-    dot.className = 'tdot'; dot.style.left = x0 + 'px'; dot.style.visibility = 'visible'; fb.firstChild.textContent = '';
-    speed = W * (0.42 + Math.random() * 0.5); state = 'wait';
-    T(() => {
-      start = performance.now(); arrive = start + (xT - x0) / speed * 1000; state = 'run';
-      const step = (now) => { if (!alive || state !== 'run') return; const x = x0 + (now - start) / 1000 * speed;
-        dot.style.left = Math.min(x, xT) + 'px'; dot.style.visibility = x < xS ? 'visible' : 'hidden';
-        if (now > arrive + 700) { state = 'idle'; reveal(null); T(trial, 900); return; }
-        raf = requestAnimationFrame(step); };
-      raf = requestAnimationFrame(step);
-    }, 600 + Math.random() * 800);
-  };
-  const reveal = (err) => {
-    dot.className = 'tdot ghost'; dot.style.visibility = 'visible'; dot.style.left = xT + 'px';
-    fb.firstChild.textContent = err == null ? 'No tap' : Math.abs(err) < 20 ? 'On time · ' + Math.round(Math.abs(err)) + 'ms' : Math.round(Math.abs(err)) + 'ms ' + (err < 0 ? 'early' : 'late');
-  };
-  const tap = (e) => {
-    if (e.target.closest('.hud')) return;
-    if (state !== 'run') return; const err = performance.now() - arrive; state = 'idle'; cancelAnimationFrame(raf);
-    errs.push(Math.abs(err)); buzz(Math.abs(err) < 40 ? 20 : [10, 30, 10]); reveal(err);
-    progress(Math.max(0, 1 - (performance.now() - t0) / 1000 / dur), 'Avg error ' + Math.round(avg(errs)) + 'ms');
-    T(trial, 1000);
-  };
-  field.addEventListener('pointerdown', tap);
-  const iv = setInterval(() => progress(Math.max(0, 1 - (performance.now() - t0) / 1000 / dur)), 150);
-  const finish = () => { stop(); done([[Math.round(avg(errs)) + 'ms', 'Avg timing error'], [Math.round(Math.min(...errs)) + 'ms', 'Best'], [errs.length, 'Reps']]); };
-  function stop() { alive = false; cancelAnimationFrame(raf); clearInterval(iv); tmr.forEach(clearTimeout); field.removeEventListener('pointerdown', tap); }
-  trial(); return stop;
-}
-
-/* ---------- VIZ ---------- */
-let vizT = null, vizRunning = false, voice = false;
-function vizSeconds() { return S.win === 5 ? 42 : 60; }
-function startViz() {
-  show('viz');
+/* ---------- step 2: mindset ---------- */
+function startMindset() {
+  clearInterval(tuneT); stopBreath();
+  updateSession({ energy1: S.energy1, method: S.method.id });
+  show('mindset');
   const p = POS[S.pos];
-  $('#vizTitle').textContent = p.name;
-  $('#vizSec').textContent = vizSeconds(); setRing($('#vizRing'), 1);
-  $('#vizLine').textContent = 'Tap Play. Read each line, then close your eyes and see it in first person.';
-  $('#vizN').textContent = p.script.length + ' scenes · ' + vizSeconds() + ' seconds';
-  $('#vizPlay').textContent = 'Play';
-  if (!S.cue) S.cue = p.cues[0];
-  renderCues();
+  const nervous = S.nerves0 >= 5 || S.dir === 'down';
+  const said = h('button', { class: 'btn btn-ghost', style: 'font-size:18px;min-height:52px' }, 'Said it');
+  said.onclick = () => { said.replaceWith(h('span', { class: 'done-tick' }, '✓ Said it')); buzz(15); };
+  $('#reframeCard').replaceChildren(
+    h('h3', {}, nervous ? 'Say it out loud: “I’m excited.”' : 'Say it out loud: “I get to play.”'),
+    h('p', { style: 'margin:0' }, nervous
+      ? 'Butterflies and excitement feel the same in your body. Don’t try to calm them away. Call them energy you can use.'
+      : 'Today is a challenge you’re ready for. You’ve done the work, you know your role, and the next ball is the only one that matters.'),
+    h('p', { class: 'why' }, nervous ? 'Reappraising nerves as excitement gives a small, consistent boost under pressure.' : 'Seeing a match as a challenge rather than a threat is linked to steadier focus and better execution.'),
+    said);
+  const goalOpts = p.goals, cueOpts = p.cues;
+  if (!S.goal) S.goal = goalOpts[0];
+  if (!S.cue) S.cue = cueOpts[0];
+  const renderChips = () => {
+    const gc = $('#goalCustom').value.trim(), cc = $('#cueCustom').value.trim();
+    $('#goalChips').replaceChildren(...goalOpts.map(g => h('button', { class: 'chip', 'aria-pressed': String(!gc && S.goal === g), onclick: () => { S.goal = g; $('#goalCustom').value = ''; renderChips(); } }, g)));
+    $('#cueChips').replaceChildren(...cueOpts.map(c => h('button', { class: 'chip', 'aria-pressed': String(!cc && S.cue === c), onclick: () => { S.cue = c; $('#cueCustom').value = ''; renderChips(); } }, c)));
+    $('#ifChips').replaceChildren(...IFS.map(x => h('button', { class: 'chip', 'aria-pressed': String(S.ifId === x.id), onclick: () => { S.ifId = x.id; store.set('ifId', x.id); renderChips(); } }, x.t)));
+    $('#thenText').textContent = IFS.find(x => x.id === S.ifId).then;
+  };
+  $('#goalCustom').oninput = e => { S.goal = e.target.value.trim() || goalOpts[0]; renderChips(); };
+  $('#cueCustom').oninput = e => { S.cue = e.target.value.trim() || cueOpts[0]; renderChips(); };
+  $('#goalCustom').value = ''; $('#cueCustom').value = ''; $('#bestMemory').value = store.get('memory', '');
+  renderChips();
 }
-function renderCues() {
-  const p = POS[S.pos], custom = $('#customCue').value.trim();
-  $('#cueChoices').replaceChildren(...p.cues.map(c => h('button', { class: 'cue', 'aria-pressed': String(!custom && S.cue === c), onclick: () => { S.cue = c; $('#customCue').value = ''; renderCues(); } }, c)));
+
+/* ---------- step 3: see it ---------- */
+let seeT = null, seeRunning = false, voice = false;
+const seeSeconds = () => ({ 5: 40, 10: 60, 15: 75 })[S.win];
+function startSee() {
+  S.memory = $('#bestMemory').value.trim(); store.set('memory', S.memory);
+  updateSession({ goal: S.goal, cue: S.cue, ifId: S.ifId });
+  show('see');
+  $('#seeTitle').textContent = POS[S.pos].name;
+  $('#seeSec').textContent = seeSeconds(); setRing($('#seeRing'), 1);
+  $('#seeLine').textContent = 'Tap Play. Read each line, then close your eyes and see it from your own eyes, at real speed.';
+  $('#seeN').textContent = 'First person, real speed';
+  $('#seePlay').textContent = 'Play';
 }
-function playViz() {
-  if (vizRunning) { stopViz(); $('#vizPlay').textContent = 'Play'; return; }
-  const p = POS[S.pos], dur = vizSeconds(), per = dur / p.script.length, t0 = Date.now();
-  let shown = -1; vizRunning = true; $('#vizPlay').textContent = 'Pause';
-  vizT = setInterval(() => {
-    const el = (Date.now() - t0) / 1000, i = Math.min(p.script.length - 1, Math.floor(el / per));
-    $('#vizSec').textContent = Math.max(0, Math.ceil(dur - el)); setRing($('#vizRing'), 1 - el / dur);
+function seeScript() {
+  const lines = [...POS[S.pos].script];
+  if (S.memory) lines.unshift('Start with your best: ' + S.memory + '. Feel how loose you were.');
+  lines.push('Your goal on every ball: ' + S.goal + '. Your cue: ' + S.cue + '.');
+  return lines;
+}
+function playSee() {
+  if (seeRunning) { stopSee(); $('#seePlay').textContent = 'Play'; return; }
+  const lines = seeScript(), dur = seeSeconds(), per = dur / lines.length, t0 = Date.now();
+  let shown = -1; seeRunning = true; $('#seePlay').textContent = 'Pause';
+  seeT = setInterval(() => {
+    const el = (Date.now() - t0) / 1000, i = Math.min(lines.length - 1, Math.floor(el / per));
+    $('#seeSec').textContent = Math.max(0, Math.ceil(dur - el)); setRing($('#seeRing'), 1 - el / dur);
     if (i !== shown) {
-      shown = i; const line = $('#vizLine'); line.style.opacity = 0;
-      setTimeout(() => { line.textContent = p.script[i]; line.style.opacity = 1; }, 250);
-      $('#vizN').textContent = 'Scene ' + (i + 1) + ' of ' + p.script.length;
-      if (voice) speak(p.script[i]);
+      shown = i; const line = $('#seeLine'); line.style.opacity = 0;
+      setTimeout(() => { line.textContent = lines[i]; line.style.opacity = 1; }, 250);
+      $('#seeN').textContent = 'Scene ' + (i + 1) + ' of ' + lines.length;
+      if (voice) speak(lines[i]);
     }
-    if (el >= dur) { stopViz(); $('#vizPlay').textContent = 'Replay'; $('#vizN').textContent = 'Now pick your cue'; buzz(30); }
+    if (el >= dur) { stopSee(); $('#seePlay').textContent = 'Replay'; $('#seeN').textContent = 'Done'; buzz(30); }
   }, 200);
 }
-function stopViz() { clearInterval(vizT); vizRunning = false; try { speechSynthesis.cancel(); } catch {} }
+function stopSee() { clearInterval(seeT); seeRunning = false; try { speechSynthesis.cancel(); } catch {} }
 function speak(t) { try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.rate = 0.95; speechSynthesis.speak(u); } catch {} }
 
-/* ---------- DECK ---------- */
+/* ---------- step 4: body deck ---------- */
 let deckI = 0, cards = [];
-function buildDeck() { cards = [...COMMON_DECK, Object.assign({ id: 'move' }, POS[S.pos].move)]; if (!S.phys || !cards.find(c => c.id === S.phys)) S.phys = 'move'; }
-function startDeck() { buildDeck(); deckI = 0; show('deck'); renderDeck(); }
+function buildDeck() {
+  cards = [
+    { id: 'scap', title: 'Scap band prep', dose: '10 pull-aparts · 8 rotations each arm', cue: 'Blades back and down', why: 'Wakes up the rotator cuff and shoulder-blade muscles before hitting, serving and setting.' },
+    { id: 'pogo', title: 'Pogo hops', dose: '2 × 10 fast hops', cue: 'Stiff ankles, quick ground', why: 'Short, springy contacts prime the ankles for jumping without tiring the legs.' },
+    { id: 'split', title: 'Split-step reaction', dose: '5 reps on the GO flash', cue: 'Split on contact, drop and go', why: 'Couples a visual trigger to your first step. Tap Reaction cue and watch for GO.', react: true },
+    Object.assign({ id: 'move' }, POS[S.pos].move),
+    { id: 'qe', title: 'Quiet-eye serves', dose: '5 serves with a ball', cue: 'Pick a spot, hold the look, serve', why: 'Before each serve, fix your eyes on one target for about 2 seconds, then go. A steady final look before aiming skills is one of the better-supported visual habits in sport.' },
+    { id: 'eyes', title: 'Eye primer (optional)', dose: '20 seconds on screen', cue: 'Head still, eyes jump', why: 'A short dot-tap warm-up for your eyes. Treat it as a focus switch, not skill training: screen drills haven’t been shown to improve play.', eyes: true }
+  ];
+  if (!S.phys || !cards.find(c => c.id === S.phys && !c.eyes)) S.phys = 'move';
+}
+function startBody() { stopSee(); buildDeck(); deckI = 0; show('body'); renderDeck(); }
 function renderDeck() {
   const el = $('#deckEl');
   el.replaceChildren(...cards.map((c, i) => {
-    const star = h('button', { 'aria-pressed': String(S.phys === c.id), onclick: () => { S.phys = c.id; store.set('phys', c.id); renderDeck(); } }, S.phys === c.id ? '★ My physical cue' : '☆ Use this cue');
-    const acts = [star];
+    const acts = [];
+    if (!c.eyes) acts.push(h('button', { 'aria-pressed': String(S.phys === c.id), onclick: () => { S.phys = c.id; store.set('phys', c.id); renderDeck(); } }, S.phys === c.id ? '★ My body cue' : '☆ Use this cue'));
     if (c.react) acts.push(h('button', { onclick: reactionDrill }, 'Reaction cue'));
+    else if (c.eyes) acts.push(h('button', { onclick: startEyePrimer }, 'Start 20s'));
     else acts.push(h('button', { onclick: (e) => cardTimer(e.currentTarget) }, 'Start 30s'));
-    const card = h('div', { class: 'card', 'aria-hidden': String(i !== deckI) },
-      h('div', { class: 'eyebrow' }, 'Card ' + (i + 1) + ' of ' + cards.length),
-      h('h3', {}, c.title), h('div', { class: 'dose' }, c.dose), h('div', { class: 'cuebox' }, c.cue), h('div', { class: 'why' }, c.why),
-      h('div', { class: 'acts' }, acts));
+    const card = h('div', { class: 'dcard', 'aria-hidden': String(i !== deckI) },
+      h('div', { class: 'eyebrow' }, 'Card ' + (i + 1) + ' of ' + cards.length), h('h3', {}, c.title), h('div', { class: 'dose' }, c.dose),
+      h('div', { class: 'cuebox' }, c.cue), h('p', { class: 'note' }, c.why), h('div', { class: 'acts' }, acts));
     const off = i - deckI;
     card.style.transform = off === 0 ? 'none' : off > 0 ? 'translateX(' + (off === 1 ? 8 : 16) + 'px) scale(' + (1 - off * .04) + ')' : 'translateX(-120%) rotate(-8deg)';
-    card.style.opacity = off < 0 ? 0 : off > 2 ? 0 : 1 - off * .3;
-    card.style.zIndex = 10 - Math.abs(off);
-    card.style.pointerEvents = off === 0 ? 'auto' : 'none';
+    card.style.opacity = off < 0 || off > 2 ? 0 : 1 - off * .3; card.style.zIndex = 10 - Math.abs(off); card.style.pointerEvents = off === 0 ? 'auto' : 'none';
     if (off === 0) attachSwipe(card);
     return card;
   }).reverse());
@@ -1090,8 +900,7 @@ function attachSwipe(card) {
   card.addEventListener('pointerdown', e => { if (e.target.closest('button')) return; x0 = e.clientX; dx = 0; card.classList.add('dragging'); card.setPointerCapture(e.pointerId); });
   card.addEventListener('pointermove', e => { if (x0 == null) return; dx = e.clientX - x0; card.style.transform = 'translateX(' + dx + 'px) rotate(' + dx / 30 + 'deg)'; });
   const end = () => { if (x0 == null) return; x0 = null; card.classList.remove('dragging');
-    if (dx < -70 && deckI < cards.length - 1) { deckI++; buzz(10); } else if (dx > 70 && deckI > 0) { deckI--; buzz(10); }
-    renderDeck(); };
+    if (dx < -70 && deckI < cards.length - 1) { deckI++; buzz(10); } else if (dx > 70 && deckI > 0) { deckI--; buzz(10); } renderDeck(); };
   card.addEventListener('pointerup', end); card.addEventListener('pointercancel', end);
 }
 function cardTimer(btn) {
@@ -1101,100 +910,312 @@ function cardTimer(btn) {
 }
 function reactionDrill() {
   const f = h('div', { class: 'flash', role: 'button', 'aria-label': 'Reaction drill, tap to exit' }, 'READY'); document.body.append(f);
-  let n = 0, t; const reps = 5;
+  let n = 0, t;
   const cycle = () => {
-    if (n >= reps) { f.remove(); toast('5 reactions done', 'cyan', 1800); return; }
+    if (n >= 5) { f.remove(); toast('5 reactions done', 'cyan', 1800); return; }
     f.className = 'flash'; f.textContent = 'SPLIT';
-    t = setTimeout(() => { f.className = 'flash go'; f.textContent = 'GO'; buzz(60); Audio.blip(1200, .12, .3); n++;
-      t = setTimeout(cycle, 1200); }, 1200 + Math.random() * 2200);
+    t = setTimeout(() => { f.className = 'flash go'; f.textContent = 'GO'; buzz(60); Audio.blip(1200, .12, .3); n++; t = setTimeout(cycle, 1200); }, 1200 + Math.random() * 2200);
   };
   f.addEventListener('click', () => { clearTimeout(t); f.remove(); });
   t = setTimeout(cycle, 800);
 }
 
-/* ---------- LOCK ---------- */
+/* ---------- optional eye primer (single 20 s saccade drill) ---------- */
+let eyeStop = null;
+async function startEyePrimer() {
+  $('#stage').hidden = false;
+  try { if (document.documentElement.requestFullscreen && !document.fullscreenElement) await document.documentElement.requestFullscreen({ navigationUI: 'hide' }); } catch {}
+  try { if (screen.orientation && screen.orientation.lock) await screen.orientation.lock('landscape'); } catch {}
+  const field = $('#field'); field.replaceChildren();
+  const cnt = h('div', { class: 'count' }, '3');
+  const ov = h('div', { class: 'ov' }, h('h3', {}, 'Eye primer'), h('p', {}, 'Head still. A dot jumps across the screen. Tap it the instant it appears. Turn the phone sideways if you can.'), cnt);
+  field.append(ov);
+  let n = 3, t;
+  const tk = () => { n--; if (n > 0) { cnt.textContent = n; t = setTimeout(tk, 900); } else { ov.remove(); eyeStop = runSaccade(field, 20); } };
+  t = setTimeout(tk, 1400);
+  eyeStop = () => clearTimeout(t);
+}
+function closeEyePrimer() {
+  if (eyeStop) { eyeStop(); eyeStop = null; }
+  if ($('#stage').hidden) return;
+  $('#stage').hidden = true;
+  try { screen.orientation && screen.orientation.unlock && screen.orientation.unlock(); } catch {}
+  try { if (document.fullscreenElement) document.exitFullscreen(); } catch {}
+}
+function runSaccade(field, dur) {
+  const TOP = 60; let alive = true, hits = 0, miss = 0, rts = [], to, last = { x: field.clientWidth / 2, y: field.clientHeight / 2 }, dot;
+  const t0 = performance.now();
+  const spawn = () => {
+    if (!alive) return;
+    const W = field.clientWidth, H = field.clientHeight; let x, y, k = 0;
+    do { x = 44 + Math.random() * (W - 88); y = TOP + 20 + Math.random() * (H - TOP - 64); k++; } while (Math.hypot(x - last.x, y - last.y) < 0.45 * Math.max(W, H) && k < 40);
+    last = { x, y };
+    dot = h('button', { class: 'dot', style: 'left:' + x + 'px;top:' + y + 'px', 'aria-label': 'Dot' });
+    const at = performance.now();
+    dot.addEventListener('pointerdown', e => { e.preventDefault(); if (!alive) return; clearTimeout(to); hits++; rts.push(performance.now() - at); buzz(12); dot.remove(); to = setTimeout(spawn, 120 + Math.random() * 260); });
+    field.append(dot);
+    to = setTimeout(() => { miss++; dot.remove(); spawn(); }, 1300);
+  };
+  const iv = setInterval(() => {
+    const el = (performance.now() - t0) / 1000; setRing($('#stRing'), 1 - el / dur);
+    if (el >= dur) {
+      stop(); buzz([30, 40, 30]);
+      field.append(h('div', { class: 'ov' }, h('h3', {}, 'Eyes on'), h('p', {}, hits + ' hits · ' + miss + ' missed' + (rts.length ? ' · ' + Math.round(avg(rts)) + ' ms avg' : '')), h('button', { class: 'btn btn-primary', style: 'max-width:280px', onclick: closeEyePrimer }, 'Done')));
+    }
+  }, 100);
+  function stop() { alive = false; clearTimeout(to); clearInterval(iv); dot && dot.remove(); }
+  spawn(); return stop;
+}
+
+/* ---------- step 5: lock in ---------- */
+function resetText() { return 'Breathe out long · eyes on one fixed point · say “' + S.cue + '”'; }
 function goLock() {
-  stopAll();
-  if (!cards.length) buildDeck();
-  const p = POS[S.pos], phys = cards.find(c => c.id === S.phys) || cards[cards.length - 1];
-  const cue = S.cue || p.cues[0];
-  $('#lockPos').textContent = p.name;
-  $('#lockCue').textContent = cue;
-  $('#lockVis').textContent = p.vis;
-  $('#lockPhys').textContent = phys.cue;
-  $('#lockReset').textContent = 'Nose in · long exhale · eyes on one fixed point · say “' + cue + '”';
-  store.set('last', { pos: S.pos, cue, vis: p.vis, phys: phys.cue, at: Date.now() });
+  clearInterval(tuneT); stopBreath(); stopSee(); closeEyePrimer();
+  if (!S.cue) S.cue = POS[S.pos].cues[0];
+  if (!S.goal) S.goal = POS[S.pos].goals[0];
+  updateSession({ goal: S.goal, cue: S.cue, ifId: S.ifId, phys: S.phys, energy1: (S.session && S.session.energy1 != null) ? S.session.energy1 : S.energy1, method: S.method.id });
+  $('#lockPos').textContent = POS[S.pos].name;
+  $('#lockCue').textContent = S.cue;
+  $('#lockGoal').textContent = S.goal;
+  const f = IFS.find(x => x.id === S.ifId);
+  $('#lockIf').textContent = 'If ' + f.t.toLowerCase() + ' → ' + f.then;
+  $('#lockReset').textContent = resetText();
   show('lock');
 }
 function practiceReset() {
-  const cue = $('#lockCue').textContent;
-  const o = h('div', { class: 'reset-run' }, h('div', { class: 'dotfix' }), h('div', { class: 'big' }, 'Breathe in'), h('div', { class: 'note' }, 'Eyes on the dot'));
-  document.body.append(o);
-  const big = o.querySelector('.big');
-  buzz(20);
-  setTimeout(() => { big.textContent = 'Long out…'; buzz(10); }, 1000);
-  setTimeout(() => { big.textContent = cue; big.style.color = 'var(--optic)'; buzz([20, 40, 20]); }, 2400);
+  const o = h('div', { class: 'full', role: 'dialog', 'aria-label': 'Reset practice' }, h('div', { class: 'dotfix' }), h('div', { class: 'big' }, 'Breathe out'), h('p', { class: 'note' }, 'Eyes on the dot'));
+  document.body.append(o); const big = o.querySelector('.big'); buzz(20);
+  setTimeout(() => { big.textContent = 'Eyes still'; buzz(10); }, 1200);
+  setTimeout(() => { big.textContent = S.cue; big.style.color = 'var(--optic)'; buzz([20, 40, 20]); }, 2200);
   setTimeout(() => o.remove(), 3600);
   o.addEventListener('click', () => o.remove());
 }
-function stopAll() {
-  clearInterval(primeT); stopBreath(); stopViz(); exitStage();
+
+/* ---------- in-match: between sets ---------- */
+function openMid() {
+  const ans = { energy: null, head: null, flow: null };
+  const inner = h('div', { class: 'inner' });
+  const o = h('div', { class: 'full', role: 'dialog', 'aria-label': 'Between sets check-in', style: 'justify-content:flex-start' }, inner);
+  const go = h('button', { class: 'btn btn-primary', disabled: '' }, 'Adjust · 30s');
+  const pickRow = (key, opts) => {
+    const row = h('div', { class: 'choices three' });
+    opts.forEach(([v, t]) => {
+      const b = h('button', { class: 'choice', 'aria-pressed': 'false' }, h('span', { class: 't', style: 'font-size:20px' }, t));
+      b.onclick = () => { ans[key] = v; row.querySelectorAll('.choice').forEach(x => x.setAttribute('aria-pressed', String(x === b))); go.disabled = !(ans.energy && ans.head); };
+      row.append(b);
+    });
+    return row;
+  };
+  const flowRow = h('div', { class: 'likert', style: 'border:0;padding:0' });
+  const sc = h('div', { class: 'scale' });
+  for (let i = 1; i <= 5; i++) sc.append(h('button', { 'aria-pressed': 'false', onclick: () => { ans.flow = i; sc.querySelectorAll('button').forEach((x, j) => x.setAttribute('aria-pressed', String(j + 1 === i))); } }, String(i)));
+  flowRow.append(sc, h('div', { class: 'ends' }, h('span', {}, 'Fighting it'), h('span', {}, 'Flowing')));
+  inner.append(h('div', { class: 'eyebrow' }, 'Between sets · 10 seconds'), h('h2', { style: 'font-size:34px' }, 'Quick check'),
+    h('h3', { style: 'font-size:22px' }, 'Energy'), pickRow('energy', [['low', 'Low'], ['right', 'Right'], ['high', 'Too high']]),
+    h('h3', { style: 'font-size:22px' }, 'Head'), pickRow('head', [['busy', 'Busy'], ['ok', 'Mixed'], ['clear', 'Clear']]),
+    h('h3', { style: 'font-size:22px' }, 'Flow so far (optional)'), flowRow,
+    go, h('button', { class: 'link', onclick: () => o.remove() }, 'Close'));
+  go.onclick = () => {
+    if (S.session) updateSession({ mids: (S.session.mids || []).concat([{ at: Date.now(), ...ans }]) });
+    runMidAction(inner, ans, () => o.remove());
+  };
+  document.body.append(o);
 }
-function endSession() {
-  stopAll(); clearInterval(clockT); if (Audio.playing) Audio.fadeOut(1.5);
+function runMidAction(inner, ans, close) {
+  const key = ans.energy === 'high' ? 'sigh' : ans.energy === 'low' ? 'power' : 'slow';
+  const title = ans.energy === 'high' ? 'Bring it down' : ans.energy === 'low' ? 'Turn it up' : 'Stay right there';
+  const orb = h('div', { class: 'orb' + (key === 'power' ? ' up' : '') });
+  const lbl = h('div', { class: 'lbl' }, ''), cnt = h('div', { class: 'cnt' }, '');
+  const holder = h('div'); holder.innerHTML = '<svg class="ring" viewBox="0 0 100 100" aria-hidden="true"><circle class="trk" cx="50" cy="50" r="46" fill="none" stroke-width="3"/><circle class="bar" cx="50" cy="50" r="46" fill="none" stroke-width="3"/></svg>';
+  const ring = holder.firstChild;
+  const br = h('div', { class: 'breath', style: 'width:min(240px,64vw)' }, ring, orb, cnt, lbl);
+  const focusLine = ans.head === 'busy' ? 'Too many thoughts. Drop them on the exhale. One thing only: ' + (S.goal || 'next ball') + '.' : 'Next set, same goal: ' + (S.goal || 'next ball') + '.';
+  const done = h('button', { class: 'btn btn-primary' }, 'Back on court');
+  inner.replaceChildren(h('div', { class: 'eyebrow' }, 'Between sets · 30 seconds'), h('h2', { style: 'font-size:34px' }, title), br,
+    h('p', { style: 'margin:0;font-weight:600' }, focusLine), h('p', { class: 'note' }, 'Cue: “' + (S.cue || 'Next ball') + '”'), done);
+  Audio.init();
+  runBreath({ orb, lbl, cnt }, key);
+  const t0 = Date.now(), bar = ring.querySelector('.bar');
+  const iv = setInterval(() => { const f = 1 - (Date.now() - t0) / 30000; setRing(bar, f); if (f <= 0) { clearInterval(iv); stopBreath(); lbl.textContent = 'Go'; buzz([30, 40, 30]); } }, 200);
+  done.onclick = () => { clearInterval(iv); stopBreath(); close(); };
+}
+
+/* ---------- in-match: clutch serve ("make it happen") ---------- */
+function openClutch() {
+  const big = h('div', { class: 'big' }, 'Breathe out');
+  const sub = h('p', { class: 'note' }, '');
+  const o = h('div', { class: 'full', role: 'dialog', 'aria-label': 'Clutch serve routine' }, h('div', { class: 'eyebrow' }, 'Clutch serve · about 8 seconds · tap to skip ahead'), big, sub);
+  const steps = [['Breathe out', 'Longer out than in', 2000], ['Pick one spot', 'An exact spot on their court', 1800], ['Hold your eyes on it', 'Still. About two seconds.', 2200], [S.cue || 'Next ball', 'Say it', 1500], ['Serve', '', 1200]];
+  let i = 0, t;
+  const next = () => {
+    if (i >= steps.length) { o.remove(); return; }
+    const [a, b, d] = steps[i++]; big.textContent = a; sub.textContent = b; big.style.color = i === steps.length ? 'var(--optic)' : ''; buzz(i === steps.length ? [30, 30, 30] : 15);
+    t = setTimeout(next, d);
+  };
+  o.addEventListener('click', () => { clearTimeout(t); next(); });
+  document.body.append(o); next();
+}
+
+/* ---------- post-match ---------- */
+let postId = null, postAns = null;
+function openPost(id) {
+  postId = id || (S.session && S.session.id); if (!postId) return;
+  postAns = { flow: Array(9).fill(0), perf: 0, fit: null };
+  const wrap = $('#flowItems'); wrap.replaceChildren();
+  FLOW_ITEMS.forEach(([dim, text], i) => {
+    const sc = h('div', { class: 'scale' });
+    for (let v = 1; v <= 5; v++) sc.append(h('button', { 'aria-pressed': 'false', 'aria-label': text + ' ' + v + ' of 5', onclick: () => { postAns.flow[i] = v; sc.querySelectorAll('button').forEach((x, j) => x.setAttribute('aria-pressed', String(j + 1 === v))); checkPost(); } }, String(v)));
+    wrap.append(h('div', { class: 'likert' }, h('span', { class: 'dim' }, dim), h('span', { class: 'it' }, text), sc, h('div', { class: 'ends' }, h('span', {}, 'Not at all'), h('span', {}, 'Completely'))));
+  });
+  const ps = $('#perfScale'); ps.replaceChildren();
+  for (let v = 1; v <= 5; v++) ps.append(h('button', { 'aria-pressed': 'false', onclick: () => { postAns.perf = v; ps.querySelectorAll('button').forEach((x, j) => x.setAttribute('aria-pressed', String(j + 1 === v))); checkPost(); } }, String(v)));
+  const fc = $('#fitChoices'); fc.replaceChildren();
+  [['low', 'Too low'], ['right', 'About right'], ['high', 'Too high']].forEach(([v, t]) => {
+    const b = h('button', { class: 'choice', 'aria-pressed': 'false' }, h('span', { class: 't', style: 'font-size:19px' }, t));
+    b.onclick = () => { postAns.fit = v; fc.querySelectorAll('.choice').forEach(x => x.setAttribute('aria-pressed', String(x === b))); checkPost(); };
+    fc.append(b);
+  });
+  checkPost();
+  show('post'); $('#sbar').hidden = true;
+}
+function checkPost() { $('#postSave').disabled = !(postAns.flow.every(v => v > 0) && postAns.perf && postAns.fit); }
+function savePost() {
+  const all = sessions(), s = all.find(x => x.id === postId); if (!s) return;
+  s.post = { at: Date.now(), flow: postAns.flow, perf: postAns.perf, fit: postAns.fit };
+  saveSessions(all);
+  endSession(false);
+  renderProfile(true); show('profile');
+}
+function skipPost() { const all = sessions(), s = all.find(x => x.id === postId); if (s) { s.skipped = true; saveSessions(all); } endSession(); }
+
+/* ---------- profile / insights ---------- */
+function renderProfile(justSaved) {
+  const L = logged(), body = $('#profBody'); body.replaceChildren();
+  if (!L.length) {
+    body.append(h('p', { style: 'margin:0' }, 'No matches logged yet. Run a pre-match session, then tap “Match over · Log it”. After 3 matches the app starts learning your energy zone and which breathing method works best for you.'),
+      h('p', { class: 'note' }, 'You’ll see your flow trend, your personal energy zone, your strongest and weakest flow ingredients, and what to change before the next match.'));
+    return;
+  }
+  const scores = L.map(flowScore), last = L[L.length - 1], z = zone();
+  if (justSaved) body.append(h('p', { class: 'adapt' }, h('b', {}, 'Saved. '), 'Flow ' + r1(flowScore(last)).toFixed(1) + ' / 5 this match.'));
+  body.append(h('div', { class: 'stats' },
+    h('div', { class: 'stat' }, h('div', { class: 'v' }, String(L.length)), h('div', { class: 'l' }, 'Matches')),
+    h('div', { class: 'stat' }, h('div', { class: 'v' }, r1(avg(scores.slice(-5))).toFixed(1)), h('div', { class: 'l' }, 'Flow · last 5')),
+    h('div', { class: 'stat' }, h('div', { class: 'v' }, z.lo + '–' + z.hi), h('div', { class: 'l' }, z.learned ? 'Your zone' : 'Start zone'))));
+  if (L.length >= 2) {
+    const W = 320, H = 80, p = 12, X = i => p + i / (scores.length - 1) * (W - 2 * p - 12), Y = v => H - p - (v - 1) / 4 * (H - 2 * p);
+    const pts = scores.map((v, i) => X(i).toFixed(1) + ',' + Y(v).toFixed(1));
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H); svg.setAttribute('class', 'spark'); svg.setAttribute('role', 'img'); svg.setAttribute('aria-label', 'Flow score per match, 1 to 5');
+    svg.innerHTML = [1, 3, 5].map(v => '<line x1="' + p + '" x2="' + (W - p - 12) + '" y1="' + Y(v) + '" y2="' + Y(v) + '" stroke="#2a3644" stroke-width="1"/><text x="' + (W - 2) + '" y="' + (Y(v) + 3) + '" fill="#8b9aab" font-size="9" text-anchor="end" font-family="Inter, system-ui">' + v + '</text>').join('') +
+      '<polygon points="' + X(0) + ',' + (H - p) + ' ' + pts.join(' ') + ' ' + X(scores.length - 1) + ',' + (H - p) + '" fill="rgba(46,230,255,.12)"/>' +
+      '<polyline points="' + pts.join(' ') + '" fill="none" stroke="#2ee6ff" stroke-width="2.5" stroke-linejoin="round"/>' +
+      '<circle cx="' + X(scores.length - 1) + '" cy="' + Y(scores[scores.length - 1]) + '" r="5" fill="#e4ff3a"/>';
+    body.append(h('div', {}, h('div', { class: 'eyebrow' }, 'Flow per match'), svg));
+  }
+  const recent = L.slice(-8);
+  const dims = FLOW_ITEMS.map((_, i) => avg(recent.map(s => s.post.flow[i])));
+  let lowIdx = -1, lowV = 9; dims.forEach((v, i) => { if (i !== 7 && v < lowV) { lowV = v; lowIdx = i; } });
+  body.append(h('div', { class: 'bars' }, h('div', { class: 'eyebrow' }, 'Flow ingredients · last ' + recent.length + ' match' + (recent.length === 1 ? '' : 'es')),
+    ...FLOW_ITEMS.map(([dim], i) => h('div', { class: 'bar-row' + (i === lowIdx ? ' low' : '') }, h('span', {}, dim), h('span', { class: 'track' }, h('span', { class: 'fill', style: 'display:block;width:' + (dims[i] / 5 * 100) + '%' })), h('span', { class: 'n' }, r1(dims[i]).toFixed(1))))));
+  body.append(h('div', { class: 'card' }, h('h3', {}, 'Work on next'), h('p', { style: 'margin:0' }, DIM_TIPS[lowIdx])));
+  const insights = [];
+  if (z.learned) insights.push('You average ' + r1(z.f).toFixed(1) + ' flow when your energy at first serve is ' + z.lo + '–' + z.hi + '. The app now tunes you toward that zone.');
+  else { const left = Math.max(1, 3 - L.length); insights.push('Log ' + left + ' more match' + (left === 1 ? '' : 'es') + ' to learn your own energy zone. Until then the app aims for ' + z.lo + '–' + z.hi + '.'); }
+  for (const dir of ['down', 'up']) {
+    const st = METHODS[dir].map(m => { const g = L.filter(s => s.method === m.id); return { m, n: g.length, f: avg(g.map(flowScore)) }; }).filter(x => x.n);
+    if (st.length >= 2) { st.sort((a, b) => b.f - a.f); insights.push((dir === 'down' ? 'Calming down: ' : 'Firing up: ') + methodLabel(st[0].m.id) + ' (' + r1(st[0].f).toFixed(1) + ', ' + st[0].n + ' match' + (st[0].n === 1 ? '' : 'es') + ') beats ' + methodLabel(st[1].m.id) + ' (' + r1(st[1].f).toFixed(1) + ', ' + st[1].n + ')' + (st[0].n + st[1].n < 8 ? '. Early read: a few more matches will make this reliable.' : '.')); }
+  }
+  const fits = L.slice(-5).map(s => s.post.fit), hi = fits.filter(x => x === 'high').length, lo = fits.filter(x => x === 'low').length;
+  if (hi >= 2) insights.push('You felt too wired at first serve in ' + hi + ' of your last ' + fits.length + ' matches. Start breathing earlier and skip the fast beat.');
+  if (lo >= 2) insights.push('You felt flat at first serve in ' + lo + ' of your last ' + fits.length + ' matches. Do the activation cards closer to first serve.');
+  const mids = L.flatMap(s => s.mids || []);
+  if (mids.length >= 3) { const busy = mids.filter(m => m.head === 'busy').length; if (busy / mids.length >= 0.5) insights.push('Your head was busy in ' + busy + ' of ' + mids.length + ' between-set check-ins. Lean on the reset after every point, not just errors.'); }
+  const perfR = L.length >= 4 ? corr(L.map(flowScore), L.map(s => s.post.perf)) : null;
+  if (perfR != null) insights.push('Your flow and how well you rated your play move together ' + (perfR > .5 ? 'strongly' : perfR > .2 ? 'somewhat' : 'only a little') + ' (r = ' + perfR.toFixed(2) + ').');
+  body.append(h('div', { class: 'card' }, h('h3', {}, 'What the app has learned'), ...insights.map(t => h('p', { style: 'margin:0' }, t))));
+  body.append(h('div', { class: 'hist' }, h('div', { class: 'eyebrow', style: 'border:0;padding:0' }, 'Recent matches'),
+    ...L.slice(-6).reverse().map(s => h('div', {}, h('span', {}, new Date(s.at).toLocaleDateString([], { month: 'short', day: 'numeric' }) + ' · ' + (POS[s.pos] ? POS[s.pos].name : '') + ' · ' + methodLabel(s.method)), h('span', {}, r1(flowScore(s)).toFixed(1))))));
+  const clear = h('button', { class: 'link', style: 'color:var(--warn)' }, 'Delete all match data');
+  clear.onclick = () => {
+    const yes = h('button', { class: 'btn btn-ghost', style: 'border-color:var(--warn);color:var(--warn)' }, 'Yes, delete everything');
+    yes.onclick = () => { saveSessions([]); renderProfile(); toast('Match data deleted', 'cyan', 2000); };
+    clear.replaceWith(h('div', { class: 'card' }, h('p', { style: 'margin:0' }, 'This removes every logged match from this device. It can’t be undone.'), yes));
+  };
+  body.append(clear);
+}
+function corr(a, b) {
+  const ma = avg(a), mb = avg(b); let n = 0, da = 0, db = 0;
+  for (let i = 0; i < a.length; i++) { n += (a[i] - ma) * (b[i] - mb); da += (a[i] - ma) ** 2; db += (b[i] - mb) ** 2; }
+  return da && db ? n / Math.sqrt(da * db) : null;
+}
+
+/* ---------- end / reset ---------- */
+function endSession(goHome = true) {
+  clearInterval(tuneT); stopBreath(); stopSee(); closeEyePrimer(); clearInterval(clockT);
+  if (Audio.playing) Audio.fadeOut(1.5);
   try { wake && wake.release(); } catch {} wake = null;
-  S.startAt = 0; S.st = null; S.cue = null; $('#clockL').textContent = 'to first serve'; $('#customCue').value = '';
-  renderCheckin(); show('checkin');
+  S.startAt = 0; $('#clockL').textContent = 'to first serve';
+  if (goHome) { renderHub(); show('hub'); }
 }
 
 /* ---------- science sheet ---------- */
 const SCIENCE = [
-  ['Flow in sport', 'm', 'Csikszentmihalyi’s flow model, applied to athletes by Jackson & Csikszentmihalyi (Flow in Sports, 1999). The routine targets conditions linked to flow: clear immediate goals (one cue), challenge matched to skill, and attention on action instead of self-evaluation. Nothing reliably switches flow on; this sets up the conditions.', null],
-  ['Athletic mental energy', 'm', 'The Athletic Mental Energy Scale has six factors: motivation, vigor, concentration, calm, confidence and tirelessness. In a field test with 81 male college volleyball players, all six correlated with match performance, and mental energy predicted receivers’ performance (R² = .23). One correlational study; the app’s check-in is a 1-tap shortcut, not the validated scale.', 'https://peerj.com/articles/15109'],
-  ['Eye drills', 'l', 'The four drills are standard lab tasks: saccade jumps, a useful-field-of-view style peripheral flash, multiple object tracking, and coincidence-anticipation timing. Elite volleyball players use a more consistent gaze strategy (Vansteenkiste et al., 2014). Tracking training improved soccer passing decisions in one small study (Romeas et al., 2016), but a later study did not replicate it, and reviews find gains on these tasks often do not carry over to the field. Use them as a short focus warm-up, not as proven performance training.', 'https://www.frontiersin.org/articles/10.3389/fphys.2025.1664572/full'],
-  ['Breathing to downshift', 'm', 'In a randomized study (Balban et al., 2023, Cell Reports Medicine), 5 minutes a day of cyclic sighing for a month improved mood and lowered resting breathing rate more than mindfulness meditation. Effects of a single pre-match session were not what that study tested.', 'https://pmc.ncbi.nlm.nih.gov/articles/PMC9873947'],
-  ['Self-talk', 'm', 'A meta-analysis of 32 studies (Hatzigeorgiadis et al., 2011) found a moderate positive effect of self-talk on sport performance (ES = 0.48), larger when athletes practiced their cues beforehand. That is why you pick one cue and rehearse it in the reset.', 'https://www.psychologicalscience.org/journals/perspectives/1745691611413136/'],
-  ['Music tempo & arousal', 'l', 'Faster music is commonly used to raise arousal and slower music to lower it, and arousal follows an inverted-U relationship with performance. The specific BPM ranges here are sensible starting points, not tested thresholds.', null],
-  ['Activation finishers', 'l', 'Short, specific drills (band work, pogo hops, reaction steps) are common in volleyball warm-up practice. They are finishers for after your team warm-up, not a replacement for it.', null]
+  ['Flow can be invited, not switched on', 's', 'Flow has nine parts (Csikszentmihalyi; Jackson & Csikszentmihalyi, Flow in Sports). Challenge matched to skill, clear goals and clear feedback are the conditions you can set up; the rest describe the experience. A 2023 review found no technique that reliably induces flow, so the app builds the conditions and learns what helps you. Across 22 studies, flow and performance correlate at about r = .31.', 'https://ore.exeter.ac.uk/articles/journal_contribution/A_systematic_review_and_meta-analysis_of_the_relationship_between_flow_states_and_performance/29784977'],
+  ['Your energy zone is personal', 'm', 'Arousal and performance follow an inverted U, but the best level differs by athlete (the IZOF model). Flow tends to show up at moderate, not minimal, arousal. That is why the app learns your zone from your own logs instead of using one target for everyone.', 'https://informahealthcare.com/doi/ref/10.1080/02640410802027352'],
+  ['“I’m excited”', 'm', 'Reappraising pre-performance nerves as excitement or useful energy gives a small but consistent benefit in randomized trials (about d = 0.23 overall, 0.34 for public performance).', 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10994935/'],
+  ['Challenge, not threat', 'm', 'Instructions that frame a task as a challenge (demands you can meet) rather than a threat improved accuracy and focus in golf putting experiments.', 'https://pmc.ncbi.nlm.nih.gov/articles/PMC3677799'],
+  ['Process goals', 's', 'Goals about how you play (feet first, platform angle) were far more effective than outcome goals (win the set) in a meta-analysis (d about 1.36 vs 0.09).', 'https://tandfonline.com/doi/full/10.1080/1750984X.2022.2116723'],
+  ['If-then plans', 's', 'Deciding in advance “if X happens, I will do Y” has a medium-to-large effect on reaching goals across 94 studies (d = 0.65), and has been applied in tennis.', 'https://pubmed.ncbi.nlm.nih.gov/18272806/'],
+  ['Routines and the reset', 'm', 'Pre-performance routines improve performance in a meta-analysis (Rupprecht et al., 2021). A steady final look at the target (quiet eye) is one of the better-supported visual habits for aiming skills like serving.', 'https://informahealthcare.com/doi/abs/10.1080/1750984X.2021.1944271'],
+  ['Self-talk', 's', 'A meta-analysis of 32 studies found a moderate effect of self-talk on performance (ES = 0.48), larger when the cue is practiced. Say yours in every reset.', 'https://www.psychologicalscience.org/journals/perspectives/1745691611413136/'],
+  ['Breathing', 'm', 'Slow breathing reliably shifts heart-rate variability toward calm. Breathwork reduces stress by a small amount in randomized trials (g about −0.35). Its effect on performance in a single pre-match session is not established.', 'https://pmc.ncbi.nlm.nih.gov/articles/PMC9828383/'],
+  ['Music', 'm', 'Across 139 studies, music improved mood (g = 0.48) and physical performance (g = 0.31). Fast, loud music raises arousal; the app uses tempo to push energy up or down.', 'https://research.usq.edu.au/item/q57x6/effects-of-music-in-exercise-and-sport-a-meta-analytic-review'],
+  ['Why the app learns from you', 'm', 'Because the best arousal level and the techniques that help are individual, the app compares your post-match flow scores across methods and energy levels. It needs at least 3 logged matches and gets more reliable with more. The post-match questions are the app’s own short wording of the nine flow dimensions, not a validated scale.', null],
+  ['Eye drills', 'l', 'Screen-based eye drills improve the drill itself but have not been shown to improve play. Elite volleyball players who trained a tracking task for 8 weeks improved on the task but not on a blocking test. The app keeps only a 20-second optional eye primer.', 'https://pubmed.ncbi.nlm.nih.gov/31396123/'],
+  ['Keep screen time short', 'm', 'About 30 minutes of social media use before playing impaired volleyball decision-making in small studies. The app keeps on-screen time to a few minutes and sends you to the court with your eyes up.', 'https://pubmed.ncbi.nlm.nih.gov/34000894/'],
+  ['Not supported', 'l', 'Claims that flow is a “neurochemical cocktail” of dopamine and anandamide, or that the prefrontal cortex “switches off”, are not established by human studies. Popular lists of “flow triggers” go beyond the evidence.', null]
 ];
 function openScience() {
+  const sheet = h('div', { class: 'sheet' });
+  sheet.addEventListener('click', e => { if (e.target === sheet) sheet.remove(); });
   const panel = h('div', { class: 'panel', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'The science' },
     h('div', { class: 'row', style: 'align-items:center' }, h('h2', {}, 'The science'), h('button', { class: 'btn btn-ghost', style: 'flex:none;width:auto;padding:0 18px;min-height:48px', onclick: () => sheet.remove() }, 'Close')),
-    h('p', { class: 'note' }, 'What each part of the routine is based on, and how strong that evidence is.'),
+    h('p', { class: 'note' }, 'What each part of the app is based on, and how strong the evidence is. Several figures come from abstracts and are being checked against the full papers.'),
     ...SCIENCE.map(([t, lv, body, url]) => h('div', { class: 'sci' }, h('h3', {}, t),
-      h('span', { class: 'ev ' + lv }, lv === 'm' ? 'Published research' : 'Practice-based / limited evidence'),
+      h('span', { class: 'ev ' + lv }, lv === 's' ? 'Strong evidence' : lv === 'm' ? 'Mixed or moderate evidence' : 'Weak evidence'),
       h('p', {}, body), url ? h('p', {}, h('a', { href: url, target: '_blank', rel: 'noopener' }, 'Source')) : null)));
-  const sheet = h('div', { class: 'sheet', onclick: e => { if (e.target === sheet) sheet.remove(); } }, panel);
-  document.body.append(sheet);
+  sheet.append(panel); document.body.append(sheet);
 }
 
 /* ---------- wiring ---------- */
-document.addEventListener('click', e => { const b = e.target.closest('[data-sheet]'); if (b) openScience(); });
-$('#backHub').onclick = () => show('hub');
+document.addEventListener('click', e => { if (e.target.closest('[data-sheet]')) openScience(); });
+$('#backHub').onclick = () => { renderHub(); show('hub'); };
 $('#startBtn').onclick = startSession;
-$('#drillStart').onclick = () => { if (drillsDone) startViz(); else enterStage(); };
-$('#drillSkip').onclick = () => { exitStage(); startViz(); };
-$('#stSkip').onclick = () => { stopDrill(); drillResults[drillIdx] = drillResults[drillIdx] || [['–', 'Skipped']]; drillIdx++; runStageDrill(); };
-$('#stExit').onclick = () => { exitStage(); renderDrillMenu(); };
-$('#primeSkip').onclick = () => { clearInterval(primeT); stopBreath(); startDrills(); };
-$('#vizPlay').onclick = () => { Audio.init(); playViz(); };
-$('#vizVoice').onclick = (e) => { voice = !voice; e.currentTarget.setAttribute('aria-pressed', String(voice)); e.currentTarget.textContent = voice ? 'Voice on' : 'Voice off'; if (!voice) try { speechSynthesis.cancel(); } catch {} };
-$('#customCue').addEventListener('input', e => { const v = e.target.value.trim(); if (v) S.cue = v; else S.cue = POS[S.pos].cues[0]; renderCues(); });
-$('#vizNext').onclick = () => { stopViz(); const v = $('#customCue').value.trim(); if (v) S.cue = v; startDeck(); };
+$('#tuneNext').onclick = startMindset;
+$('#mindNext').onclick = startSee;
+$('#seePlay').onclick = () => { Audio.init(); playSee(); };
+$('#seeVoice').onclick = (e) => { voice = !voice; e.currentTarget.setAttribute('aria-pressed', String(voice)); e.currentTarget.textContent = voice ? 'Voice on' : 'Voice off'; if (!voice) try { speechSynthesis.cancel(); } catch {} };
+$('#seeNext').onclick = startBody;
 $('#deckPrev').onclick = () => { if (deckI > 0) { deckI--; renderDeck(); } };
 $('#deckNext').onclick = () => { if (deckI < cards.length - 1) { deckI++; renderDeck(); } };
-$('#deckDone').onclick = goLock;
+$('#bodyDone').onclick = goLock;
 $('#resetPractice').onclick = practiceReset;
-$('#lockAgain').onclick = endSession;
+$('#midBtn').onclick = openMid;
+$('#clutchBtn').onclick = openClutch;
+$('#postBtn').onclick = () => openPost();
+$('#lockHome').onclick = () => { renderHub(); show('hub'); };
+$('#postSave').onclick = savePost;
+$('#postSkip').onclick = skipPost;
+$('#openProfile').onclick = () => { renderProfile(); show('profile'); };
+$('#profileHome').onclick = () => { renderHub(); show('hub'); };
+$('#stExit').onclick = closeEyePrimer;
 $('#muteBtn').onclick = () => { S.muted = !S.muted; Audio.setMuted(S.muted); $('#muteWave').style.display = S.muted ? 'none' : ''; $('#muteBtn').setAttribute('aria-label', S.muted ? 'Unmute audio' : 'Mute audio'); };
 
-renderHub(); renderCheckin(); renderSteps();
+renderHub(); renderCheckin();
 
-/* Offline: register the service worker when hosted as a standalone app (ignored where not allowed). */
 try {
-  if ('serviceWorker' in navigator && location.protocol === 'https:' && document.querySelector('link[rel=manifest]')) {
-    navigator.serviceWorker.register('sw.js').catch(() => {});
-  }
+  if ('serviceWorker' in navigator && location.protocol === 'https:' && document.querySelector('link[rel=manifest]')) navigator.serviceWorker.register('sw.js').catch(() => {});
 } catch {}
 })();
 </script>
