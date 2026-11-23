@@ -2,6 +2,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon.svg"><link rel="apple-touch-icon" href="icon.svg">
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<script src="config.js"></script><script src="lib/supabase.js"></script>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
 </head><body>
 <title>Flow of Ace</title>
@@ -265,6 +266,31 @@ input[type=text]::placeholder { color: var(--muted); }
   font-family: var(--font-display); font-weight: 800; font-size: 20px; text-transform: uppercase; padding: 14px 20px; border-radius: 14px; width: min(480px, calc(100% - 32px)); text-align: center; }
 .toast.cyan { background: var(--cyan); }
 
+/* Account */
+.brandrow { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.acct { flex: none; min-height: 44px; padding: 0 14px; border-radius: 99px; border: 1px solid var(--line); background: var(--surface); font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; max-width: 50%; }
+.acct span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.acct i { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); flex: none; }
+.acct i.ok { background: var(--good); } .acct i.wait { background: var(--warn); }
+input[type=email], input[type=password] { width: 100%; min-height: 54px; border-radius: 14px; border: 2px solid var(--line); background: var(--surface); color: var(--fg); padding: 0 14px; font-size: 16px; }
+.field { display: grid; gap: 6px; }
+.field label { font-size: 13px; color: var(--muted); font-weight: 600; }
+.check { display: flex; gap: 12px; align-items: flex-start; font-size: 14px; line-height: 1.4; }
+.check input { width: 24px; height: 24px; flex: none; accent-color: var(--optic); margin: 0; }
+.divider { display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .1em; }
+.divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.msg { margin: 0; font-size: 14px; padding: 10px 12px; border-radius: 12px; background: var(--surface-2); }
+.msg.err { color: var(--warn); } .msg.ok { color: var(--good); }
+.btn-google { background: var(--fg); color: var(--bg); }
+.btn-google svg { width: 22px; height: 22px; }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; font-size: 13px; margin: 8px 0 0; }
+.kv dt { color: var(--muted); } .kv dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.hist details { border-top: 1px solid var(--line); padding: 10px 0; }
+.hist summary { display: flex; justify-content: space-between; gap: 10px; cursor: pointer; list-style: none; font-size: 13px; min-height: 28px; align-items: center; }
+.hist summary::-webkit-details-marker { display: none; }
+.hist summary .f { font-variant-numeric: tabular-nums; color: var(--optic); font-weight: 600; }
+.hist summary .f.none { color: var(--muted); font-weight: 500; }
+
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: 0s !important; animation-duration: 0s !important; } }
 @media (max-width: 360px) { .choices.three .t { font-size: 26px; } .brand h1 { font-size: 42px; } .bar-row { grid-template-columns: 8em 1fr 2.2em; } }
 </style>
@@ -283,7 +309,7 @@ input[type=text]::placeholder { color: var(--muted); }
 
   <!-- HUB -->
   <section class="screen" id="hub">
-    <div class="brand"><h1>Flow <span class="of">of</span> <b>Ace</b></h1></div>
+    <div class="brand brandrow"><h1>Flow <span class="of">of</span> <b>Ace</b></h1><button class="acct" id="acctBtn" hidden><i></i><span>Sign in</span></button></div>
     <p class="tag">Get your energy right, set your mindset, and walk on court with one goal and one cue. Log each match and the app learns what puts you in flow.</p>
     <div id="pendingBox"></div>
     <div class="sports" id="sports"></div>
@@ -291,7 +317,7 @@ input[type=text]::placeholder { color: var(--muted); }
       <button class="link" id="openProfile">My flow profile</button>
       <button class="link" data-sheet="science">The science</button>
     </div>
-    <p class="note">Works offline once loaded. Your matches and waitlist choices are saved on this device only.</p>
+    <p class="note" id="hubNote">Works offline once loaded. Your matches and waitlist choices are saved on this device only.</p>
   </section>
 
   <!-- CHECK-IN -->
@@ -421,6 +447,12 @@ input[type=text]::placeholder { color: var(--muted); }
     <div class="q"><h2 style="font-size:22px">Your energy at first serve was…</h2><div class="choices three" id="fitChoices"></div></div>
     <button class="btn btn-primary" id="postSave" disabled>Save match</button>
     <button class="link" id="postSkip">Not now</button>
+  </section>
+
+  <!-- ACCOUNT -->
+  <section class="screen" id="account" hidden>
+    <div class="row" style="align-items:center"><div class="eyebrow">Account</div><button class="link" style="flex:none;text-align:right" id="acctHome">Home</button></div>
+    <div id="acctBody" style="display:grid;gap:16px"></div>
   </section>
 
   <!-- PROFILE -->
@@ -560,6 +592,264 @@ const S = {
 const STEP_IDS = ['tune', 'mindset', 'see', 'body', 'lock'];
 const sessions = () => store.get('sessions', []);
 const saveSessions = (a) => store.set('sessions', a);
+
+/* ---------- accounts & cloud sync (Supabase) ---------- */
+// Offline-first: the device copy is always written first; signed-in players sync to their own rows.
+const CFG = window.FOA_CONFIG || {};
+const LEVELS = [['school', 'School'], ['club', 'Club'], ['college', 'College'], ['pro', 'Pro / semi-pro'], ['beach', 'Beach']];
+const Cloud = {
+  sb: null, user: null, profile: null, status: '', recovery: false, dirty: new Set(store.get('dirty', [])),
+  enabled() { return !!(CFG.supabaseUrl && CFG.supabaseAnonKey && window.supabase && window.supabase.createClient); },
+  async init() {
+    if (!this.enabled()) { renderAcctBtn(); return; }
+    try {
+      this.sb = window.supabase.createClient(CFG.supabaseUrl, CFG.supabaseAnonKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: 'pkce' } });
+      this.sb.auth.onAuthStateChange((event, sess) => {
+        if (event === 'PASSWORD_RECOVERY') { this.recovery = true; setTimeout(openAccount, 0); }
+        setTimeout(() => this.setUser(sess ? sess.user : null), 0);
+      });
+      const { data } = await this.sb.auth.getSession();
+      await this.setUser(data && data.session ? data.session.user : null);
+    } catch (e) { this.status = 'Can’t reach your account right now. Everything still saves on this phone.'; }
+    renderAcctBtn();
+    addEventListener('online', () => this.flush());
+  },
+  async setUser(u) {
+    const prev = this.user ? this.user.id : null, next = u ? u.id : null;
+    this.user = u || null;
+    if (next && next !== prev) {
+      const owner = store.get('owner', null);
+      if (owner && owner !== next) { saveSessions([]); this.dirty.clear(); store.set('dirty', []); }
+      const guest = owner ? 0 : sessions().length;
+      store.set('owner', next);
+      try { await this.loadProfile(); await this.sync(); } catch (e) { this.status = 'Sync failed. It will retry.'; }
+      if (guest) toast('Added ' + guest + ' session' + (guest === 1 ? '' : 's') + ' from this phone to your account', 'cyan', 3500);
+      if (!this.profile || !this.profile.consent_at) openAccount();
+      renderHub(); renderCheckin();
+    }
+    renderAcctBtn();
+    if (currentScreen() === 'account') renderAccount();
+  },
+  async loadProfile() {
+    const { data, error } = await this.sb.from('profiles').select('*').eq('id', this.user.id).maybeSingle();
+    if (error) throw error;
+    this.profile = data || null;
+    if (this.profile && POS[this.profile.position]) { S.pos = this.profile.position; store.set('pos', S.pos); }
+  },
+  async saveProfile(p) {
+    const row = Object.assign({ id: this.user.id, updated_at: new Date().toISOString() }, p);
+    const { error } = await this.sb.from('profiles').upsert(row);
+    if (error) throw error;
+    this.profile = Object.assign({}, this.profile, row);
+    if (POS[row.position]) { S.pos = row.position; store.set('pos', S.pos); }
+  },
+  mark(id) {
+    if (!id || !this.enabled()) return;
+    this.dirty.add(id); store.set('dirty', [...this.dirty]);
+    clearTimeout(this._t); this._t = setTimeout(() => this.flush(), 1200);
+  },
+  async flush() {
+    if (!this.user || !navigator.onLine) return;
+    const all = sessions(), rows = [];
+    for (const id of this.dirty) { const s = all.find(x => x.id === id); if (s) rows.push({ id: s.id, user_id: this.user.id, at: new Date(s.at).toISOString(), data: s, updated_at: new Date(s.updatedAt || s.at).toISOString() }); }
+    if (rows.length) {
+      const { error } = await this.sb.from('sessions').upsert(rows, { onConflict: 'user_id,id' });
+      if (error) { this.status = 'Sync failed. It will retry.'; renderAcctBtn(); return; }
+    }
+    this.dirty.clear(); store.set('dirty', []);
+    this.status = 'Synced ' + new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+    renderAcctBtn(); if (currentScreen() === 'account') renderAccount();
+  },
+  async sync() {
+    const { data, error } = await this.sb.from('sessions').select('id,data,updated_at').order('at', { ascending: true });
+    if (error) throw error;
+    const byId = new Map(sessions().map(s => [s.id, s])), remote = new Map();
+    for (const r of data || []) {
+      const ru = Date.parse(r.updated_at); remote.set(r.id, ru);
+      const l = byId.get(r.id);
+      if (!l || (l.updatedAt || l.at) < ru) byId.set(r.id, Object.assign({}, r.data, { updatedAt: ru }));
+    }
+    for (const s of byId.values()) { const ru = remote.get(s.id); if (ru == null || (s.updatedAt || s.at) > ru) this.dirty.add(s.id); }
+    saveSessions([...byId.values()].sort((a, b) => a.at - b.at));
+    store.set('dirty', [...this.dirty]);
+    await this.flush();
+  },
+  async deleteAllSessions() {
+    if (!this.user) return;
+    this.dirty.clear(); store.set('dirty', []);
+    const { error } = await this.sb.from('sessions').delete().eq('user_id', this.user.id);
+    if (error) throw error;
+  },
+  clearLocal() { saveSessions([]); this.dirty.clear(); store.set('dirty', []); store.set('owner', null); this.profile = null; this.status = ''; },
+  async signOut(force) {
+    try { await this.flush(); } catch (e) {}
+    if (this.dirty.size && !force) return false;
+    await this.sb.auth.signOut();
+    this.clearLocal(); this.user = null;
+    return true;
+  },
+  async deleteAccount() {
+    const { error } = await this.sb.rpc('delete_my_account');
+    if (error) throw error;
+    try { await this.sb.auth.signOut(); } catch (e) {}
+    this.clearLocal(); this.user = null;
+  }
+};
+const redirectURL = () => location.origin + location.pathname;
+const GOOGLE_G = '<svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>';
+
+function renderAcctBtn() {
+  const b = $('#acctBtn'); if (!b) return;
+  b.hidden = !Cloud.enabled();
+  const dot = b.querySelector('i'), label = b.querySelector('span');
+  if (Cloud.user) {
+    label.textContent = (Cloud.profile && Cloud.profile.display_name) || 'Account';
+    dot.className = Cloud.dirty.size ? 'wait' : 'ok';
+    b.setAttribute('aria-label', 'Account: ' + label.textContent + (Cloud.dirty.size ? ', sync pending' : ', synced'));
+  } else { label.textContent = 'Sign in'; dot.className = ''; b.setAttribute('aria-label', 'Sign in or create an account'); }
+  const note = $('#hubNote');
+  if (note) note.textContent = Cloud.user ? 'Works offline once loaded. Your history syncs to your account when you have signal.' : 'Works offline once loaded. Without an account, your matches are saved on this device only.';
+}
+function openAccount() { renderAccount(); show('account'); }
+function msgEl() { return h('p', { class: 'msg', hidden: '' }); }
+function say(el, text, kind) { el.hidden = false; el.className = 'msg ' + (kind || ''); el.textContent = text; }
+function busy(btn, on, text) { btn.disabled = on; if (text) btn.textContent = text; }
+function renderAccount() {
+  const body = $('#acctBody'); body.replaceChildren();
+  if (!Cloud.enabled()) { body.append(h('p', {}, 'Accounts aren’t switched on for this copy of the app. Everything is saved on this device.')); return; }
+  if (Cloud.recovery && Cloud.user) return renderNewPassword(body);
+  if (!Cloud.user) return renderSignIn(body);
+  if (!Cloud.profile || !Cloud.profile.consent_at) return renderProfileForm(body, true);
+  renderAccountHome(body);
+}
+function renderSignIn(body) {
+  const m = msgEl();
+  const email = h('input', { type: 'email', id: 'acEmail', autocomplete: 'email', placeholder: 'you@example.com', inputmode: 'email' });
+  const pass = h('input', { type: 'password', id: 'acPass', autocomplete: 'current-password', placeholder: 'At least 8 characters', minlength: '8' });
+  const signIn = h('button', { class: 'btn btn-primary' }, 'Sign in');
+  const signUp = h('button', { class: 'btn btn-ghost' }, 'Create account');
+  const forgot = h('button', { class: 'link' }, 'Forgot password?');
+  const valid = (needPass) => {
+    if (!/^\S+@\S+\.\S+$/.test(email.value.trim())) { say(m, 'Enter a valid email address.', 'err'); return false; }
+    if (needPass && pass.value.length < 8) { say(m, 'Password needs at least 8 characters.', 'err'); return false; }
+    return true;
+  };
+  signIn.onclick = async () => {
+    if (!valid(true)) return; busy(signIn, true, 'Signing in…');
+    const { error } = await Cloud.sb.auth.signInWithPassword({ email: email.value.trim(), password: pass.value });
+    busy(signIn, false, 'Sign in');
+    if (error) say(m, error.message === 'Invalid login credentials' ? 'Wrong email or password.' : error.message, 'err');
+  };
+  signUp.onclick = async () => {
+    if (!valid(true)) return; busy(signUp, true, 'Creating…');
+    const { data, error } = await Cloud.sb.auth.signUp({ email: email.value.trim(), password: pass.value, options: { emailRedirectTo: redirectURL() } });
+    busy(signUp, false, 'Create account');
+    if (error) return say(m, error.message, 'err');
+    if (!data.session) say(m, 'Check your email and tap the confirmation link, then come back and sign in.', 'ok');
+  };
+  forgot.onclick = async () => {
+    if (!valid(false)) return;
+    const { error } = await Cloud.sb.auth.resetPasswordForEmail(email.value.trim(), { redirectTo: redirectURL() });
+    say(m, error ? error.message : 'If that email has an account, a reset link is on its way.', error ? 'err' : 'ok');
+  };
+  const parts = [h('h2', { style: 'font-size:34px' }, 'Your flow history'),
+    h('p', { class: 'note' }, 'Create an account to keep your sessions, flow scores and what works for you across phones. Without one, everything stays on this device.')];
+  if (CFG.googleSignIn !== false) {
+    const g = h('button', { class: 'btn btn-google' }); g.innerHTML = GOOGLE_G; g.append(h('span', {}, 'Continue with Google'));
+    g.onclick = async () => { const { error } = await Cloud.sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: redirectURL() } }); if (error) say(m, error.message, 'err'); };
+    parts.push(g, h('div', { class: 'divider' }, 'or with email'));
+  }
+  parts.push(h('div', { class: 'field' }, h('label', { for: 'acEmail' }, 'Email'), email), h('div', { class: 'field' }, h('label', { for: 'acPass' }, 'Password'), pass),
+    m, signIn, signUp, forgot, h('button', { class: 'link', onclick: openPrivacy }, 'How your data is handled'));
+  body.append(...parts);
+}
+function renderNewPassword(body) {
+  const m = msgEl(), pass = h('input', { type: 'password', id: 'acNewPass', autocomplete: 'new-password', placeholder: 'At least 8 characters' });
+  const save = h('button', { class: 'btn btn-primary' }, 'Save new password');
+  save.onclick = async () => {
+    if (pass.value.length < 8) return say(m, 'Password needs at least 8 characters.', 'err');
+    const { error } = await Cloud.sb.auth.updateUser({ password: pass.value });
+    if (error) return say(m, error.message, 'err');
+    Cloud.recovery = false; toast('Password updated', 'cyan', 2000); renderAccount();
+  };
+  body.append(h('h2', { style: 'font-size:30px' }, 'Set a new password'), h('div', { class: 'field' }, h('label', { for: 'acNewPass' }, 'New password'), pass), m, save);
+}
+function renderProfileForm(body, setup) {
+  const P = Cloud.profile || {}, m = msgEl();
+  const st = { position: P.position || S.pos || null, level: P.level || null };
+  const name = h('input', { type: 'text', id: 'pfName', maxlength: '60', autocomplete: 'nickname', placeholder: 'What should we call you?' }); name.value = P.display_name || '';
+  const year = h('input', { type: 'text', id: 'pfYear', inputmode: 'numeric', maxlength: '4', placeholder: 'e.g. 2006' }); year.value = P.birth_year || '';
+  const chipRow = (opts, key) => { const row = h('div', { class: 'chips' }); const draw = () => row.replaceChildren(...opts.map(([v, t]) => h('button', { class: 'chip', 'aria-pressed': String(st[key] === v), onclick: () => { st[key] = v; draw(); } }, t))); draw(); return row; };
+  const age = h('input', { type: 'checkbox', id: 'pfAge' }), agree = h('input', { type: 'checkbox', id: 'pfAgree' }), share = h('input', { type: 'checkbox', id: 'pfShare' });
+  age.checked = agree.checked = !!P.consent_at; share.checked = !!P.share_anonymized;
+  const save = h('button', { class: 'btn btn-primary' }, setup ? 'Save and continue' : 'Save profile');
+  save.onclick = async () => {
+    const y = year.value.trim();
+    if (y && !(/^\d{4}$/.test(y) && +y >= 1930 && +y <= new Date().getFullYear() - 5)) return say(m, 'Enter your birth year as 4 digits, or leave it empty.', 'err');
+    if (!age.checked || !agree.checked) return say(m, 'Tick both required boxes to use an account.', 'err');
+    busy(save, true, 'Saving…');
+    try {
+      await Cloud.saveProfile({ display_name: name.value.trim() || null, position: st.position, level: st.level, birth_year: y ? +y : null, consent_at: P.consent_at || new Date().toISOString(), share_anonymized: share.checked });
+      renderAcctBtn(); renderCheckin();
+      if (setup) { toast('Profile saved', 'cyan', 2000); renderHub(); show('hub'); } else { say(m, 'Saved.', 'ok'); busy(save, false, 'Save profile'); }
+    } catch (e) { busy(save, false, setup ? 'Save and continue' : 'Save profile'); say(m, 'Couldn’t save: ' + (e.message || 'try again'), 'err'); }
+  };
+  body.append(
+    setup ? h('h2', { style: 'font-size:34px' }, 'Set up your profile') : h('h3', { style: 'font-size:24px' }, 'Your profile'),
+    setup ? h('p', { class: 'note' }, 'Signed in as ' + (Cloud.user.email || 'your account') + '. Only you can see this.') : null,
+    h('div', { class: 'field' }, h('label', { for: 'pfName' }, 'Name or nickname'), name),
+    h('div', { class: 'field' }, h('label', {}, 'Position'), chipRow(Object.entries(POS).map(([k, p]) => [k, p.name]), 'position')),
+    h('div', { class: 'field' }, h('label', {}, 'Level'), chipRow(LEVELS, 'level')),
+    h('div', { class: 'field' }, h('label', { for: 'pfYear' }, 'Birth year (optional)'), year),
+    h('label', { class: 'check', for: 'pfAge' }, age, h('span', {}, 'I’m 16 or older, or a parent or guardian has agreed to me using Flow of Ace. ', h('b', {}, 'Required'))),
+    h('label', { class: 'check', for: 'pfAgree' }, agree, h('span', {}, 'Store my check-ins, flow ratings and match logs in my account so I can see my history. ', h('b', {}, 'Required'))),
+    h('label', { class: 'check', for: 'pfShare' }, share, h('span', {}, 'Optional: let my data be used anonymously, without my name or email, to improve recommendations for all players.')),
+    m, save, h('button', { class: 'link', onclick: openPrivacy }, 'How your data is handled'));
+}
+function renderAccountHome(body) {
+  const P = Cloud.profile, n = sessions().length, logged_n = logged().length;
+  const out = h('button', { class: 'btn btn-ghost' }, 'Sign out'), m = msgEl();
+  out.onclick = async () => {
+    busy(out, true, 'Signing out…');
+    const ok = await Cloud.signOut(false);
+    if (ok) { toast('Signed out', 'cyan', 2000); renderHub(); renderCheckin(); show('hub'); return; }
+    busy(out, false, 'Sign out anyway');
+    say(m, Cloud.dirty.size + ' session' + (Cloud.dirty.size === 1 ? ' hasn’t' : 's haven’t') + ' synced yet. Connect to the internet first, or sign out anyway and lose them.', 'err');
+    out.onclick = async () => { await Cloud.signOut(true); toast('Signed out', 'cyan', 2000); renderHub(); renderCheckin(); show('hub'); };
+  };
+  const del = h('button', { class: 'link', style: 'color:var(--warn)' }, 'Delete my account');
+  del.onclick = () => {
+    const yes = h('button', { class: 'btn btn-ghost', style: 'border-color:var(--warn);color:var(--warn)' }, 'Yes, delete my account and history');
+    const dm = msgEl();
+    yes.onclick = async () => {
+      busy(yes, true, 'Deleting…');
+      try { await Cloud.deleteAccount(); toast('Account deleted', 'cyan', 2500); renderHub(); renderCheckin(); show('hub'); }
+      catch (e) { busy(yes, false, 'Yes, delete my account and history'); say(dm, 'Couldn’t delete: ' + (e.message || 'try again'), 'err'); }
+    };
+    del.replaceWith(h('div', { class: 'card' }, h('p', { style: 'margin:0' }, 'This permanently deletes your account, profile and every logged session, on all your devices. It can’t be undone.'), dm, yes));
+  };
+  body.append(h('h2', { style: 'font-size:34px' }, (P.display_name || 'Your account')),
+    h('dl', { class: 'kv' }, h('dt', {}, 'Signed in as'), h('dd', {}, Cloud.user.email || '—'), h('dt', {}, 'History'), h('dd', {}, n + ' session' + (n === 1 ? '' : 's') + ', ' + logged_n + ' logged'),
+      h('dt', {}, 'Sync'), h('dd', {}, Cloud.dirty.size ? Cloud.dirty.size + ' waiting to upload' : (Cloud.status || 'Up to date'))),
+    h('button', { class: 'btn btn-cyan', onclick: () => { renderProfile(); show('profile'); } }, 'See my flow history'));
+  renderProfileForm(body, false);
+  body.append(m, out, del);
+}
+function openPrivacy() {
+  const sheet = h('div', { class: 'sheet' });
+  sheet.addEventListener('click', e => { if (e.target === sheet) sheet.remove(); });
+  const items = [
+    ['What’s stored', 'Your email, the profile you fill in, and each session: your energy and nerves ratings, the breathing method, your goal, cue and if-then plan, between-set check-ins, and your post-match flow and performance ratings.'],
+    ['Who can see it', 'Only you, through your login. Database rules block every other account from reading your rows. The person who runs this copy of Flow of Ace administers the database and can technically access it.'],
+    ['Where it lives', 'In a Supabase database. A copy also stays on your phone so the app works offline.'],
+    ['Anonymous sharing', 'Off unless you turn it on. If on, your data may later be used without your name or email to improve recommendations for all players. It isn’t used for anything yet.'],
+    ['Deleting', 'Delete all match data from your flow profile, or delete your whole account from the Account screen. Both remove the data from the database, not just your phone.']
+  ];
+  sheet.append(h('div', { class: 'panel', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'How your data is handled' },
+    h('div', { class: 'row', style: 'align-items:center' }, h('h2', {}, 'Your data'), h('button', { class: 'btn btn-ghost', style: 'flex:none;width:auto;padding:0 18px;min-height:48px', onclick: () => sheet.remove() }, 'Close')),
+    ...items.map(([t, b]) => h('div', { class: 'sci' }, h('h3', {}, t), h('p', {}, b)))));
+  document.body.append(sheet);
+}
 
 /* ---------- adaptive engine ---------- */
 // Flow score = mean of 9 items (1–5). Learning uses only completed post-match logs.
@@ -749,8 +1039,8 @@ function startSession() {
   const pick = pickMethod(S.dir); S.method = pick.m; S.why = pick.why;
   S.energy1 = S.energy0; $('#energy2In').value = S.energy0; $('#energy2V').textContent = S.energy0;
   S.goal = null; S.cue = null; S.memory = '';
-  S.session = { id: 's' + S.startAt, at: S.startAt, pos: S.pos, win: S.win, energy0: S.energy0, nerves0: S.nerves0, dir: S.dir, method: S.method.id, mids: [] };
-  const all = sessions(); all.push(S.session); saveSessions(all.slice(-200));
+  S.session = { id: 's' + S.startAt, at: S.startAt, updatedAt: S.startAt, pos: S.pos, win: S.win, energy0: S.energy0, nerves0: S.nerves0, dir: S.dir, method: S.method.id, mids: [] };
+  const all = sessions(); all.push(S.session); saveSessions(all.slice(-500)); Cloud.mark(S.session.id);
   keepAwake();
   Audio.start(S.dir, S.method.bpm);
   clearInterval(clockT); clockT = setInterval(tickClock, 250); tickClock();
@@ -759,7 +1049,7 @@ function startSession() {
 function updateSession(patch) {
   if (!S.session) return;
   const all = sessions(), i = all.findIndex(s => s.id === S.session.id); if (i < 0) return;
-  Object.assign(all[i], patch); S.session = all[i]; saveSessions(all);
+  Object.assign(all[i], patch, { updatedAt: Date.now() }); S.session = all[i]; saveSessions(all); Cloud.mark(S.session.id);
 }
 function tickClock() {
   const rem = (S.endAt - Date.now()) / 1000;
@@ -1140,12 +1430,12 @@ function openPost(id) {
 function checkPost() { $('#postSave').disabled = !(postAns.flow.every(v => v > 0) && postAns.perf && postAns.fit); }
 function savePost() {
   const all = sessions(), s = all.find(x => x.id === postId); if (!s) return;
-  s.post = { at: Date.now(), flow: postAns.flow, perf: postAns.perf, fit: postAns.fit };
-  saveSessions(all);
+  s.post = { at: Date.now(), flow: postAns.flow, perf: postAns.perf, fit: postAns.fit }; s.updatedAt = Date.now();
+  saveSessions(all); Cloud.mark(s.id);
   endSession(false);
   renderProfile(true); show('profile');
 }
-function skipPost() { const all = sessions(), s = all.find(x => x.id === postId); if (s) { s.skipped = true; saveSessions(all); } endSession(); }
+function skipPost() { const all = sessions(), s = all.find(x => x.id === postId); if (s) { s.skipped = true; s.updatedAt = Date.now(); saveSessions(all); Cloud.mark(s.id); } endSession(); }
 
 /* ---------- profile / insights ---------- */
 function renderProfile(justSaved) {
@@ -1153,6 +1443,7 @@ function renderProfile(justSaved) {
   if (!L.length) {
     body.append(h('p', { style: 'margin:0' }, 'No matches logged yet. Run a pre-match session, then tap “Match over · Log it”. After 3 matches the app starts learning your energy zone and which breathing method works best for you.'),
       h('p', { class: 'note' }, 'You’ll see your flow trend, your personal energy zone, your strongest and weakest flow ingredients, and what to change before the next match.'));
+    renderHistory(body);
     return;
   }
   const scores = L.map(flowScore), last = L[L.length - 1], z = zone();
@@ -1177,13 +1468,14 @@ function renderProfile(justSaved) {
   let lowIdx = -1, lowV = 9; dims.forEach((v, i) => { if (i !== 7 && v < lowV) { lowV = v; lowIdx = i; } });
   body.append(h('div', { class: 'bars' }, h('div', { class: 'eyebrow' }, 'Flow ingredients · last ' + recent.length + ' match' + (recent.length === 1 ? '' : 'es')),
     ...FLOW_ITEMS.map(([dim], i) => h('div', { class: 'bar-row' + (i === lowIdx ? ' low' : '') }, h('span', {}, dim), h('span', { class: 'track' }, h('span', { class: 'fill', style: 'display:block;width:' + (dims[i] / 5 * 100) + '%' })), h('span', { class: 'n' }, r1(dims[i]).toFixed(1))))));
-  body.append(h('div', { class: 'card' }, h('h3', {}, 'Work on next'), h('p', { style: 'margin:0' }, DIM_TIPS[lowIdx])));
+  const spread = Math.max(...dims) - Math.min(...dims.filter((_, i) => i !== 7));
+  body.append(h('div', { class: 'card' }, h('h3', {}, 'Work on next'), h('p', { style: 'margin:0' }, spread < 0.3 ? 'Your flow ingredients are even right now, with no weak spot. Keep the same routine and log a few more matches.' : DIM_TIPS[lowIdx])));
   const insights = [];
   if (z.learned) insights.push('You average ' + r1(z.f).toFixed(1) + ' flow when your energy at first serve is ' + z.lo + '–' + z.hi + '. The app now tunes you toward that zone.');
   else { const left = Math.max(1, 3 - L.length); insights.push('Log ' + left + ' more match' + (left === 1 ? '' : 'es') + ' to learn your own energy zone. Until then the app aims for ' + z.lo + '–' + z.hi + '.'); }
   for (const dir of ['down', 'up']) {
     const st = METHODS[dir].map(m => { const g = L.filter(s => s.method === m.id); return { m, n: g.length, f: avg(g.map(flowScore)) }; }).filter(x => x.n);
-    if (st.length >= 2) { st.sort((a, b) => b.f - a.f); insights.push((dir === 'down' ? 'Calming down: ' : 'Firing up: ') + methodLabel(st[0].m.id) + ' (' + r1(st[0].f).toFixed(1) + ', ' + st[0].n + ' match' + (st[0].n === 1 ? '' : 'es') + ') beats ' + methodLabel(st[1].m.id) + ' (' + r1(st[1].f).toFixed(1) + ', ' + st[1].n + ')' + (st[0].n + st[1].n < 8 ? '. Early read: a few more matches will make this reliable.' : '.')); }
+    if (st.length >= 2) { st.sort((a, b) => b.f - a.f); insights.push((dir === 'down' ? 'Calming down: ' : 'Firing up: ') + methodLabel(st[0].m.id) + ' (' + r1(st[0].f).toFixed(1) + ', ' + st[0].n + ' match' + (st[0].n === 1 ? '' : 'es') + ')' + (st[0].f - st[1].f < 0.1 ? ' is level with ' : ' beats ') + methodLabel(st[1].m.id) + ' (' + r1(st[1].f).toFixed(1) + ', ' + st[1].n + ')' + (st[0].n + st[1].n < 8 ? '. Early read: a few more matches will make this reliable.' : '.')); }
   }
   const fits = L.slice(-5).map(s => s.post.fit), hi = fits.filter(x => x === 'high').length, lo = fits.filter(x => x === 'low').length;
   if (hi >= 2) insights.push('You felt too wired at first serve in ' + hi + ' of your last ' + fits.length + ' matches. Start breathing earlier and skip the fast beat.');
@@ -1193,15 +1485,35 @@ function renderProfile(justSaved) {
   const perfR = L.length >= 4 ? corr(L.map(flowScore), L.map(s => s.post.perf)) : null;
   if (perfR != null) insights.push('Your flow and how well you rated your play move together ' + (perfR > .5 ? 'strongly' : perfR > .2 ? 'somewhat' : 'only a little') + ' (r = ' + perfR.toFixed(2) + ').');
   body.append(h('div', { class: 'card' }, h('h3', {}, 'What the app has learned'), ...insights.map(t => h('p', { style: 'margin:0' }, t))));
-  body.append(h('div', { class: 'hist' }, h('div', { class: 'eyebrow', style: 'border:0;padding:0' }, 'Recent matches'),
-    ...L.slice(-6).reverse().map(s => h('div', {}, h('span', {}, new Date(s.at).toLocaleDateString([], { month: 'short', day: 'numeric' }) + ' · ' + (POS[s.pos] ? POS[s.pos].name : '') + ' · ' + methodLabel(s.method)), h('span', {}, r1(flowScore(s)).toFixed(1))))));
+  renderHistory(body);
   const clear = h('button', { class: 'link', style: 'color:var(--warn)' }, 'Delete all match data');
   clear.onclick = () => {
     const yes = h('button', { class: 'btn btn-ghost', style: 'border-color:var(--warn);color:var(--warn)' }, 'Yes, delete everything');
-    yes.onclick = () => { saveSessions([]); renderProfile(); toast('Match data deleted', 'cyan', 2000); };
-    clear.replaceWith(h('div', { class: 'card' }, h('p', { style: 'margin:0' }, 'This removes every logged match from this device. It can’t be undone.'), yes));
+    yes.onclick = async () => {
+      try { if (Cloud.user) await Cloud.deleteAllSessions(); saveSessions([]); renderProfile(); toast('Match data deleted', 'cyan', 2000); }
+      catch (e) { toast('Couldn\u2019t delete from your account. Check your connection.', '', 3500); }
+    };
+    clear.replaceWith(h('div', { class: 'card' }, h('p', { style: 'margin:0' }, Cloud.user ? 'This removes every session from your account and this phone. It can’t be undone.' : 'This removes every logged match from this device. It can’t be undone.'), yes));
   };
   body.append(clear);
+}
+function renderHistory(body) {
+  const all = sessions().slice().reverse();
+  if (!all.length) return;
+  const fitTxt = { low: 'too low', right: 'about right', high: 'too high' };
+  body.append(h('div', { class: 'hist' }, h('div', { class: 'eyebrow', style: 'border:0;padding:0 0 4px' }, 'History · ' + all.length + ' session' + (all.length === 1 ? '' : 's')),
+    ...all.map(s => {
+      const f = flowScore(s), d = new Date(s.at), ifx = IFS.find(x => x.id === s.ifId);
+      const kv = [['Energy', (s.energy0 ?? '–') + ' → ' + (s.energy1 ?? '–') + ' after tuning'], ['Nerves', s.nerves0 ?? '–'], ['Method', methodLabel(s.method)]];
+      if (s.goal) kv.push(['Goal', s.goal]); if (s.cue) kv.push(['Cue', s.cue]); if (ifx) kv.push(['If-then', ifx.t]);
+      if (s.mids && s.mids.length) kv.push(['Between sets', s.mids.map(m => (m.energy || '?') + ' energy, ' + (m.head || '?') + ' head' + (m.flow ? ', flow ' + m.flow : '')).join(' · ')]);
+      if (s.post) kv.push(['Flow', r1(f).toFixed(1) + ' / 5'], ['Played', s.post.perf + ' / 5'], ['Energy at serve', fitTxt[s.post.fit] || '–']);
+      const det = h('details', {}, h('summary', {}, h('span', {}, d.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' }) + ' · ' + (POS[s.pos] ? POS[s.pos].name : '')),
+        h('span', { class: 'f' + (s.post ? '' : ' none') }, s.post ? r1(f).toFixed(1) : s.skipped ? 'Not logged' : 'Log it')),
+        h('dl', { class: 'kv' }, ...kv.flatMap(([k, v]) => [h('dt', {}, k), h('dd', {}, String(v))])));
+      if (!s.post && !s.skipped) det.append(h('button', { class: 'btn btn-ghost', style: 'margin-top:10px;min-height:48px;font-size:18px', onclick: () => openPost(s.id) }, 'Log this match'));
+      return det;
+    })));
 }
 function corr(a, b) {
   const ma = avg(a), mb = avg(b); let n = 0, da = 0, db = 0;
@@ -1268,11 +1580,13 @@ $('#lockHome').onclick = () => { renderHub(); show('hub'); };
 $('#postSave').onclick = savePost;
 $('#postSkip').onclick = skipPost;
 $('#openProfile').onclick = () => { renderProfile(); show('profile'); };
+$('#acctBtn').onclick = openAccount;
+$('#acctHome').onclick = () => { renderHub(); show('hub'); };
 $('#profileHome').onclick = () => { renderHub(); show('hub'); };
 $('#stExit').onclick = closeEyePrimer;
 $('#muteBtn').onclick = () => { S.muted = !S.muted; Audio.setMuted(S.muted); $('#muteWave').style.display = S.muted ? 'none' : ''; $('#muteBtn').setAttribute('aria-label', S.muted ? 'Unmute audio' : 'Mute audio'); };
 
-renderHub(); renderCheckin();
+renderHub(); renderCheckin(); Cloud.init();
 
 try {
   if ('serviceWorker' in navigator && location.protocol === 'https:' && document.querySelector('link[rel=manifest]')) navigator.serviceWorker.register('sw.js').catch(() => {});
