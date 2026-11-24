@@ -859,7 +859,7 @@ window.FOA_CS = {
   'Your default if-then plan is for errors, and reset reps are your recommended practice.': 'Tvůj výchozí plán když–pak je na chyby a doporučený trénink je opakování resetu.',
   'Your default if-then plan is for tight serves, and clutch-serve practice is recommended.': 'Tvůj výchozí plán když–pak je na stažené podání a doporučený je trénink podání pod tlakem.',
   'The reset after every point is your main tool, and imagery practice is recommended.': 'Hlavní nástroj je pro tebe reset po každém bodu a doporučený je trénink představivosti.',
-  'Use my own music (Spotify)': 'Moje vlastní hudba (Spotify)', 'Your club’s playlists are used unless you add your own.': 'Používají se playlisty klubu, dokud nepřidáš vlastní.', 'Calm playlist': 'Klidný playlist', 'Hype playlist': 'Nabuzující playlist', 'Play my calm playlist': 'Pustit můj klidný playlist', 'Play my hype playlist': 'Pustit můj nabuzující playlist',
+  'Use my own music (Spotify)': 'Moje vlastní hudba (Spotify)', 'Open in Spotify': 'Otevřít ve Spotify', 'Calm song': 'Klidná písnička', 'Steady song': 'Vyrovnaná písnička', 'Hype song': 'Nabuzující písnička', 'Your club’s playlists are used unless you add your own.': 'Používají se playlisty klubu, dokud nepřidáš vlastní.', 'Calm playlist': 'Klidný playlist', 'Hype playlist': 'Nabuzující playlist', 'Play my calm playlist': 'Pustit můj klidný playlist', 'Play my hype playlist': 'Pustit můj nabuzující playlist',
   'Paste links to two of your playlists. The app opens the calm one when it’s bringing you down and the hype one when it’s firing you up, and turns its own beat off. Slow songs (60–80 BPM) for calm, fast (130+ BPM) for hype.': 'Vlož odkazy na dva své playlisty. Aplikace otevře klidný, když tě zklidňuje, a nabuzující, když tě nabíjí, a vypne vlastní rytmus. Pomalé písně (60–80 BPM) na klid, rychlé (130+ BPM) na nabuzení.',
 
   // ---------- privacy sheet ----------
@@ -980,6 +980,7 @@ window.FOA_CS_PATTERNS = [
   [/^Tap again to remove (.+)$/, (m) => 'Ťukni znovu pro odebrání: ' + m[1]],
   [/^Couldn’t (save|delete|load the team|load your teams): (.+)$/, (m) => ({ save: 'Nepodařilo se uložit: ', delete: 'Nepodařilo se smazat: ', 'load the team': 'Tým se nepodařilo načíst: ', 'load your teams': 'Týmy se nepodařilo načíst: ' })[m[1]] + m[2]],
   [/^(\d+) min$/, (m) => m[1] + ' min'],
+  [/^(Calm song|Steady song|Hype song) · ~(\d+) BPM$/, (m, t) => t(m[1]) + ' · ~' + m[2] + ' BPM'],
   [/^(\d+) of (\d+) done$/, (m) => 'Hotovo ' + m[1] + ' z ' + m[2]],
   [/^(.+) (\d) of 5$/, (m, t) => t(m[1]) + ' ' + m[2] + ' z 5'],
   [/^Practice · (.+)$/, (m, t) => 'Trénink · ' + t(m[1])]
@@ -1730,6 +1731,8 @@ function startTune() {
   drawCurve();
   const kind = S.dir === 'down' ? 'calm' : S.dir === 'up' ? 'hype' : 'calm', link = musicLinks()[kind];
   const old = $('#playlistBtn'); if (old) old.remove();
+  const oldSong = $('#songCard'); if (oldSong) oldSong.remove();
+  $('#tuneNote').after(songCard(S.dir === 'down' ? 'calm' : S.dir === 'up' ? 'hype' : 'steady'));
   if (link) $('#tuneNote').after(h('button', { class: 'btn btn-ghost', id: 'playlistBtn', onclick: () => openPlaylist(kind) }, kind === 'calm' ? 'Play my calm playlist' : 'Play my hype playlist'));
   runBreath();
   const dur = { 5: 40, 10: 90, 15: 150 }[S.win], t0 = Date.now();
@@ -2615,6 +2618,34 @@ function openPlaylist(kind) {
   Audio.setMuted(true); S.muted = true; $('#muteWave').style.display = 'none';
   const a = h('a', { href: url, target: '_blank', rel: 'noopener' }); document.body.append(a); a.click(); a.remove();
   return true;
+}
+// Curated songs by tempo (approximate BPM from public tempo databases). Opens a Spotify search; skipped songs don't come back.
+const SONGS = {
+  calm: [['Bad Day', 'Daniel Powter', 70], ['Paradise', 'Coldplay', 70], ['Lover', 'Taylor Swift', 69], ['Talk', 'Khalid', 68], ['Heaven', 'Bryan Adams', 70], ['Dream On', 'Aerosmith', 74], ['7 rings', 'Ariana Grande', 70]],
+  steady: [['Eye of the Tiger', 'Survivor', 108], ['Another One Bites the Dust', 'Queen', 110], ['Hollaback Girl', 'Gwen Stefani', 109], ['Grenade', 'Bruno Mars', 110], ['Alright', 'Kendrick Lamar', 110], ['Need You Now', 'Lady A', 108], ['Crazy in Love', 'Beyoncé, Jay-Z', 100], ['Hips Don’t Lie', 'Shakira, Wyclef Jean', 100], ['Dancing Queen', 'ABBA', 100]],
+  hype: [['Timber', 'Pitbull', 130], ['Pompeii', 'Bastille', 130], ['So What', 'P!nk', 130], ['Elastic Heart', 'Sia', 130], ['Save the World', 'Swedish House Mafia', 130], ['Satisfaction', 'Benny Benassi', 130], ['Mr. Vain', 'Culture Beat', 133], ['HandClap', 'Fitz and the Tantrums', 140], ['Drop the World', 'Lil Wayne, Eminem', 145], ['Can’t Hold Us', 'Macklemore & Ryan Lewis', 146]]
+};
+function songFor(mood) {
+  const skips = store.get('songSkips', {}), list = SONGS[mood], left = list.filter(x => !(skips[mood] || []).includes(x[0]));
+  if (!left.length) { skips[mood] = []; store.set('songSkips', skips); return list[0]; }
+  return left[0];
+}
+function songCard(mood) {
+  const box = h('div', { class: 'card', id: 'songCard' });
+  const draw = () => {
+    const [title, artist, bpm] = songFor(mood);
+    const open = h('button', { class: 'btn btn-ghost', style: 'flex:2;min-height:52px;font-size:18px' }, 'Open in Spotify');
+    open.onclick = () => {
+      Audio.setMuted(true); S.muted = true; $('#muteWave').style.display = 'none';
+      updateSession({ song: title + ' · ' + artist });
+      const a = h('a', { href: 'https://open.spotify.com/search/' + encodeURIComponent(title + ' ' + artist), target: '_blank', rel: 'noopener' }); document.body.append(a); a.click(); a.remove();
+    };
+    const skip = h('button', { class: 'btn btn-ghost', style: 'flex:1;min-height:52px;font-size:18px' }, 'Skip');
+    skip.onclick = () => { const sk = store.get('songSkips', {}); sk[mood] = (sk[mood] || []).concat([title]); store.set('songSkips', sk); buzz(10); draw(); };
+    box.replaceChildren(h('div', { class: 'eyebrow' }, ({ calm: 'Calm song', steady: 'Steady song', hype: 'Hype song' })[mood] + ' · ~' + bpm + ' BPM'),
+      h('div', {}, h('b', { style: 'font-size:18px' }, title), h('div', { class: 'note' }, artist)), h('div', { class: 'row' }, open, skip));
+  };
+  draw(); return box;
 }
 function musicEditor() {
   const m = store.get('music', { calm: '', hype: '' }), club = (window.FOA_CONFIG && window.FOA_CONFIG.playlists) || {};
