@@ -170,8 +170,8 @@ input[type=text]::placeholder { color: var(--muted); }
 .viz-n { font-size: 12px; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; font-family: var(--font-display); font-weight: 700; }
 
 /* Deck */
-.deck { position: relative; height: 560px; touch-action: pan-y; }
-.dcard { position: absolute; inset: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 22px; padding: 20px; display: flex; flex-direction: column; gap: 12px;
+.deck { position: relative; }
+.dcard { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: 22px; padding: 20px; display: flex; flex-direction: column; gap: 12px;
   transition: transform .3s ease, opacity .3s ease; will-change: transform; }
 .dcard.dragging { transition: none; }
 .dcard h3 { font-size: 30px; }
@@ -180,7 +180,7 @@ input[type=text]::placeholder { color: var(--muted); }
 .dcard .acts { margin-top: auto; display: flex; gap: 8px; }
 .dcard .acts button { flex: 1; min-height: 52px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface-2); font-weight: 600; }
 .dcard .acts button[aria-pressed="true"] { background: var(--good); color: var(--on-accent); border-color: var(--good); }
-.dcard { overflow-y: auto; }
+.dcard { touch-action: pan-y; }
 .demo { width: 100%; height: 150px; display: block; background: var(--surface-2); border-radius: 14px; flex: none; }
 .howto { margin: 0; padding-left: 20px; display: grid; gap: 4px; font-size: 14.5px; }
 .dots i.done { background: var(--good); }
@@ -268,6 +268,8 @@ input[type=text]::placeholder { color: var(--muted); }
 
 /* Account */
 .topbtns { display: flex; gap: 8px; flex: none; align-items: center; }
+.topbtns .acct, .brandrow > .acct { height: 44px; min-height: 44px; line-height: 1; justify-content: center; }
+#langBtn { min-width: 52px; padding: 0 12px; font-weight: 700; }
 .brandrow { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .acct { flex: none; min-height: 44px; padding: 0 14px; border-radius: 99px; border: 1px solid var(--line); background: var(--surface); font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; max-width: 50%; }
 .acct span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -747,7 +749,8 @@ window.FOA_CS = {
   'Go · Run routine': 'Start · Spustit rutinu', 'Practice logged': 'Trénink zapsán',
 
   // ---------- account ----------
-  'Your flow history': 'Tvoje historie flow',
+  'Your flow history': 'Tvoje historie flow', 'Sign in to start': 'Pro začátek se přihlas',
+  'Flow of Ace needs an account. It keeps your sessions, flow scores and what works for you, on every phone, and lets you join your team.': 'Flow of Ace potřebuje účet. Uchová tvoje přípravy, flow skóre a co ti funguje na všech telefonech a umožní ti připojit se k týmu.',
   'Create an account to keep your sessions, flow scores and what works for you across phones. Without one, everything stays on this device.': 'Vytvoř si účet a měj své přípravy, flow skóre a co ti funguje na všech telefonech. Bez účtu zůstane vše v tomto zařízení.',
   'Continue with Google': 'Pokračovat přes Google', 'or with email': 'nebo e-mailem', 'Email': 'E-mail', 'Password': 'Heslo', 'At least 8 characters': 'Alespoň 8 znaků',
   'Create account': 'Vytvořit účet', 'Forgot password?': 'Zapomenuté heslo?', 'How your data is handled': 'Jak nakládáme s tvými daty',
@@ -1156,7 +1159,7 @@ const saveSessions = (a) => store.set('sessions', a);
 const CFG = window.FOA_CONFIG || {};
 const LEVELS = [['school', 'School'], ['club', 'Club'], ['college', 'College'], ['pro', 'Pro / semi-pro'], ['beach', 'Beach']];
 const Cloud = {
-  sb: null, user: null, profile: null, teams: [], status: '', recovery: false, dirty: new Set(store.get('dirty', [])),
+  sb: null, user: null, profile: null, teams: [], status: '', recovery: false, ready: false, dirty: new Set(store.get('dirty', [])),
   enabled() { return !!(CFG.supabaseUrl && CFG.supabaseAnonKey && window.supabase && window.supabase.createClient); },
   async init() {
     if (!this.enabled()) { renderAcctBtn(); return; }
@@ -1169,6 +1172,8 @@ const Cloud = {
       const { data } = await this.sb.auth.getSession();
       await this.setUser(data && data.session ? data.session.user : null);
     } catch (e) { this.status = 'Can’t reach your account right now. Everything still saves on this phone.'; }
+    this.ready = true;
+    if (needAuth()) gateStart(); else if (currentScreen() == null) { renderHub(); show('hub'); }
     renderAcctBtn();
     addEventListener('online', () => this.flush());
   },
@@ -1186,6 +1191,7 @@ const Cloud = {
       renderHub(); renderCheckin();
     }
     renderAcctBtn();
+    if (this.gated && this.ready && !needAuth()) { this.gated = false; renderHub(); renderCheckin(); show('hub'); return; }
     if (currentScreen() === 'account') renderAccount();
   },
   async loadProfile() {
@@ -1276,7 +1282,7 @@ function renderAcctBtn() {
     b.setAttribute('aria-label', 'Account: ' + label.textContent + (Cloud.dirty.size ? ', sync pending' : ', synced'));
   } else { label.textContent = 'Sign in'; dot.className = ''; b.setAttribute('aria-label', 'Sign in or create an account'); }
   const note = $('#hubNote');
-  if (note) note.textContent = Cloud.user ? 'Works offline once loaded. Your history syncs to your account when you have signal.' : 'Works offline once loaded. Without an account, your matches are saved on this device only.';
+  if (note) note.textContent = 'Works offline once loaded. Your history syncs to your account when you have signal.';
 }
 function openAccount() { renderAccount(); show('account'); }
 function msgEl() { return h('p', { class: 'msg', hidden: '' }); }
@@ -1320,8 +1326,10 @@ function renderSignIn(body) {
     const { error } = await Cloud.sb.auth.resetPasswordForEmail(email.value.trim(), { redirectTo: redirectURL() });
     say(m, error ? error.message : 'If that email has an account, a reset link is on its way.', error ? 'err' : 'ok');
   };
-  const parts = [h('h2', { style: 'font-size:34px' }, 'Your flow history'),
-    h('p', { class: 'note' }, 'Create an account to keep your sessions, flow scores and what works for you across phones. Without one, everything stays on this device.')];
+  const lang = h('button', { class: 'acct', style: 'flex:none', onclick: switchLang }, LANG === 'cs' ? 'EN' : 'CZ');
+  const parts = [h('div', { class: 'brandrow' }, h('h1', { style: 'font-size:44px' }, 'Flow ', h('span', { class: 'of', style: 'color:var(--cyan);font-size:.55em;vertical-align:.2em' }, 'of'), ' ', h('b', { style: 'color:var(--optic)' }, 'Ace')), lang),
+    h('h2', { style: 'font-size:30px' }, 'Sign in to start'),
+    h('p', { class: 'note' }, 'Flow of Ace needs an account. It keeps your sessions, flow scores and what works for you, on every phone, and lets you join your team.')];
   if (CFG.googleSignIn !== false) {
     const g = h('button', { class: 'btn btn-google' }); g.innerHTML = GOOGLE_G; g.append(h('span', {}, 'Continue with Google'));
     g.onclick = async () => { const { error } = await Cloud.sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: redirectURL() } }); if (error) say(m, error.message, 'err'); };
@@ -1616,7 +1624,16 @@ async function keepAwake() { try { if ('wakeLock' in navigator) wake = await nav
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && S.startAt) keepAwake(); });
 
 /* ---------- navigation ---------- */
+function gateStart() {
+  Cloud.gated = true;
+  if (!store.get('introSeen', false)) { show('account'); openIntro(() => openAccount()); }
+  else openAccount();
+}
+const needAuth = () => Cloud.enabled() && Cloud.ready && (!Cloud.user || !Cloud.profile || !Cloud.profile.consent_at || !Cloud.profile.health_consent_at);
 function show(id) {
+  if (needAuth() && id !== 'account') { id = 'account'; Cloud.gated = true; renderAccount(); }
+  if (!needAuth() && id !== 'account') Cloud.gated = false;
+  const home = document.getElementById('acctHome'); if (home) home.hidden = needAuth();
   document.querySelectorAll('.screen').forEach(s => s.hidden = s.id !== id);
   const idx = STEP_IDS.indexOf(id);
   $('#sbar').hidden = idx < 0 || !S.startAt;
@@ -2009,22 +2026,30 @@ function renderDeck() {
       off === 0 && c.demo ? demoSVG(c.demo) : (c.demo ? h('div', { class: 'demo' }) : null),
       h('ol', { class: 'howto' }, ...(c.steps || []).map(t => h('li', {}, t))),
       h('div', { class: 'cuebox' }, c.cue), h('p', { class: 'note' }, c.why), h('div', { class: 'acts' }, acts));
-    card.style.transform = off === 0 ? 'none' : off > 0 ? 'translateX(' + (off === 1 ? 8 : 16) + 'px) scale(' + (1 - off * .04) + ')' : 'translateX(-120%) rotate(-8deg)';
-    card.style.opacity = off < 0 || off > 2 ? 0 : 1 - off * .3; card.style.zIndex = 10 - Math.abs(off); card.style.pointerEvents = off === 0 ? 'auto' : 'none';
-    if (off === 0) attachSwipe(card);
+    if (off !== 0) card.hidden = true; else attachSwipe(card);
     return card;
-  }).reverse());
+  }));
   $('#deckDots').replaceChildren(...cards.map((c, i) => h('i', { class: i === deckI ? 'on' : deckDone.has(c.id) ? 'done' : '' })));
   $('#deckPrev').disabled = deckI === 0; $('#deckNext').disabled = deckI === cards.length - 1;
   const n = cards.filter(c => !c.eyes).length, d = cards.filter(c => !c.eyes && deckDone.has(c.id)).length;
   $('#deckProgress').textContent = d + ' of ' + n + ' done';
 }
 function attachSwipe(card) {
-  let x0 = null, dx = 0;
-  card.addEventListener('pointerdown', e => { if (e.target.closest('button')) return; x0 = e.clientX; dx = 0; card.classList.add('dragging'); card.setPointerCapture(e.pointerId); });
-  card.addEventListener('pointermove', e => { if (x0 == null) return; dx = e.clientX - x0; card.style.transform = 'translateX(' + dx + 'px) rotate(' + dx / 30 + 'deg)'; });
-  const end = () => { if (x0 == null) return; x0 = null; card.classList.remove('dragging');
-    if (dx < -70 && deckI < cards.length - 1) { deckI++; buzz(10); } else if (dx > 70 && deckI > 0) { deckI--; buzz(10); } renderDeck(); };
+  // Vertical drags scroll the page as normal; only a clearly horizontal drag turns the card.
+  let x0 = null, y0 = 0, dx = 0, horiz = false;
+  card.addEventListener('pointerdown', e => { if (e.target.closest('button')) return; x0 = e.clientX; y0 = e.clientY; dx = 0; horiz = false; });
+  card.addEventListener('pointermove', e => {
+    if (x0 == null) return;
+    dx = e.clientX - x0; const dy = e.clientY - y0;
+    if (!horiz && Math.abs(dx) > 12 && Math.abs(dx) > Math.abs(dy) * 1.5) { horiz = true; card.classList.add('dragging'); }
+    if (horiz) card.style.transform = 'translateX(' + dx + 'px) rotate(' + dx / 40 + 'deg)';
+  });
+  const end = () => {
+    if (x0 == null) return; x0 = null; card.classList.remove('dragging');
+    if (horiz && dx < -70 && deckI < cards.length - 1) { deckI++; buzz(10); renderDeck(); }
+    else if (horiz && dx > 70 && deckI > 0) { deckI--; buzz(10); renderDeck(); }
+    else card.style.transform = 'none';
+  };
   card.addEventListener('pointerup', end); card.addEventListener('pointercancel', end);
 }
 function cardTimer(btn) {
@@ -2944,6 +2969,7 @@ $('#profileHome').onclick = () => { renderHub(); show('hub'); };
 $('#stExit').onclick = closeEyePrimer;
 $('#muteBtn').onclick = () => { S.muted = !S.muted; Audio.setMuted(S.muted); $('#muteWave').style.display = S.muted ? 'none' : ''; $('#muteBtn').setAttribute('aria-label', S.muted ? 'Unmute audio' : 'Mute audio'); };
 
+if (Cloud.enabled()) document.getElementById('hub').hidden = true;
 $('#langBtn').onclick = switchLang;
 $('#openIntro').onclick = () => openIntro();
 Voice.loadClips();
