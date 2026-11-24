@@ -44,3 +44,16 @@ If you skip this, set `googleSignIn: false` in `config.js` so the Google button 
 - As the project owner you can see all data in the Supabase dashboard. The in-app privacy note says so.
 - The profile asks for birth year and requires explicit consent for wellbeing data (GDPR Art. 9). Players who may be under 15 (the Czech digital consent age) must confirm a parent's or guardian's agreement. The app can't verify that agreement; if you run team programmes with minors, collect written parental consent through the club as well.
 - Players can download all their data from the Account screen.
+
+## Roles: player, coach, admin
+
+- Everyone who signs up is a **player**.
+- Only an **admin** can make someone a **coach** (Admin screen → tap Player / Coach on a person). Coaches can create teams and see the players who join with the team code.
+- Admins are not chosen in the app. Add the admin's email in Supabase → SQL Editor:
+
+  ```sql
+  insert into foa_private.admin_emails values (lower('admin@example.com'));
+  ```
+
+  The account gets the admin role when it signs up (or on its next profile save if it already exists). Keep admin emails out of this repository.
+- The admin sees every account's profile and full session history and every team. The in-app privacy notice and consent text say so.

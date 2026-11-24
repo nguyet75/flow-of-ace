@@ -99,8 +99,8 @@ input[type=range]::-webkit-slider-runnable-track { height: 10px; border-radius: 
 input[type=range]::-moz-range-track { height: 10px; border-radius: 5px; background: linear-gradient(90deg, var(--cyan), var(--optic) 55%, var(--warn)); }
 input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 36px; height: 36px; border-radius: 50%; background: var(--fg); border: 4px solid var(--bg); margin-top: -13px; box-shadow: 0 0 0 2px var(--fg); }
 input[type=range]::-moz-range-thumb { width: 30px; height: 30px; border-radius: 50%; background: var(--fg); border: 4px solid var(--bg); }
-input[type=text] { width: 100%; min-height: 54px; border-radius: 14px; border: 2px solid var(--line); background: var(--surface); color: var(--fg); padding: 0 14px; font-size: 16px; }
-input[type=text]::placeholder { color: var(--muted); }
+input[type=text], input[type=search] { -webkit-appearance: none; appearance: none; width: 100%; min-height: 54px; border-radius: 14px; border: 2px solid var(--line); background: var(--surface); color: var(--fg); padding: 0 14px; font-size: 16px; }
+input[type=text]::placeholder, input[type=search]::placeholder { color: var(--muted); }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip { font-size: 14px; padding: 10px 14px; min-height: 44px; border-radius: 99px; background: var(--surface); color: var(--fg); border: 2px solid var(--line); text-align: left; }
 .chip[aria-pressed="true"] { border-color: var(--optic); color: var(--optic); background: var(--surface-2); }
@@ -311,6 +311,10 @@ input[type=email], input[type=password], input[type=url] { width: 100%; min-heig
 .counter { font-family: var(--font-display); font-weight: 800; font-size: 96px; line-height: 1; font-variant-numeric: tabular-nums; }
 .teamcode { font-family: var(--font-display); font-weight: 800; font-size: 44px; letter-spacing: .18em; color: var(--optic); line-height: 1; }
 .roster { display: grid; gap: 10px; }
+.urow { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 12px 14px; display: grid; gap: 10px; }
+.urow .who { text-align: left; background: none; border: 0; padding: 0; color: var(--fg); display: grid; gap: 3px; width: 100%; }
+.urow .who b { font-size: 17px; } .urow .who .meta { color: var(--muted); font-size: 13px; overflow-wrap: anywhere; }
+.urow .seg { width: 100%; max-width: 260px; } .urow .seg button { min-height: 40px; }
 .pl { text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 14px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; align-items: center; width: 100%; }
 .pl .nm { font-weight: 600; font-size: 16px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pl .meta { color: var(--muted); font-size: 12.5px; }
@@ -532,6 +536,10 @@ input[type=email], input[type=password], input[type=url] { width: 100%; min-heig
   </section>
 
   <!-- COACH -->
+  <section class="screen" id="admin" hidden>
+    <div class="row" style="align-items:center"><div class="eyebrow">Admin</div><button class="link" style="flex:none;text-align:right" id="adminHome">Home</button></div>
+    <div id="adminBody" style="display:grid;gap:18px"></div>
+  </section>
   <section class="screen" id="coach" hidden>
     <div class="row" style="align-items:center"><div class="eyebrow">Coach dashboard</div><button class="link" style="flex:none;text-align:right" id="coachHome">Home</button></div>
     <div id="coachBody" style="display:grid;gap:18px"></div>
@@ -749,7 +757,16 @@ window.FOA_CS = {
   'Go · Run routine': 'Start · Spustit rutinu', 'Practice logged': 'Trénink zapsán',
 
   // ---------- account ----------
-  'Your flow history': 'Tvoje historie flow', 'Sign in to start': 'Pro začátek se přihlas',
+  'Your flow history': 'Tvoje historie flow', 'Role': 'Role', 'Player': 'Hráč', 'Coach': 'Trenér', 'Admin': 'Správce', 'Open admin': 'Otevřít správu',
+  'Everyone’s accounts, roles and teams': 'Účty, role a týmy všech', 'Admins only.': 'Jen pro správce.', 'You’re offline. The admin screen needs a connection.': 'Jsi offline. Správa potřebuje připojení.',
+  'Loading accounts…': 'Načítám účty…', 'Search name or email': 'Hledat jméno nebo e-mail', 'All': 'Všichni', 'Players': 'Hráči', 'Coaches': 'Trenéři', 'Admins': 'Správci',
+  'No one matches.': 'Nikdo neodpovídá.', 'Refresh': 'Obnovit', 'Accounts': 'Účty', 'All teams': 'Všechny týmy', 'People · tap a name for their history': 'Lidé · klepni na jméno pro historii',
+  'Everyone starts as a player. Make someone a coach and they can create teams and see the players who join with the team code. Admin access is set in the database.': 'Každý začíná jako hráč. Když z někoho uděláš trenéra, může zakládat týmy a vidí hráče, kteří se připojí kódem týmu. Přístup správce se nastavuje v databázi.',
+  'Hasn’t finished their profile': 'Ještě nedokončil(a) profil', '← Everyone': '← Všichni', 'Loading…': 'Načítám…', 'Email': 'E-mail', 'Position': 'Pozice', 'Birth year': 'Rok narození',
+  'Teams': 'Týmy', 'Joined': 'Registrace', 'Last sign-in': 'Poslední přihlášení', 'Matches logged': 'Zapsané zápasy', 'Flow · last 5': 'Flow · posledních 5', 'Practice · 7 days': 'Trénink · 7 dní',
+  'Only coaches can create teams. Ask the club admin.': 'Týmy můžou zakládat jen trenéři. Požádej správce klubu.', 'Admin accounts are set in the database': 'Účty správců se nastavují v databázi',
+  'This person hasn’t finished setting up their profile yet': 'Tento člověk ještě nedokončil profil', 'Admins only': 'Jen pro správce', 'Role must be player or coach': 'Role musí být hráč nebo trenér',
+  'no sessions yet': 'zatím žádné přípravy', 'Sign in to start': 'Pro začátek se přihlas',
   'Flow of Ace needs an account. It keeps your sessions, flow scores and what works for you, on every phone, and lets you join your team.': 'Flow of Ace potřebuje účet. Uchová tvoje přípravy, flow skóre a co ti funguje na všech telefonech a umožní ti připojit se k týmu.',
   'Create an account to keep your sessions, flow scores and what works for you across phones. Without one, everything stays on this device.': 'Vytvoř si účet a měj své přípravy, flow skóre a co ti funguje na všech telefonech. Bez účtu zůstane vše v tomto zařízení.',
   'Continue with Google': 'Pokračovat přes Google', 'or with email': 'nebo e-mailem', 'Email': 'E-mail', 'Password': 'Heslo', 'At least 8 characters': 'Alespoň 8 znaků',
@@ -762,7 +779,7 @@ window.FOA_CS = {
   'Set up your profile': 'Nastav si profil', 'Your profile': 'Tvůj profil', 'How will you use Flow of Ace?': 'Jak budeš Flow of Ace používat?',
   'For myself': 'Pro sebe', 'With my team': 'S týmem', 'I’m a coach': 'Jsem trenér', 'Name or nickname': 'Jméno nebo přezdívka', 'What should we call you?': 'Jak ti máme říkat?',
   'Position': 'Pozice', 'Level': 'Úroveň', 'School': 'Škola', 'Club': 'Klub', 'College': 'Univerzita', 'Pro / semi-pro': 'Profi / poloprofi', 'Beach': 'Beach', 'Birth year': 'Rok narození', 'e.g. 2008': 'např. 2008',
-  'I explicitly agree that Flow of Ace stores my wellbeing data (energy, nerves, mood and flow ratings, and match logs) in my account to show my history and personalise my routine. I can withdraw by deleting my data at any time. ': 'Výslovně souhlasím, aby Flow of Ace ukládala v mém účtu data o mé pohodě (hodnocení energie, nervozity, nálady a flow a záznamy zápasů), aby mi ukázala historii a přizpůsobila přípravu. Souhlas můžu kdykoli odvolat smazáním dat. ',
+  'I explicitly agree that Flow of Ace stores my wellbeing data (energy, nerves, mood and flow ratings, and match logs) in my account to show my history and personalise my routine, and that the club’s app admin can see it. I can withdraw by deleting my data at any time. ': 'Výslovně souhlasím, aby Flow of Ace ukládala v mém účtu data o mé pohodě (hodnocení energie, nervozity, nálady a flow a záznamy zápasů), aby mi ukázala historii a přizpůsobila přípravu, a s tím, že je uvidí správce aplikace v klubu. Souhlas můžu kdykoli odvolat smazáním dat. ',
   'I’m under 15. My parent or guardian has read how my data is handled and agrees to me using Flow of Ace. ': 'Je mi méně než 15 let. Můj rodič nebo zákonný zástupce si přečetl, jak se s mými daty nakládá, a souhlasí s tím, abych Flow of Ace používal. ',
   'Required under 15': 'Povinné pod 15 let',
   'Optional: let my data be used anonymously, without my name or email, to improve recommendations for all players.': 'Volitelné: moje data smí být anonymně, bez jména a e-mailu, použita ke zlepšení doporučení pro všechny hráče.',
@@ -868,7 +885,7 @@ window.FOA_CS = {
   'Coaches and teams': 'Trenéři a týmy',
   'A coach only sees players who joined their team with the team code, only sessions from the day they joined, and only what each player chose: a summary, or everything including goals, cues and if-then plans. You can change that or leave the team at any time.': 'Trenér vidí jen hráče, kteří se k jeho týmu připojili kódem, jen přípravy ode dne připojení a jen to, co si každý hráč zvolil: souhrn, nebo vše včetně cílů, klíčových slov a plánů když–pak. Můžeš to kdykoli změnit nebo tým opustit.',
   'Who else can see it': 'Kdo další to vidí',
-  'No other player can. Database rules block every account from reading anyone else’s rows. The person who runs this copy of Flow of Ace administers the database and can technically access it.': 'Žádný jiný hráč. Pravidla databáze brání každému účtu číst cizí záznamy. Osoba, která tuto verzi Flow of Ace provozuje, spravuje databázi a technicky k ní má přístup.',
+  'No other player can. Database rules block every player and coach account from reading anyone else’s rows. The club’s app admin can see every account’s profile and sessions, to run the pilot and decide who is a coach, and administers the database.': 'Žádný jiný hráč. Pravidla databáze brání každému hráčskému i trenérskému účtu číst cizí záznamy. Správce aplikace v klubu vidí profil a přípravy všech účtů, aby mohl vést pilot a určovat trenéry, a spravuje databázi.',
   'Where it lives': 'Kde jsou uložená', 'In a Supabase database. A copy also stays on your phone so the app works offline.': 'V databázi Supabase. Kopie zůstává i v telefonu, aby aplikace fungovala offline.',
   'Anonymous sharing': 'Anonymní sdílení',
   'Off unless you turn it on. If on, your data may later be used without your name or email to improve recommendations for all players. It isn’t used for anything yet.': 'Vypnuto, dokud ho nezapneš. Když je zapnuté, můžou být tvoje data později bez jména a e-mailu použita ke zlepšení doporučení pro všechny hráče. Zatím se k ničemu nepoužívají.',
@@ -915,6 +932,8 @@ window.FOA_CS = {
 // Patterns: [regex, replacement(match, tr)] for text containing numbers or names.
 const lc = (x) => x ? x[0].toLowerCase() + x.slice(1) : x;
 window.FOA_CS_PATTERNS = [
+  [/^(.+) is now a coach$/, (m) => m[1] + ' je teď trenér'], [/^(.+) is now a player$/, (m) => m[1] + ' je teď hráč'], [/^Coach: (.+)$/, (m) => 'Trenér: ' + m[1]],
+  [/^(\d+) sessions?$/, (m, t, p) => m[1] + ' ' + p(+m[1], 'příprava', 'přípravy', 'příprav')], [/^coach of: (.+)$/, (m) => 'trenér: ' + m[1]], [/^team: (.+)$/, (m) => 'tým: ' + m[1]],
   [/^Started (.+)\. 60 seconds, and the app gets smarter\.$/, (m) => 'Začalo ' + m[1] + '. 60 sekund a aplikace bude chytřejší.'],
   [/^Your flow zone: energy (\d+)–(\d+)\. $/, (m) => 'Tvoje flow zóna: energie ' + m[1] + '–' + m[2] + '. '],
   [/^Starting zone: energy (\d+)–(\d+)\. $/, (m) => 'Výchozí zóna: energie ' + m[1] + '–' + m[2] + '. '],
@@ -1202,9 +1221,9 @@ const Cloud = {
   },
   async saveProfile(p) {
     const row = Object.assign({ id: this.user.id, updated_at: new Date().toISOString() }, p);
-    const { error } = await this.sb.from('profiles').upsert(row);
+    const { data, error } = await this.sb.from('profiles').upsert(row).select().maybeSingle();
     if (error) throw error;
-    this.profile = Object.assign({}, this.profile, row);
+    this.profile = Object.assign({}, this.profile, row, data || {});
     if (POS[row.position]) { S.pos = row.position; store.set('pos', S.pos); }
   },
   async rpc(name, args) { const { data, error } = await this.sb.rpc(name, args || {}); if (error) throw new Error(error.message); return data; },
@@ -1284,6 +1303,10 @@ function renderAcctBtn() {
   const note = $('#hubNote');
   if (note) note.textContent = 'Works offline once loaded. Your history syncs to your account when you have signal.';
 }
+const myRole = () => (Cloud.user && Cloud.profile && Cloud.profile.role) || 'player';
+const isAdmin = () => myRole() === 'admin';
+const isCoach = () => myRole() === 'coach' || isAdmin();
+const ROLE_NAMES = { player: 'Player', coach: 'Coach', admin: 'Admin' };
 function openAccount() { renderAccount(); show('account'); }
 function msgEl() { return h('p', { class: 'msg', hidden: '' }); }
 function say(el, text, kind) { el.hidden = false; el.className = 'msg ' + (kind || ''); el.textContent = text; }
@@ -1353,7 +1376,7 @@ function renderNewPassword(body) {
 function ageFromYear(y) { return y ? new Date().getFullYear() - y : null; }
 function renderProfileForm(body, setup) {
   const P = Cloud.profile || {}, m = msgEl();
-  const st = { position: P.position || S.pos || null, level: P.level || null, use: P.role === 'coach' ? 'coach' : P.mode === 'team' ? 'team' : P.mode === 'solo' ? 'solo' : null };
+  const st = { position: P.position || S.pos || null, level: P.level || null, use: P.mode === 'team' ? 'team' : P.mode === 'solo' ? 'solo' : null };
   const name = h('input', { type: 'text', id: 'pfName', maxlength: '60', autocomplete: 'nickname', placeholder: 'What should we call you?' }); name.value = P.display_name || '';
   const year = h('input', { type: 'text', id: 'pfYear', inputmode: 'numeric', maxlength: '4', placeholder: 'e.g. 2008' }); year.value = P.birth_year || '';
   const chipRow = (opts, key, after) => { const row = h('div', { class: 'chips' }); const draw = () => row.replaceChildren(...opts.map(([v, t]) => h('button', { class: 'chip', 'aria-pressed': String(st[key] === v), onclick: () => { st[key] = v; draw(); if (after) after(); } }, t))); draw(); return row; };
@@ -1374,25 +1397,25 @@ function renderProfileForm(body, setup) {
     const now = new Date().toISOString();
     try {
       await Cloud.saveProfile({ display_name: name.value.trim() || null, position: st.position, level: st.level, birth_year: +y,
-        role: st.use === 'coach' ? 'coach' : 'player', mode: st.use === 'solo' ? 'solo' : 'team',
+        mode: st.use === 'solo' ? 'solo' : 'team',
         parent_consent: young() ? parent.checked : false, health_consent_at: P.health_consent_at || now, consent_at: P.consent_at || now, share_anonymized: share.checked });
       renderAcctBtn(); renderCheckin(); renderHub();
       if (setup) {
         toast('Profile saved', 'cyan', 2000);
-        const next = () => { if (st.use === 'coach') openCoach(); else if (st.use === 'team') { openAccount(); setTimeout(() => { const c = $('#joinCode'); if (c) c.focus(); }, 50); } else show('hub'); };
-        if (!store.get('introSeen', false) && st.use !== 'coach') openIntro(next); else next();
+        const next = () => { if (st.use === 'team') { openAccount(); setTimeout(() => { const c = $('#joinCode'); if (c) c.focus(); }, 50); } else show('hub'); };
+        if (!store.get('introSeen', false)) openIntro(next); else next();
       } else { say(m, 'Saved.', 'ok'); busy(save, false, 'Save profile'); }
     } catch (e) { busy(save, false, setup ? 'Save and continue' : 'Save profile'); say(m, 'Couldn’t save: ' + (e.message || 'try again'), 'err'); }
   };
   body.append(...[
     setup ? h('h2', { style: 'font-size:34px' }, 'Set up your profile') : h('h3', { style: 'font-size:24px' }, 'Your profile'),
     setup ? h('p', { class: 'note' }, 'Signed in as ' + (Cloud.user.email || 'your account') + '.') : null,
-    h('div', { class: 'field' }, h('label', {}, 'How will you use Flow of Ace?'), chipRow([['solo', 'For myself'], ['team', 'With my team'], ['coach', 'I’m a coach']], 'use')),
+    h('div', { class: 'field' }, h('label', {}, 'How will you use Flow of Ace?'), chipRow([['solo', 'For myself'], ['team', 'With my team']], 'use')),
     h('div', { class: 'field' }, h('label', { for: 'pfName' }, 'Name or nickname'), name),
     h('div', { class: 'field' }, h('label', {}, 'Position'), chipRow(Object.entries(POS).map(([k, p]) => [k, p.name]), 'position')),
     h('div', { class: 'field' }, h('label', {}, 'Level'), chipRow(LEVELS, 'level')),
     h('div', { class: 'field' }, h('label', { for: 'pfYear' }, 'Birth year'), year),
-    h('label', { class: 'check', for: 'pfHealth' }, health, h('span', {}, 'I explicitly agree that Flow of Ace stores my wellbeing data (energy, nerves, mood and flow ratings, and match logs) in my account to show my history and personalise my routine. I can withdraw by deleting my data at any time. ', h('b', {}, 'Required'))),
+    h('label', { class: 'check', for: 'pfHealth' }, health, h('span', {}, 'I explicitly agree that Flow of Ace stores my wellbeing data (energy, nerves, mood and flow ratings, and match logs) in my account to show my history and personalise my routine, and that the club’s app admin can see it. I can withdraw by deleting my data at any time. ', h('b', {}, 'Required'))),
     parentRow,
     h('label', { class: 'check', for: 'pfShare' }, share, h('span', {}, 'Optional: let my data be used anonymously, without my name or email, to improve recommendations for all players.')),
     m, save, h('button', { class: 'link', onclick: openPrivacy }, 'How your data is handled')].filter(Boolean));
@@ -1454,12 +1477,13 @@ function renderAccountHome(body) {
     del.replaceWith(h('div', { class: 'card' }, h('p', { style: 'margin:0' }, 'This permanently deletes your account, profile, team memberships and every logged session, on all your devices. Teams you coach are deleted too. It can’t be undone.'), dm, yes));
   };
   body.append(h('h2', { style: 'font-size:34px' }, (P.display_name || 'Your account')),
-    h('dl', { class: 'kv' }, h('dt', {}, 'Signed in as'), h('dd', {}, Cloud.user.email || '—'), h('dt', {}, 'Using it'), h('dd', {}, P.role === 'coach' ? 'As a coach' : P.mode === 'team' ? 'With my team' : 'For myself'),
+    h('dl', { class: 'kv' }, h('dt', {}, 'Signed in as'), h('dd', {}, Cloud.user.email || '—'), h('dt', {}, 'Role'), h('dd', {}, ROLE_NAMES[myRole()] || 'Player'), h('dt', {}, 'Using it'), h('dd', {}, P.mode === 'team' ? 'With my team' : 'For myself'),
       h('dt', {}, 'History'), h('dd', {}, n + ' session' + (n === 1 ? '' : 's') + ', ' + logged_n + ' match' + (logged_n === 1 ? '' : 'es') + ' logged'),
       h('dt', {}, 'Sync'), h('dd', {}, Cloud.dirty.size ? Cloud.dirty.size + ' waiting to upload' : (Cloud.status || 'Up to date'))),
     h('button', { class: 'btn btn-cyan', onclick: () => { renderProfile(); show('profile'); } }, 'See my flow history'));
-  if (P.role === 'coach') body.append(h('button', { class: 'btn btn-primary', onclick: openCoach }, 'Open coach dashboard'));
-  if (P.role !== 'coach' || (Cloud.teams || []).some(t => t.role === 'player')) renderTeamsCard(body);
+  if (isAdmin()) body.append(h('button', { class: 'btn btn-primary', onclick: openAdmin }, 'Open admin'));
+  if (isCoach()) body.append(h('button', { class: isAdmin() ? 'btn btn-ghost' : 'btn btn-primary', onclick: openCoach }, 'Open coach dashboard'));
+  if (!isCoach() || (Cloud.teams || []).some(t => t.role === 'player')) renderTeamsCard(body);
   renderProfileForm(body, false);
   body.append(h('button', { class: 'btn btn-ghost', onclick: exportData }, 'Download my data'), m, out, del);
 }
@@ -1479,7 +1503,7 @@ function openPrivacy() {
     ['Wellbeing data', 'Energy, nerves, mood and flow ratings can count as health-related data under EU law (GDPR). That’s why the app asks for your explicit consent, and why you can withdraw it by deleting your data or account at any time.'],
     ['Under 15', 'In the Czech Republic, players under 15 need a parent or guardian to agree before using an account. The app asks for birth year and requires that agreement for younger players.'],
     ['Coaches and teams', 'A coach only sees players who joined their team with the team code, only sessions from the day they joined, and only what each player chose: a summary, or everything including goals, cues and if-then plans. You can change that or leave the team at any time.'],
-    ['Who else can see it', 'No other player can. Database rules block every account from reading anyone else’s rows. The person who runs this copy of Flow of Ace administers the database and can technically access it.'],
+    ['Who else can see it', 'No other player can. Database rules block every player and coach account from reading anyone else’s rows. The club’s app admin can see every account’s profile and sessions, to run the pilot and decide who is a coach, and administers the database.'],
     ['Where it lives', 'In a Supabase database. A copy also stays on your phone so the app works offline.'],
     ['Anonymous sharing', 'Off unless you turn it on. If on, your data may later be used without your name or email to improve recommendations for all players. It isn’t used for anything yet.'],
     ['Your rights', 'Download everything with “Download my data”, delete your match data from your flow profile, or delete your whole account from the Account screen. Deleting removes the data from the database, not just your phone.'],
@@ -2687,7 +2711,8 @@ function renderHubCards() {
   const n = weekPractice(), cards = [], due = surveyDue();
   if (due) cards.push(h('button', { class: 'hcard', style: 'border-color:var(--cyan)', onclick: () => openSurvey(due) }, h('div', {}, h('b', {}, 'Pilot check-in · 1 minute'), h('span', { class: 's' }, due === 'base' ? 'Start of the pilot' : 'After 6 weeks')), h('span', { class: 'go' }, 'Answer →')));
   cards.push(h('button', { class: 'hcard', onclick: openPractice }, h('div', {}, h('b', {}, 'Practice mode'), h('span', { class: 's' }, 'Training days · ' + Math.min(n, 3) + ' of 3 this week')), h('span', { class: 'go' }, 'Train →')));
-  if (Cloud.user && Cloud.profile && Cloud.profile.role === 'coach') cards.push(h('button', { class: 'hcard', onclick: openCoach }, h('div', {}, h('b', {}, 'Coach dashboard'), h('span', { class: 's' }, 'Your team’s flow, alerts and what works')), h('span', { class: 'go' }, 'Open →')));
+  if (isAdmin()) cards.push(h('button', { class: 'hcard', onclick: openAdmin }, h('div', {}, h('b', {}, 'Admin'), h('span', { class: 's' }, 'Everyone’s accounts, roles and teams')), h('span', { class: 'go' }, 'Open →')));
+  if (isCoach()) cards.push(h('button', { class: 'hcard', onclick: openCoach }, h('div', {}, h('b', {}, 'Coach dashboard'), h('span', { class: 's' }, 'Your team’s flow, alerts and what works')), h('span', { class: 'go' }, 'Open →')));
   box.replaceChildren(...cards);
 }
 
@@ -2822,14 +2847,14 @@ async function renderCoach() {
   if (!navigator.onLine) { body.replaceChildren(h('p', { class: 'msg err' }, 'You’re offline. The coach dashboard needs a connection.')); return; }
   body.replaceChildren(h('p', { class: 'note' }, 'Loading your teams…'));
   let teams;
-  try { teams = (await Cloud.myTeams()).filter(t => t.role === 'coach'); } catch (e) { body.replaceChildren(h('p', { class: 'msg err' }, 'Couldn’t load your teams: ' + e.message)); return; }
+  try { teams = isAdmin() ? (await Cloud.rpc('admin_teams')) || [] : (await Cloud.myTeams()).filter(t => t.role === 'coach'); } catch (e) { body.replaceChildren(h('p', { class: 'msg err' }, 'Couldn’t load your teams: ' + e.message)); return; }
   body.replaceChildren();
   const nm = h('input', { type: 'text', id: 'newTeam', maxlength: '60', placeholder: 'Team name, e.g. U17 Women' });
   const mk = h('button', { class: 'btn btn-primary' }, 'Create team'), m = msgEl();
   mk.onclick = async () => {
     if (!nm.value.trim()) return say(m, 'Give the team a name.', 'err');
     busy(mk, true, 'Creating…');
-    try { const t = await Cloud.createTeam(nm.value.trim()); coachState.teamId = t.id; store.set('coachTeam', t.id); if (Cloud.profile) Cloud.profile.role = 'coach'; renderHubCards(); renderCoach(); }
+    try { const t = await Cloud.createTeam(nm.value.trim()); coachState.teamId = t.id; store.set('coachTeam', t.id); renderHubCards(); renderCoach(); }
     catch (e) { busy(mk, false, 'Create team'); say(m, e.message, 'err'); }
   };
   const createBlock = [h('div', { class: 'field' }, h('label', { for: 'newTeam' }, 'Team name'), nm), m, mk];
@@ -2851,7 +2876,7 @@ async function renderCoach() {
   copy.onclick = async () => { try { await navigator.clipboard.writeText(team.code); toast('Code copied', 'cyan', 1500); } catch { toast('Select the code to copy it', '', 2000); } };
   const regen = h('button', { class: 'link', style: 'flex:none' }, 'New code');
   regen.onclick = async () => { if (!regen.dataset.sure) { regen.dataset.sure = '1'; regen.textContent = 'Tap again: old code stops working'; return; } try { team.code = await Cloud.regenCode(team.id); renderCoach(); } catch (e) { toast(e.message, '', 3000); } };
-  body.append(h('h2', { style: 'font-size:34px' }, team.name),
+  body.append(h('h2', { style: 'font-size:34px' }, team.name), isAdmin() && team.coach ? h('p', { class: 'note', style: 'margin-top:-10px' }, 'Coach: ' + team.coach) : null,
     h('div', { class: 'card' }, h('div', { class: 'eyebrow' }, 'Team code · players join from their Account screen'), codeEl, h('div', { class: 'row', style: 'justify-content:flex-start;gap:18px' }, copy, regen)));
   // team stats
   const all = data.map(pl => ({ pl, st: playerStats(pl.sessions || []) }));
@@ -2909,6 +2934,88 @@ function renderCoachPlayer(body, team, pl) {
   rm.onclick = async () => { if (!rm.dataset.sure) { rm.dataset.sure = '1'; rm.textContent = 'Tap again to remove ' + pl.name; return; } try { await Cloud.removeMember(team.id, pl.user_id); coachState.player = null; renderCoach(); } catch (e) { toast(e.message, '', 3000); } };
   body.append(rm);
 }
+
+/* ---------- admin ---------- */
+const adminState = { users: null, q: '', filter: 'all', user: null };
+function openAdmin() { adminState.user = null; adminState.users = null; show('admin'); renderAdmin(); }
+const statBox = (v, l) => h('div', { class: 'stat' }, h('div', { class: 'v' }, String(v)), h('div', { class: 'l' }, l));
+function roleControl(u) {
+  if (u.role === 'admin') return h('span', { class: 'flag ok', style: 'justify-self:start' }, 'Admin');
+  if (!u.has_profile) return h('span', { class: 'flag mute', style: 'justify-self:start' }, 'Hasn’t finished their profile');
+  return h('div', { class: 'seg', role: 'group', 'aria-label': 'Role' }, ...[['player', 'Player'], ['coach', 'Coach']].map(([k, l]) => {
+    const b = h('button', { 'aria-pressed': String(u.role === k) }, l);
+    b.onclick = async () => {
+      if (u.role === k) return;
+      b.disabled = true;
+      try { await Cloud.rpc('admin_set_role', { p_user: u.id, p_role: k }); u.role = k; toast((u.name || u.email) + (k === 'coach' ? ' is now a coach' : ' is now a player'), 'cyan', 2200); renderAdmin(); }
+      catch (e) { b.disabled = false; toast(e.message, '', 3500); }
+    };
+    return b;
+  }));
+}
+function userMeta(u) {
+  return [u.email, POS[u.position] ? POS[u.position].name : null, u.sessions ? u.sessions + ' session' + (u.sessions === 1 ? '' : 's') : 'no sessions yet',
+    u.last_at ? 'active ' + ago(new Date(u.last_at).getTime()) : null,
+    u.coaches && u.coaches.length ? 'coach of: ' + u.coaches.join(', ') : null, u.teams && u.teams.length ? 'team: ' + u.teams.join(', ') : null].filter(Boolean).flatMap((t, i) => i ? [' · ', h('span', {}, t)] : [h('span', {}, t)]);
+}
+async function renderAdmin() {
+  const body = $('#adminBody');
+  if (!isAdmin()) { body.replaceChildren(h('p', {}, 'Admins only.')); return; }
+  if (!navigator.onLine) { body.replaceChildren(h('p', { class: 'msg err' }, 'You’re offline. The admin screen needs a connection.')); return; }
+  if (!adminState.users) {
+    body.replaceChildren(h('p', { class: 'note' }, 'Loading accounts…'));
+    try { adminState.users = (await Cloud.rpc('admin_users')) || []; } catch (e) { body.replaceChildren(h('p', { class: 'msg err' }, 'Couldn’t load accounts: ' + e.message)); return; }
+  }
+  if (adminState.user) return renderAdminUser(body);
+  const U = adminState.users, count = r => U.filter(u => u.role === r).length;
+  const search = h('input', { type: 'search', id: 'adminSearch', placeholder: 'Search name or email', autocomplete: 'off' }); search.value = adminState.q;
+  const list = h('div', { class: 'roster' });
+  const filters = h('div', { class: 'chips' }, ...[['all', 'All'], ['player', 'Players'], ['coach', 'Coaches'], ['admin', 'Admins']].map(([k, l]) =>
+    h('button', { class: 'chip', 'aria-pressed': String(adminState.filter === k), onclick: () => { adminState.filter = k; renderAdmin(); } }, l)));
+  const draw = () => {
+    const q = adminState.q.trim().toLowerCase();
+    const rows = U.filter(u => (adminState.filter === 'all' || u.role === adminState.filter) && (!q || (u.name || '').toLowerCase().includes(q) || (u.email || '').toLowerCase().includes(q)));
+    list.replaceChildren(...rows.map(u => h('div', { class: 'urow' },
+      h('button', { class: 'who', onclick: () => { adminState.user = u.id; renderAdmin(); } }, h('b', {}, u.name || u.email), h('span', { class: 'meta' }, ...userMeta(u))),
+      roleControl(u))));
+    if (!rows.length) list.append(h('p', { class: 'note' }, 'No one matches.'));
+  };
+  search.oninput = () => { adminState.q = search.value; draw(); };
+  const refresh = h('button', { class: 'link', style: 'flex:none' }, 'Refresh');
+  refresh.onclick = () => { adminState.users = null; renderAdmin(); };
+  body.replaceChildren(h('div', { class: 'row', style: 'align-items:end' }, h('h2', { style: 'font-size:34px' }, 'Admin'), refresh),
+    h('div', { class: 'stats' }, statBox(U.length, 'Accounts'), statBox(count('player'), 'Players'), statBox(count('coach'), 'Coaches')),
+    h('button', { class: 'btn btn-cyan', onclick: openCoach }, 'All teams'),
+    h('div', { class: 'eyebrow' }, 'People · tap a name for their history'), search, filters, list,
+    h('p', { class: 'note' }, 'Everyone starts as a player. Make someone a coach and they can create teams and see the players who join with the team code. Admin access is set in the database.'));
+  draw();
+}
+async function renderAdminUser(body) {
+  const u = adminState.users.find(x => x.id === adminState.user);
+  const back = h('button', { class: 'link' }, '← Everyone');
+  back.onclick = () => { adminState.user = null; renderAdmin(); };
+  if (!u) { adminState.user = null; return renderAdmin(); }
+  body.replaceChildren(back, h('p', { class: 'note' }, 'Loading…'));
+  let d;
+  try { d = await Cloud.rpc('admin_user', { p_user: u.id }); } catch (e) { body.replaceChildren(back, h('p', { class: 'msg err' }, 'Couldn’t load: ' + e.message)); return; }
+  if (adminState.user !== u.id) return;
+  const P = d.profile || {}, list = d.sessions || [], st = playerStats(list);
+  const dt = v => v ? new Date(v).toLocaleDateString() : '–';
+  body.replaceChildren(back, h('h2', { style: 'font-size:34px' }, u.name || u.email), roleControl(u),
+    h('dl', { class: 'kv' },
+      h('dt', {}, 'Email'), h('dd', {}, u.email || '–'),
+      h('dt', {}, 'Position'), h('dd', {}, POS[P.position] ? POS[P.position].name : '–'),
+      h('dt', {}, 'Birth year'), h('dd', {}, P.birth_year ? String(P.birth_year) : '–'),
+      h('dt', {}, 'Using it'), h('dd', {}, P.mode === 'team' ? 'With my team' : P.mode === 'solo' ? 'For myself' : '–'),
+      h('dt', {}, 'Teams'), h('dd', {}, [...(u.coaches || []).map(t => t + ' (coach)'), ...(u.teams || [])].join(', ') || '–'),
+      h('dt', {}, 'Joined'), h('dd', {}, dt(u.created_at)),
+      h('dt', {}, 'Last sign-in'), h('dd', {}, dt(u.last_sign_in_at))),
+    h('div', { class: 'stats' }, statBox(st.matches.length, 'Matches logged'), statBox(st.last5 == null ? '–' : r1(st.last5).toFixed(1), 'Flow · last 5'), statBox(st.practice7, 'Practice · 7 days')));
+  if (st.flags.length) body.append(h('div', { class: 'flags', style: 'display:flex;flex-wrap:wrap;gap:6px' }, ...st.flags.map(([t, c]) => h('span', { class: 'flag ' + c }, t))));
+  if (st.flows.length >= 2) body.append(h('div', {}, h('div', { class: 'eyebrow' }, 'Flow per match'), sparkSVG(st.flows)));
+  renderHistory(body, list, false);
+}
+$('#adminHome').onclick = () => { renderHub(); show('hub'); };
 
 /* ---------- science sheet ---------- */
 const SCIENCE = [
