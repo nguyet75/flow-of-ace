@@ -8,7 +8,7 @@ Live app: https://nguyet75.github.io/flow-of-ace/
 
 1. Sign up at https://supabase.com (you can sign in with GitHub) and click **New project**.
 2. Name it `flow-of-ace`, set a database password (save it somewhere safe), and pick the region closest to your players (for Europe, Frankfurt).
-3. When the project is ready, open **SQL Editor → New query**, paste the whole of [`supabase/schema.sql`](supabase/schema.sql), and click **Run**. It should say "Success. No rows returned".
+3. When the project is ready, open **SQL Editor → New query**, paste the whole of [`supabase/schema.sql`](supabase/schema.sql), and click **Run**. It should say "Success. No rows returned". The file is safe to run again whenever it changes (for example after an app update adds teams or new fields).
 
 ## 2. Email sign-in and the app's address
 
@@ -30,9 +30,17 @@ Live app: https://nguyet75.github.io/flow-of-ace/
 
 If you skip this, set `googleSignIn: false` in `config.js` so the Google button is hidden.
 
+## Teams and coaches
+
+- In their profile, each person picks **For myself**, **With my team** or **I'm a coach**.
+- Coaches create a team in the coach dashboard and get a 6-letter code. Players enter it under **Account → Teams** and choose what the coach sees: **Summary** (energy, nerves, breathing method, between-set checks, flow and performance ratings, practice counts) or **Everything** (also goals, cues and if-then plans).
+- Coaches only see sessions from the day a player joined. Players can switch sharing or leave at any time; coaches can remove players or regenerate the code.
+- All team access runs through database functions that check who is asking (tested against Postgres 16 before release).
+
 ## Data and privacy
 
 - Each player can only read and change their own profile and sessions (row-level security on every table).
 - Players can delete their match data or their whole account from inside the app.
 - As the project owner you can see all data in the Supabase dashboard. The in-app privacy note says so.
-- The profile asks players to confirm they're 16+ or have a parent's or guardian's agreement. Check the rules for your country before inviting younger players.
+- The profile asks for birth year and requires explicit consent for wellbeing data (GDPR Art. 9). Players who may be under 15 (the Czech digital consent age) must confirm a parent's or guardian's agreement. The app can't verify that agreement; if you run team programmes with minors, collect written parental consent through the club as well.
+- Players can download all their data from the Account screen.

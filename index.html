@@ -291,6 +291,45 @@ input[type=email], input[type=password] { width: 100%; min-height: 54px; border-
 .hist summary .f { font-variant-numeric: tabular-nums; color: var(--optic); font-weight: 600; }
 .hist summary .f.none { color: var(--muted); font-weight: 500; }
 
+/* Hub cards, practice, coach */
+.hub-cards { display: grid; gap: 10px; }
+.hcard { display: flex; justify-content: space-between; align-items: center; gap: 12px; text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px; min-height: 76px; width: 100%; }
+.hcard b { display: block; font-family: var(--font-display); font-weight: 800; font-size: 22px; text-transform: uppercase; }
+.hcard .s { color: var(--muted); font-size: 13px; }
+.hcard .go { font-family: var(--font-display); font-weight: 800; color: var(--optic); font-size: 20px; flex: none; }
+.weekdots { display: flex; gap: 6px; }
+.weekdots i { flex: 1; height: 8px; border-radius: 4px; background: var(--surface-2); }
+.weekdots i.on { background: var(--good); }
+.pgrid { display: grid; gap: 10px; }
+.pcardx { text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; display: grid; gap: 6px; width: 100%; }
+.pcardx b { font-family: var(--font-display); font-weight: 800; font-size: 24px; text-transform: uppercase; }
+.pcardx .dose { font-family: var(--font-display); font-weight: 700; color: var(--cyan); text-transform: uppercase; font-size: 16px; }
+.pcardx .s { color: var(--muted); font-size: 13px; }
+.counter { font-family: var(--font-display); font-weight: 800; font-size: 96px; line-height: 1; font-variant-numeric: tabular-nums; }
+.teamcode { font-family: var(--font-display); font-weight: 800; font-size: 44px; letter-spacing: .18em; color: var(--optic); line-height: 1; }
+.roster { display: grid; gap: 10px; }
+.pl { text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 14px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; align-items: center; width: 100%; }
+.pl .nm { font-weight: 600; font-size: 16px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pl .meta { color: var(--muted); font-size: 12.5px; }
+.pl .fl { grid-row: 1 / span 2; grid-column: 2; font-family: var(--font-display); font-weight: 800; font-size: 32px; color: var(--optic); text-align: right; font-variant-numeric: tabular-nums; }
+.pl .fl.none { color: var(--muted); font-size: 18px; }
+.pl .flags { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px; }
+.flag { font-size: 12px; padding: 3px 9px; border-radius: 99px; border: 1px solid var(--warn); color: var(--warn); }
+.flag.ok { border-color: var(--good); color: var(--good); }
+.flag.mute { border-color: var(--line); color: var(--muted); }
+.tbl-wrap { overflow-x: auto; }
+.tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+.tbl th, .tbl td { padding: 8px 4px; border-top: 1px solid var(--line); text-align: left; }
+.tbl th { color: var(--muted); font-weight: 600; }
+.tbl td.n, .tbl th.n { text-align: right; font-variant-numeric: tabular-nums; }
+.radio { display: flex; gap: 12px; align-items: flex-start; padding: 12px; border: 2px solid var(--line); border-radius: 14px; background: var(--surface); }
+.radio input { width: 22px; height: 22px; flex: none; accent-color: var(--optic); margin: 2px 0 0; }
+.radio:has(input:checked) { border-color: var(--optic); }
+.radio b { display: block; }
+.radio span { font-size: 13px; color: var(--muted); }
+.teamrow { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid var(--line); }
+.teamrow > div { min-width: 0; }
+
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: 0s !important; animation-duration: 0s !important; } }
 @media (max-width: 360px) { .choices.three .t { font-size: 26px; } .brand h1 { font-size: 42px; } .bar-row { grid-template-columns: 8em 1fr 2.2em; } }
 </style>
@@ -313,6 +352,7 @@ input[type=email], input[type=password] { width: 100%; min-height: 54px; border-
     <p class="tag">Get your energy right, set your mindset, and walk on court with one goal and one cue. Log each match and the app learns what puts you in flow.</p>
     <div id="pendingBox"></div>
     <div class="sports" id="sports"></div>
+    <div class="hub-cards" id="hubCards"></div>
     <div class="hub-links">
       <button class="link" id="openProfile">My flow profile</button>
       <button class="link" data-sheet="science">The science</button>
@@ -335,6 +375,7 @@ input[type=email], input[type=password] { width: 100%; min-height: 54px; border-
       <div class="ends"><span>Calm</span><span>Tight, overthinking</span></div>
     </div>
     <div class="q"><h2>Minutes to first serve</h2><div class="choices three" id="winChoices"></div></div>
+    <div class="q"><h2 style="font-size:22px">Voice coach</h2><div class="seg" id="voiceSeg"></div><p class="note" id="voiceNote" hidden></p></div>
     <p class="adapt" id="zoneHint"></p>
     <button class="btn btn-primary" id="startBtn" disabled>Start my flow</button>
   </section>
@@ -447,6 +488,21 @@ input[type=email], input[type=password] { width: 100%; min-height: 54px; border-
     <div class="q"><h2 style="font-size:22px">Your energy at first serve was…</h2><div class="choices three" id="fitChoices"></div></div>
     <button class="btn btn-primary" id="postSave" disabled>Save match</button>
     <button class="link" id="postSkip">Not now</button>
+  </section>
+
+  <!-- PRACTICE -->
+  <section class="screen" id="practice" hidden>
+    <div class="row" style="align-items:center"><div class="eyebrow">Practice · training days</div><button class="link" style="flex:none;text-align:right" id="practiceHome">Home</button></div>
+    <h2 style="font-size:34px">Train the routine</h2>
+    <p class="note">Routines and imagery work best when you rehearse them, not only on match day. Imagery gave the biggest gains at about 10 minutes, 3 times a week.</p>
+    <div id="practiceWeek"></div>
+    <div class="pgrid" id="practiceCards"></div>
+  </section>
+
+  <!-- COACH -->
+  <section class="screen" id="coach" hidden>
+    <div class="row" style="align-items:center"><div class="eyebrow">Coach dashboard</div><button class="link" style="flex:none;text-align:right" id="coachHome">Home</button></div>
+    <div id="coachBody" style="display:grid;gap:18px"></div>
   </section>
 
   <!-- ACCOUNT -->
@@ -598,7 +654,7 @@ const saveSessions = (a) => store.set('sessions', a);
 const CFG = window.FOA_CONFIG || {};
 const LEVELS = [['school', 'School'], ['club', 'Club'], ['college', 'College'], ['pro', 'Pro / semi-pro'], ['beach', 'Beach']];
 const Cloud = {
-  sb: null, user: null, profile: null, status: '', recovery: false, dirty: new Set(store.get('dirty', [])),
+  sb: null, user: null, profile: null, teams: [], status: '', recovery: false, dirty: new Set(store.get('dirty', [])),
   enabled() { return !!(CFG.supabaseUrl && CFG.supabaseAnonKey && window.supabase && window.supabase.createClient); },
   async init() {
     if (!this.enabled()) { renderAcctBtn(); return; }
@@ -622,9 +678,9 @@ const Cloud = {
       if (owner && owner !== next) { saveSessions([]); this.dirty.clear(); store.set('dirty', []); }
       const guest = owner ? 0 : sessions().length;
       store.set('owner', next);
-      try { await this.loadProfile(); await this.sync(); } catch (e) { this.status = 'Sync failed. It will retry.'; }
+      try { await this.loadProfile(); await this.sync(); await this.myTeams(); } catch (e) { this.status = 'Sync failed. It will retry.'; }
       if (guest) toast('Added ' + guest + ' session' + (guest === 1 ? '' : 's') + ' from this phone to your account', 'cyan', 3500);
-      if (!this.profile || !this.profile.consent_at) openAccount();
+      if (!this.profile || !this.profile.consent_at || !this.profile.health_consent_at) openAccount();
       renderHub(); renderCheckin();
     }
     renderAcctBtn();
@@ -643,6 +699,16 @@ const Cloud = {
     this.profile = Object.assign({}, this.profile, row);
     if (POS[row.position]) { S.pos = row.position; store.set('pos', S.pos); }
   },
+  async rpc(name, args) { const { data, error } = await this.sb.rpc(name, args || {}); if (error) throw new Error(error.message); return data; },
+  async myTeams() { this.teams = (await this.rpc('my_teams')) || []; return this.teams; },
+  joinTeam(code, share) { return this.rpc('join_team', { p_code: code, p_share: share }); },
+  setShare(team, share) { return this.rpc('set_team_share', { p_team: team, p_share: share }); },
+  leaveTeam(team) { return this.rpc('leave_team', { p_team: team }); },
+  createTeam(name) { return this.rpc('create_team', { p_name: name }); },
+  regenCode(team) { return this.rpc('regenerate_team_code', { p_team: team }); },
+  removeMember(team, user) { return this.rpc('remove_team_member', { p_team: team, p_user: user }); },
+  deleteTeam(team) { return this.rpc('delete_team', { p_team: team }); },
+  teamOverview(team) { return this.rpc('coach_team_overview', { p_team: team }); },
   mark(id) {
     if (!id || !this.enabled()) return;
     this.dirty.add(id); store.set('dirty', [...this.dirty]);
@@ -680,7 +746,7 @@ const Cloud = {
     const { error } = await this.sb.from('sessions').delete().eq('user_id', this.user.id);
     if (error) throw error;
   },
-  clearLocal() { saveSessions([]); this.dirty.clear(); store.set('dirty', []); store.set('owner', null); this.profile = null; this.status = ''; },
+  clearLocal() { saveSessions([]); this.dirty.clear(); store.set('dirty', []); store.set('owner', null); this.profile = null; this.teams = []; this.status = ''; },
   async signOut(force) {
     try { await this.flush(); } catch (e) {}
     if (this.dirty.size && !force) return false;
@@ -719,7 +785,7 @@ function renderAccount() {
   if (!Cloud.enabled()) { body.append(h('p', {}, 'Accounts aren’t switched on for this copy of the app. Everything is saved on this device.')); return; }
   if (Cloud.recovery && Cloud.user) return renderNewPassword(body);
   if (!Cloud.user) return renderSignIn(body);
-  if (!Cloud.profile || !Cloud.profile.consent_at) return renderProfileForm(body, true);
+  if (!Cloud.profile || !Cloud.profile.consent_at || !Cloud.profile.health_consent_at) return renderProfileForm(body, true);
   renderAccountHome(body);
 }
 function renderSignIn(body) {
@@ -774,37 +840,85 @@ function renderNewPassword(body) {
   };
   body.append(h('h2', { style: 'font-size:30px' }, 'Set a new password'), h('div', { class: 'field' }, h('label', { for: 'acNewPass' }, 'New password'), pass), m, save);
 }
+function ageFromYear(y) { return y ? new Date().getFullYear() - y : null; }
 function renderProfileForm(body, setup) {
   const P = Cloud.profile || {}, m = msgEl();
-  const st = { position: P.position || S.pos || null, level: P.level || null };
+  const st = { position: P.position || S.pos || null, level: P.level || null, use: P.role === 'coach' ? 'coach' : P.mode === 'team' ? 'team' : P.mode === 'solo' ? 'solo' : null };
   const name = h('input', { type: 'text', id: 'pfName', maxlength: '60', autocomplete: 'nickname', placeholder: 'What should we call you?' }); name.value = P.display_name || '';
-  const year = h('input', { type: 'text', id: 'pfYear', inputmode: 'numeric', maxlength: '4', placeholder: 'e.g. 2006' }); year.value = P.birth_year || '';
-  const chipRow = (opts, key) => { const row = h('div', { class: 'chips' }); const draw = () => row.replaceChildren(...opts.map(([v, t]) => h('button', { class: 'chip', 'aria-pressed': String(st[key] === v), onclick: () => { st[key] = v; draw(); } }, t))); draw(); return row; };
-  const age = h('input', { type: 'checkbox', id: 'pfAge' }), agree = h('input', { type: 'checkbox', id: 'pfAgree' }), share = h('input', { type: 'checkbox', id: 'pfShare' });
-  age.checked = agree.checked = !!P.consent_at; share.checked = !!P.share_anonymized;
+  const year = h('input', { type: 'text', id: 'pfYear', inputmode: 'numeric', maxlength: '4', placeholder: 'e.g. 2008' }); year.value = P.birth_year || '';
+  const chipRow = (opts, key, after) => { const row = h('div', { class: 'chips' }); const draw = () => row.replaceChildren(...opts.map(([v, t]) => h('button', { class: 'chip', 'aria-pressed': String(st[key] === v), onclick: () => { st[key] = v; draw(); if (after) after(); } }, t))); draw(); return row; };
+  const health = h('input', { type: 'checkbox', id: 'pfHealth' }), parent = h('input', { type: 'checkbox', id: 'pfParent' }), share = h('input', { type: 'checkbox', id: 'pfShare' });
+  health.checked = !!(P.health_consent_at || P.consent_at); parent.checked = !!P.parent_consent; share.checked = !!P.share_anonymized;
+  const parentRow = h('label', { class: 'check', for: 'pfParent' }, parent, h('span', {}, 'I’m under 15. My parent or guardian has read how my data is handled and agrees to me using Flow of Ace. ', h('b', {}, 'Required under 15')));
+  const young = () => { const y = +year.value.trim(); return /^\d{4}$/.test(year.value.trim()) && ageFromYear(y) <= 15; };
+  const syncParent = () => { parentRow.hidden = !young(); };
+  year.addEventListener('input', syncParent); syncParent();
   const save = h('button', { class: 'btn btn-primary' }, setup ? 'Save and continue' : 'Save profile');
   save.onclick = async () => {
     const y = year.value.trim();
-    if (y && !(/^\d{4}$/.test(y) && +y >= 1930 && +y <= new Date().getFullYear() - 5)) return say(m, 'Enter your birth year as 4 digits, or leave it empty.', 'err');
-    if (!age.checked || !agree.checked) return say(m, 'Tick both required boxes to use an account.', 'err');
+    if (!st.use) return say(m, 'Choose how you’ll use Flow of Ace.', 'err');
+    if (!(/^\d{4}$/.test(y) && +y >= 1930 && +y <= new Date().getFullYear() - 5)) return say(m, 'Enter your birth year as 4 digits. We need it to check consent rules for under-15s.', 'err');
+    if (!health.checked) return say(m, 'Tick the data consent box to use an account.', 'err');
+    if (young() && !parent.checked) return say(m, 'Players under 15 need a parent or guardian to agree first.', 'err');
     busy(save, true, 'Saving…');
+    const now = new Date().toISOString();
     try {
-      await Cloud.saveProfile({ display_name: name.value.trim() || null, position: st.position, level: st.level, birth_year: y ? +y : null, consent_at: P.consent_at || new Date().toISOString(), share_anonymized: share.checked });
-      renderAcctBtn(); renderCheckin();
-      if (setup) { toast('Profile saved', 'cyan', 2000); renderHub(); show('hub'); } else { say(m, 'Saved.', 'ok'); busy(save, false, 'Save profile'); }
+      await Cloud.saveProfile({ display_name: name.value.trim() || null, position: st.position, level: st.level, birth_year: +y,
+        role: st.use === 'coach' ? 'coach' : 'player', mode: st.use === 'solo' ? 'solo' : 'team',
+        parent_consent: young() ? parent.checked : false, health_consent_at: P.health_consent_at || now, consent_at: P.consent_at || now, share_anonymized: share.checked });
+      renderAcctBtn(); renderCheckin(); renderHub();
+      if (setup) {
+        toast('Profile saved', 'cyan', 2000);
+        if (st.use === 'coach') openCoach(); else if (st.use === 'team') { openAccount(); setTimeout(() => { const c = $('#joinCode'); if (c) c.focus(); }, 50); } else show('hub');
+      } else { say(m, 'Saved.', 'ok'); busy(save, false, 'Save profile'); }
     } catch (e) { busy(save, false, setup ? 'Save and continue' : 'Save profile'); say(m, 'Couldn’t save: ' + (e.message || 'try again'), 'err'); }
   };
-  body.append(
+  body.append(...[
     setup ? h('h2', { style: 'font-size:34px' }, 'Set up your profile') : h('h3', { style: 'font-size:24px' }, 'Your profile'),
-    setup ? h('p', { class: 'note' }, 'Signed in as ' + (Cloud.user.email || 'your account') + '. Only you can see this.') : null,
+    setup ? h('p', { class: 'note' }, 'Signed in as ' + (Cloud.user.email || 'your account') + '.') : null,
+    h('div', { class: 'field' }, h('label', {}, 'How will you use Flow of Ace?'), chipRow([['solo', 'For myself'], ['team', 'With my team'], ['coach', 'I’m a coach']], 'use')),
     h('div', { class: 'field' }, h('label', { for: 'pfName' }, 'Name or nickname'), name),
     h('div', { class: 'field' }, h('label', {}, 'Position'), chipRow(Object.entries(POS).map(([k, p]) => [k, p.name]), 'position')),
     h('div', { class: 'field' }, h('label', {}, 'Level'), chipRow(LEVELS, 'level')),
-    h('div', { class: 'field' }, h('label', { for: 'pfYear' }, 'Birth year (optional)'), year),
-    h('label', { class: 'check', for: 'pfAge' }, age, h('span', {}, 'I’m 16 or older, or a parent or guardian has agreed to me using Flow of Ace. ', h('b', {}, 'Required'))),
-    h('label', { class: 'check', for: 'pfAgree' }, agree, h('span', {}, 'Store my check-ins, flow ratings and match logs in my account so I can see my history. ', h('b', {}, 'Required'))),
+    h('div', { class: 'field' }, h('label', { for: 'pfYear' }, 'Birth year'), year),
+    h('label', { class: 'check', for: 'pfHealth' }, health, h('span', {}, 'I explicitly agree that Flow of Ace stores my wellbeing data (energy, nerves, mood and flow ratings, and match logs) in my account to show my history and personalise my routine. I can withdraw by deleting my data at any time. ', h('b', {}, 'Required'))),
+    parentRow,
     h('label', { class: 'check', for: 'pfShare' }, share, h('span', {}, 'Optional: let my data be used anonymously, without my name or email, to improve recommendations for all players.')),
-    m, save, h('button', { class: 'link', onclick: openPrivacy }, 'How your data is handled'));
+    m, save, h('button', { class: 'link', onclick: openPrivacy }, 'How your data is handled')].filter(Boolean));
+}
+function shareChoice(id, cur) {
+  const mk = (v, t, d) => { const r = h('input', { type: 'radio', name: id, value: v }); if (cur === v) r.checked = true; return h('label', { class: 'radio' }, r, h('div', {}, h('b', {}, t), h('span', {}, d))); };
+  return h('div', { style: 'display:grid;gap:8px' },
+    mk('summary', 'Summary', 'Energy and nerves ratings, breathing method, between-set checks, flow and performance ratings, practice counts.'),
+    mk('full', 'Everything', 'The summary plus your goals, cues and if-then plans.'));
+}
+const pickedShare = (id) => { const r = document.querySelector('input[name="' + id + '"]:checked'); return r ? r.value : null; };
+function renderTeamsCard(body) {
+  const card = h('div', { class: 'card' }, h('h3', {}, 'Teams'));
+  const mine = (Cloud.teams || []).filter(t => t.role === 'player');
+  if (mine.length) mine.forEach(t => {
+    const leave = h('button', { class: 'link', style: 'color:var(--warn);flex:none' }, 'Leave');
+    leave.onclick = async () => { if (leave.dataset.sure) { try { await Cloud.leaveTeam(t.id); await Cloud.myTeams(); toast('Left ' + t.name, 'cyan', 2000); renderAccount(); } catch (e) { toast(e.message, '', 3000); } } else { leave.dataset.sure = '1'; leave.textContent = 'Tap again to leave'; } };
+    const flip = h('button', { class: 'link', style: 'flex:none' }, t.share === 'full' ? 'Share summary only' : 'Share everything');
+    flip.onclick = async () => { try { await Cloud.setShare(t.id, t.share === 'full' ? 'summary' : 'full'); await Cloud.myTeams(); renderAccount(); } catch (e) { toast(e.message, '', 3000); } };
+    card.append(h('div', { class: 'teamrow' }, h('div', {}, h('b', {}, t.name), h('div', { class: 'note' }, 'Your coach sees: ' + (t.share === 'full' ? 'everything' : 'summary'))), h('div', { style: 'display:grid;justify-items:end' }, flip, leave)));
+  });
+  else card.append(h('p', { class: 'note' }, 'You’re not on a team. Join one with the 6-letter code from your coach.'));
+  const code = h('input', { type: 'text', id: 'joinCode', maxlength: '6', autocomplete: 'off', placeholder: 'Team code', style: 'text-transform:uppercase;letter-spacing:.15em' });
+  const agree = h('input', { type: 'checkbox', id: 'joinAgree' });
+  const m = msgEl(), join = h('button', { class: 'btn btn-primary' }, 'Join team');
+  join.onclick = async () => {
+    const c = code.value.trim().toUpperCase(), sh = pickedShare('joinShare');
+    if (!/^[A-Z0-9]{6}$/.test(c)) return say(m, 'The code is 6 letters and numbers.', 'err');
+    if (!sh) return say(m, 'Choose what your coach can see.', 'err');
+    if (!agree.checked) return say(m, 'Tick the box to agree to share with this team’s coach.', 'err');
+    busy(join, true, 'Joining…');
+    try { const t = await Cloud.joinTeam(c, sh); await Cloud.myTeams(); toast('Joined ' + t.name, 'cyan', 2500); renderAccount(); }
+    catch (e) { busy(join, false, 'Join team'); say(m, e.message, 'err'); }
+  };
+  card.append(h('div', { class: 'field' }, h('label', { for: 'joinCode' }, 'Join a team'), code), h('div', { class: 'field' }, h('label', {}, 'What your coach can see'), shareChoice('joinShare', 'summary')),
+    h('label', { class: 'check', for: 'joinAgree' }, agree, h('span', {}, 'Share my sessions from today onward with this team’s coach. I can change this or leave the team at any time.')), m, join);
+  body.append(card);
 }
 function renderAccountHome(body) {
   const P = Cloud.profile, n = sessions().length, logged_n = logged().length;
@@ -826,24 +940,39 @@ function renderAccountHome(body) {
       try { await Cloud.deleteAccount(); toast('Account deleted', 'cyan', 2500); renderHub(); renderCheckin(); show('hub'); }
       catch (e) { busy(yes, false, 'Yes, delete my account and history'); say(dm, 'Couldn’t delete: ' + (e.message || 'try again'), 'err'); }
     };
-    del.replaceWith(h('div', { class: 'card' }, h('p', { style: 'margin:0' }, 'This permanently deletes your account, profile and every logged session, on all your devices. It can’t be undone.'), dm, yes));
+    del.replaceWith(h('div', { class: 'card' }, h('p', { style: 'margin:0' }, 'This permanently deletes your account, profile, team memberships and every logged session, on all your devices. Teams you coach are deleted too. It can’t be undone.'), dm, yes));
   };
   body.append(h('h2', { style: 'font-size:34px' }, (P.display_name || 'Your account')),
-    h('dl', { class: 'kv' }, h('dt', {}, 'Signed in as'), h('dd', {}, Cloud.user.email || '—'), h('dt', {}, 'History'), h('dd', {}, n + ' session' + (n === 1 ? '' : 's') + ', ' + logged_n + ' logged'),
+    h('dl', { class: 'kv' }, h('dt', {}, 'Signed in as'), h('dd', {}, Cloud.user.email || '—'), h('dt', {}, 'Using it'), h('dd', {}, P.role === 'coach' ? 'As a coach' : P.mode === 'team' ? 'With my team' : 'For myself'),
+      h('dt', {}, 'History'), h('dd', {}, n + ' session' + (n === 1 ? '' : 's') + ', ' + logged_n + ' match' + (logged_n === 1 ? '' : 'es') + ' logged'),
       h('dt', {}, 'Sync'), h('dd', {}, Cloud.dirty.size ? Cloud.dirty.size + ' waiting to upload' : (Cloud.status || 'Up to date'))),
     h('button', { class: 'btn btn-cyan', onclick: () => { renderProfile(); show('profile'); } }, 'See my flow history'));
+  if (P.role === 'coach') body.append(h('button', { class: 'btn btn-primary', onclick: openCoach }, 'Open coach dashboard'));
+  if (P.role !== 'coach' || (Cloud.teams || []).some(t => t.role === 'player')) renderTeamsCard(body);
   renderProfileForm(body, false);
-  body.append(m, out, del);
+  body.append(h('button', { class: 'btn btn-ghost', onclick: exportData }, 'Download my data'), m, out, del);
+}
+function exportData() {
+  const data = { exported_at: new Date().toISOString(), account: Cloud.user ? { email: Cloud.user.email } : null, profile: Cloud.profile, teams: Cloud.teams, sessions: sessions() };
+  try {
+    const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
+    const a = h('a', { href: url, download: 'flow-of-ace-data.json' }); document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+  } catch (e) { toast('Download isn’t available here', '', 2500); }
 }
 function openPrivacy() {
   const sheet = h('div', { class: 'sheet' });
   sheet.addEventListener('click', e => { if (e.target === sheet) sheet.remove(); });
   const items = [
-    ['What’s stored', 'Your email, the profile you fill in, and each session: your energy and nerves ratings, the breathing method, your goal, cue and if-then plan, between-set check-ins, and your post-match flow and performance ratings.'],
-    ['Who can see it', 'Only you, through your login. Database rules block every other account from reading your rows. The person who runs this copy of Flow of Ace administers the database and can technically access it.'],
+    ['What’s stored', 'Your email, your profile (name, position, level, birth year, how you use the app) and each session: energy and nerves ratings, breathing method, goal, cue and if-then plan, between-set check-ins, post-match flow and performance ratings, and practice sessions.'],
+    ['Wellbeing data', 'Energy, nerves, mood and flow ratings can count as health-related data under EU law (GDPR). That’s why the app asks for your explicit consent, and why you can withdraw it by deleting your data or account at any time.'],
+    ['Under 15', 'In the Czech Republic, players under 15 need a parent or guardian to agree before using an account. The app asks for birth year and requires that agreement for younger players.'],
+    ['Coaches and teams', 'A coach only sees players who joined their team with the team code, only sessions from the day they joined, and only what each player chose: a summary, or everything including goals, cues and if-then plans. You can change that or leave the team at any time.'],
+    ['Who else can see it', 'No other player can. Database rules block every account from reading anyone else’s rows. The person who runs this copy of Flow of Ace administers the database and can technically access it.'],
     ['Where it lives', 'In a Supabase database. A copy also stays on your phone so the app works offline.'],
     ['Anonymous sharing', 'Off unless you turn it on. If on, your data may later be used without your name or email to improve recommendations for all players. It isn’t used for anything yet.'],
-    ['Deleting', 'Delete all match data from your flow profile, or delete your whole account from the Account screen. Both remove the data from the database, not just your phone.']
+    ['Your rights', 'Download everything with “Download my data”, delete your match data from your flow profile, or delete your whole account from the Account screen. Deleting removes the data from the database, not just your phone.'],
+    ['Not medical advice', 'Flow of Ace is a sport performance and wellbeing routine. It doesn’t diagnose or treat anything. If nerves or low mood affect your life beyond sport, talk to a doctor or psychologist.']
   ];
   sheet.append(h('div', { class: 'panel', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'How your data is handled' },
     h('div', { class: 'row', style: 'align-items:center' }, h('h2', {}, 'Your data'), h('button', { class: 'btn btn-ghost', style: 'flex:none;width:auto;padding:0 18px;min-height:48px', onclick: () => sheet.remove() }, 'Close')),
@@ -998,6 +1127,7 @@ function toast(msg, cls = '', ms = 4000) {
 
 /* ---------- hub ---------- */
 function renderHub() {
+  renderHubCards();
   const wl = store.get('waitlist', {});
   $('#sports').replaceChildren(...SPORTS.map(sp => {
     if (sp.live) return h('button', { class: 'sport active', onclick: () => { renderCheckin(); show('checkin'); } },
@@ -1006,7 +1136,7 @@ function renderHub() {
     sw.addEventListener('click', () => { wl[sp.id] = !wl[sp.id]; store.set('waitlist', wl); sw.setAttribute('aria-checked', String(!!wl[sp.id])); if (wl[sp.id]) toast('On the ' + sp.name + ' waitlist', 'cyan', 2000); });
     return h('div', { class: 'sport locked' }, h('span', { class: 'badge' }, 'Coming soon'), h('span', { class: 'name' }, sp.name), h('span', { class: 'wl' }, 'Waitlist', sw));
   }));
-  const pend = sessions().filter(s => !s.post && !s.skipped).slice(-1)[0];
+  const pend = sessions().filter(s => !s.post && !s.skipped && s.kind !== 'practice').slice(-1)[0];
   $('#pendingBox').replaceChildren(...(pend ? [h('div', { class: 'pending' },
     h('b', {}, 'Log your last match'), h('p', { class: 'note' }, 'Started ' + new Date(pend.at).toLocaleString([], { weekday: 'short', hour: 'numeric', minute: '2-digit' }) + '. 60 seconds, and the app gets smarter.'),
     h('button', { class: 'btn btn-cyan', onclick: () => openPost(pend.id) }, 'Log it now'))] : []));
@@ -1024,6 +1154,7 @@ function renderCheckin() {
   zh.append(z.learned
     ? h('span', {}, h('b', {}, 'Your flow zone: energy ' + z.lo + '–' + z.hi + '. '), 'Learned from ' + z.n + ' logged matches.')
     : h('span', {}, h('b', {}, 'Starting zone: energy ' + z.lo + '–' + z.hi + '. '), z.n ? 'Log ' + left + ' more match' + (left === 1 ? '' : 'es') + ' to personalise it.' : 'Log your matches and the app finds your own zone.'));
+  renderVoiceSeg();
   $('#startBtn').disabled = !S.pos;
 }
 $('#energyIn').addEventListener('input', e => { S.energy0 = +e.target.value; $('#energyV').textContent = S.energy0; });
@@ -1056,7 +1187,7 @@ function tickClock() {
   $('#clockV').textContent = fmt(rem); setRing($('#clockRing'), rem / (S.win * 60));
   if (!S.faded && rem <= 180) {
     S.faded = true; Audio.fadeOut(10); $('#clockL').textContent = 'headphones off';
-    toast('Headphones off. Tune in to the court: calls, contact, the whistle.', 'cyan', 7000); buzz([60, 80, 60]);
+    toast('Headphones off. Tune in to the court: calls, contact, the whistle.', 'cyan', 7000); buzz([60, 80, 60]); Voice.key('headphones');
   }
   if (rem <= 0) { clearInterval(clockT); $('#clockL').textContent = 'first serve'; const cur = currentScreen(); if (STEP_IDS.indexOf(cur) >= 0 && cur !== 'lock') goLock(); }
 }
@@ -1090,7 +1221,7 @@ function startTune() {
   $('#tuneNext').className = 'btn btn-ghost';
   tuneT = setInterval(() => {
     const el = (Date.now() - t0) / 1000; setRing($('#tuneRing'), 1 - el / dur);
-    if (el >= dur) { clearInterval(tuneT); stopBreath(); $('#breathLbl').textContent = 'Rate your energy'; $('#breathCnt').textContent = ''; $('#tuneNext').className = 'btn btn-primary'; buzz([30, 40, 30]); Audio.blip(660, .15); }
+    if (el >= dur) { clearInterval(tuneT); stopBreath(); $('#breathLbl').textContent = 'Rate your energy'; $('#breathCnt').textContent = ''; $('#tuneNext').className = 'btn btn-primary'; buzz([30, 40, 30]); Audio.blip(660, .15); Voice.key('tune_done'); }
   }, 200);
 }
 function runBreath(target, key) {
@@ -1116,6 +1247,7 @@ function runBreath(target, key) {
       else num.textContent = '';
     }
     buzz(ph === 'in' ? 40 : ph === 'out' ? [15, 60, 15] : 8);
+    Voice.breath(key, kind, rt, dur, i, round);
     Audio.breath(kind, dur); Audio.cue(ph, dur);
     if (kind === 'rest') { i = 0; round = 0; } else { i++; if (B.rounds && i % B.steps.length === 0) round++; }
     breathT = setTimeout(seq, dur * 1000);
@@ -1170,6 +1302,7 @@ function startMindset() {
   $('#cueCustom').oninput = e => { S.cue = e.target.value.trim() || cueOpts[0]; renderChips(); };
   $('#goalCustom').value = ''; $('#cueCustom').value = ''; $('#bestMemory').value = store.get('memory', '');
   renderChips();
+  Voice.key(nervous ? 'reframe_nervous' : 'reframe_calm');
 }
 
 /* ---------- step 3: see it ---------- */
@@ -1184,7 +1317,16 @@ function startSee() {
   $('#seeLine').textContent = 'Tap Play. Read each line, then close your eyes and see it from your own eyes, at real speed.';
   $('#seeN').textContent = 'First person, real speed';
   $('#seePlay').textContent = 'Play';
+  labelSeeVoice();
 }
+function seeSpoken() {
+  if (Voice.lang !== 'cs') return seeScript();
+  const lines = [...SCRIPT_CS[S.pos]];
+  if (S.memory) lines.unshift(Voice.t('memory', S.memory));
+  lines.push(Voice.t('goal', trCue(S.goal)) + ' ' + Voice.t('cue', trCue(S.cue)));
+  return lines;
+}
+function labelSeeVoice() { const b = $('#seeVoice'); b.textContent = 'Voice: ' + ({ off: 'Off', en: 'English', cs: 'Čeština' })[Voice.lang]; b.setAttribute('aria-pressed', String(Voice.lang !== 'off')); }
 function seeScript() {
   const lines = [...POS[S.pos].script];
   if (S.memory) lines.unshift('Start with your best: ' + S.memory + '. Feel how loose you were.');
@@ -1193,7 +1335,7 @@ function seeScript() {
 }
 function playSee() {
   if (seeRunning) { stopSee(); $('#seePlay').textContent = 'Play'; return; }
-  const lines = seeScript(), dur = seeSeconds(), per = dur / lines.length, t0 = Date.now();
+  const lines = seeScript(), spoken = seeSpoken(), dur = seeSeconds(), per = dur / lines.length, t0 = Date.now();
   let shown = -1; seeRunning = true; $('#seePlay').textContent = 'Pause';
   seeT = setInterval(() => {
     const el = (Date.now() - t0) / 1000, i = Math.min(lines.length - 1, Math.floor(el / per));
@@ -1202,7 +1344,7 @@ function playSee() {
       shown = i; const line = $('#seeLine'); line.style.opacity = 0;
       setTimeout(() => { line.textContent = lines[i]; line.style.opacity = 1; }, 250);
       $('#seeN').textContent = 'Scene ' + (i + 1) + ' of ' + lines.length;
-      if (voice) speak(lines[i]);
+      Voice.say(spoken[i]);
     }
     if (el >= dur) { stopSee(); $('#seePlay').textContent = 'Replay'; $('#seeN').textContent = 'Done'; buzz(30); }
   }, 200);
@@ -1330,14 +1472,18 @@ function goLock() {
   $('#lockIf').textContent = 'If ' + f.t.toLowerCase() + ' → ' + f.then;
   $('#lockReset').textContent = resetText();
   show('lock');
+  Voice.key('locked', trCue(S.cue));
 }
-function practiceReset() {
-  const o = h('div', { class: 'full', role: 'dialog', 'aria-label': 'Reset practice' }, h('div', { class: 'dotfix' }), h('div', { class: 'big' }, 'Breathe out'), h('p', { class: 'note' }, 'Eyes on the dot'));
+function practiceReset(onDone) {
+  const o = h('div', { class: 'full', role: 'dialog', 'aria-label': 'Reset' }, h('div', { class: 'dotfix' }), h('div', { class: 'big' }, 'Breathe out'), h('p', { class: 'note' }, 'Eyes on the dot'));
   document.body.append(o); const big = o.querySelector('.big'); buzz(20);
-  setTimeout(() => { big.textContent = 'Eyes still'; buzz(10); }, 1200);
-  setTimeout(() => { big.textContent = S.cue; big.style.color = 'var(--optic)'; buzz([20, 40, 20]); }, 2200);
-  setTimeout(() => o.remove(), 3600);
-  o.addEventListener('click', () => o.remove());
+  Voice.key('reset', trCue(S.cue || POS[S.pos || 'hitter'].cues[0]));
+  const t1 = setTimeout(() => { big.textContent = 'Eyes still'; buzz(10); }, 1200);
+  const t2 = setTimeout(() => { big.textContent = S.cue || 'Next ball'; big.style.color = 'var(--optic)'; buzz([20, 40, 20]); }, 2200);
+  let closed = false;
+  const close = () => { if (closed) return; closed = true; clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); o.remove(); if (onDone) onDone(); };
+  const t3 = setTimeout(close, 3600);
+  o.addEventListener('click', close);
 }
 
 /* ---------- in-match: between sets ---------- */
@@ -1383,22 +1529,24 @@ function runMidAction(inner, ans, close) {
   inner.replaceChildren(h('div', { class: 'eyebrow' }, 'Between sets · 30 seconds'), h('h2', { style: 'font-size:34px' }, title), br, route,
     h('p', { style: 'margin:0;font-weight:600' }, focusLine), h('p', { class: 'note' }, 'Cue: “' + (S.cue || 'Next ball') + '”'), done);
   Audio.init();
-  runBreath({ orb, lbl, cnt, num, route }, key);
+  Voice.key(ans.energy === 'high' ? 'mid_high' : ans.energy === 'low' ? 'mid_low' : 'mid_right');
+  const startT = setTimeout(() => runBreath({ orb, lbl, cnt, num, route }, key), Voice.ok() ? 2600 : 0);
   const t0 = Date.now(), bar = ring.querySelector('.bar');
   const iv = setInterval(() => { const f = 1 - (Date.now() - t0) / 30000; setRing(bar, f); if (f <= 0) { clearInterval(iv); stopBreath(); lbl.textContent = 'Go'; buzz([30, 40, 30]); } }, 200);
-  done.onclick = () => { clearInterval(iv); stopBreath(); close(); };
+  done.onclick = () => { clearTimeout(startT); clearInterval(iv); stopBreath(); Voice.stop(); close(); };
 }
 
 /* ---------- in-match: clutch serve ("make it happen") ---------- */
-function openClutch() {
+function openClutch(onDone) {
   const big = h('div', { class: 'big' }, 'Breathe out');
   const sub = h('p', { class: 'note' }, '');
   const o = h('div', { class: 'full', role: 'dialog', 'aria-label': 'Clutch serve routine' }, h('div', { class: 'eyebrow' }, 'Clutch serve · about 8 seconds · tap to skip ahead'), big, sub);
   const steps = [['Breathe out', 'Longer out than in', 2000], ['Pick one spot', 'An exact spot on their court', 1800], ['Hold your eyes on it', 'Still. About two seconds.', 2200], [S.cue || 'Next ball', 'Say it', 1500], ['Serve', '', 1200]];
   let i = 0, t;
   const next = () => {
-    if (i >= steps.length) { o.remove(); return; }
-    const [a, b, d] = steps[i++]; big.textContent = a; sub.textContent = b; big.style.color = i === steps.length ? 'var(--optic)' : ''; buzz(i === steps.length ? [30, 30, 30] : 15);
+    if (i >= steps.length) { o.remove(); if (onDone) onDone(); return; }
+    const [a, b, d] = steps[i++]; big.textContent = a;
+    Voice.say(Voice.t('clutch')[i - 1].replace('{x}', trCue(S.cue || 'Next ball'))); sub.textContent = b; big.style.color = i === steps.length ? 'var(--optic)' : ''; buzz(i === steps.length ? [30, 30, 30] : 15);
     t = setTimeout(next, d);
   };
   o.addEventListener('click', () => { clearTimeout(t); next(); });
@@ -1497,21 +1645,29 @@ function renderProfile(justSaved) {
   };
   body.append(clear);
 }
-function renderHistory(body) {
-  const all = sessions().slice().reverse();
+function renderHistory(body, list, own = true) {
+  const all = (list || sessions()).slice().reverse();
   if (!all.length) return;
   const fitTxt = { low: 'too low', right: 'about right', high: 'too high' };
   body.append(h('div', { class: 'hist' }, h('div', { class: 'eyebrow', style: 'border:0;padding:0 0 4px' }, 'History · ' + all.length + ' session' + (all.length === 1 ? '' : 's')),
     ...all.map(s => {
-      const f = flowScore(s), d = new Date(s.at), ifx = IFS.find(x => x.id === s.ifId);
+      const d = new Date(s.at), when = d.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
+      if (s.kind === 'practice') {
+        const P = PRACTICE[s.type] || { title: 'Practice' };
+        const kv = [['Type', P.title], ['Time', Math.round((s.dur || 0) / 60) + ' min']];
+        if (s.reps) kv.push(['Reps', s.reps + (s.type === 'clutch' && s.reps ? ' · ' + (s.made || 0) + ' in (' + Math.round((s.made || 0) / s.reps * 100) + '%)' : '')]);
+        return h('details', {}, h('summary', {}, h('span', {}, when + ' · Practice'), h('span', { class: 'f none' }, P.short || 'Practice')),
+          h('dl', { class: 'kv' }, ...kv.flatMap(([k, v]) => [h('dt', {}, k), h('dd', {}, String(v))])));
+      }
+      const f = flowScore(s), ifx = IFS.find(x => x.id === s.ifId);
       const kv = [['Energy', (s.energy0 ?? '–') + ' → ' + (s.energy1 ?? '–') + ' after tuning'], ['Nerves', s.nerves0 ?? '–'], ['Method', methodLabel(s.method)]];
       if (s.goal) kv.push(['Goal', s.goal]); if (s.cue) kv.push(['Cue', s.cue]); if (ifx) kv.push(['If-then', ifx.t]);
       if (s.mids && s.mids.length) kv.push(['Between sets', s.mids.map(m => (m.energy || '?') + ' energy, ' + (m.head || '?') + ' head' + (m.flow ? ', flow ' + m.flow : '')).join(' · ')]);
       if (s.post) kv.push(['Flow', r1(f).toFixed(1) + ' / 5'], ['Played', s.post.perf + ' / 5'], ['Energy at serve', fitTxt[s.post.fit] || '–']);
-      const det = h('details', {}, h('summary', {}, h('span', {}, d.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' }) + ' · ' + (POS[s.pos] ? POS[s.pos].name : '')),
-        h('span', { class: 'f' + (s.post ? '' : ' none') }, s.post ? r1(f).toFixed(1) : s.skipped ? 'Not logged' : 'Log it')),
+      const det = h('details', {}, h('summary', {}, h('span', {}, when + (POS[s.pos] ? ' · ' + POS[s.pos].name : '')),
+        h('span', { class: 'f' + (s.post ? '' : ' none') }, s.post ? r1(f).toFixed(1) : s.skipped ? 'Not logged' : own ? 'Log it' : 'Not logged')),
         h('dl', { class: 'kv' }, ...kv.flatMap(([k, v]) => [h('dt', {}, k), h('dd', {}, String(v))])));
-      if (!s.post && !s.skipped) det.append(h('button', { class: 'btn btn-ghost', style: 'margin-top:10px;min-height:48px;font-size:18px', onclick: () => openPost(s.id) }, 'Log this match'));
+      if (own && !s.post && !s.skipped) det.append(h('button', { class: 'btn btn-ghost', style: 'margin-top:10px;min-height:48px;font-size:18px', onclick: () => openPost(s.id) }, 'Log this match'));
       return det;
     })));
 }
@@ -1530,6 +1686,320 @@ function endSession(goHome = true) {
   if (goHome) { renderHub(); show('hub'); }
 }
 
+/* ---------- voice coach (speech synthesis, English / Czech) ---------- */
+// Uses the phone's built-in text-to-speech voices, so it works offline when a voice for the language is installed.
+const VOICE_TXT = {
+  en: {
+    in_nose: 'Breathe in through your nose', out_mouth: 'Breathe out through your mouth', out_nose: 'Breathe out through your nose', hold: 'Hold', rest: 'Breathe normally',
+    power: 'Power breaths. In through the nose, out through the mouth. Follow the beat.',
+    tune_done: 'Good. Rate your energy now.', reframe_nervous: 'Say it out loud: I’m excited.', reframe_calm: 'Say it out loud: I get to play.',
+    goal: 'Your goal on every ball: {x}.', cue: 'Your cue: {x}.', reset: 'Breathe out. Eyes still. {x}.', headphones: 'Headphones off. Tune in to the court.',
+    clutch: ['Breathe out', 'Pick one spot', 'Hold your eyes on it', '{x}', 'Serve'],
+    mid_high: 'Bring it down. Long breaths out.', mid_low: 'Turn it up. Power breaths.', mid_right: 'Stay right there. Slow, steady breathing.',
+    memory: 'Start with your best: {x}. Feel how loose you were.', locked: 'You’re locked in. {x}.',
+    p_breath: 'Breathing practice. Follow the circle.', p_img: 'Imagery practice. Close your eyes and see each scene from your own eyes, at real speed.',
+    p_reset: 'Reset practice. Tap after each point.', p_clutch: 'Clutch serve practice. Tap Go before each serve.', made: 'In?', done: 'Done. Nice work.',
+    img_extra: ['Now replay your best rally of the season, start to finish.', 'Feel the ball leave your hands exactly where you wanted it.', 'A mistake happens. Breathe out, say your cue, next ball.', 'Back to the start. See it again, a little faster.']
+  },
+  cs: {
+    in_nose: 'Nádech nosem', out_mouth: 'Výdech ústy', out_nose: 'Výdech nosem', hold: 'Zadrž dech', rest: 'Dýchej normálně',
+    power: 'Silné dýchání. Nádech nosem, výdech ústy. Drž rytmus.',
+    tune_done: 'Dobře. Teď ohodnoť svou energii.', reframe_nervous: 'Řekni nahlas: Těším se.', reframe_calm: 'Řekni nahlas: Jdu si to užít.',
+    goal: 'Tvůj cíl u každého míče: {x}.', cue: 'Tvoje klíčové slovo: {x}.', reset: 'Výdech. Oči v klidu. {x}.', headphones: 'Sundej sluchátka. Vnímej kurt.',
+    clutch: ['Výdech', 'Vyber si jedno místo', 'Drž na něm oči', '{x}', 'Podání'],
+    mid_high: 'Zklidni se. Dlouhé výdechy.', mid_low: 'Přidej energii. Silné dýchání.', mid_right: 'Takhle to drž. Pomalé, klidné dýchání.',
+    memory: 'Začni tím nejlepším: {x}. Vzpomeň si na ten pocit lehkosti.', locked: 'Jdeme na to. {x}.',
+    p_breath: 'Dechový trénink. Sleduj kruh.', p_img: 'Trénink představivosti. Zavři oči a sleduj každou scénu svýma očima, ve skutečné rychlosti.',
+    p_reset: 'Trénink resetu. Ťukni po každém bodu.', p_clutch: 'Trénink podání pod tlakem. Před každým podáním ťukni na Start.', made: 'Bylo dobře?', done: 'Hotovo. Dobrá práce.',
+    img_extra: ['Teď si přehraj svou nejlepší výměnu sezóny, od začátku do konce.', 'Cítíš, jak míč letí přesně tam, kam chceš.', 'Přijde chyba. Výdech, klíčové slovo, další míč.', 'Zpátky na začátek. Viď to znovu, o kousek rychleji.']
+  }
+};
+const SCRIPT_CS = {
+  setter: ['Podání letí. Včas na místo nahrávky. Jsi tam dřív než příjem.', 'Příjem letí. Nohy stojí, ruce nahoře, tělo čelem.', 'Rychlý pohled na jejich blokaře. Už víš, kam to půjde.', 'Měkké ruce, stejný tvar. Nahrávka odchází v rytmu.', 'Smečař má čistý úder. Cítíš tempo, které řídíš.', 'Krytí, oči zpátky na míči. Klid a kontrola.'],
+  hitter: ['Přijímáš. Klidné ruce, míč na cíl.', 'Přechod ven na kraj. Oči na rukou nahrávače.', 'Míč letí. Pomalu, pak rychle. Ruce dozadu, velký švih nahoru.', 'Nahoře vidíš blok. Mezera je volná.', 'Vysoký kontakt, rychlá ruka, plné zápěstí. Volný úder.', 'Dopad v rovnováze, zpátky do krytí, připravit na další.'],
+  middle: ['Základní postavení u sítě. Ruce nahoře, oči na jejich příjmu.', 'Míč jde k nahrávači. Tvoje oči na jeho rukou.', 'Odhoz. To je tvůj signál. Krok, překřížení, odraz.', 'Uzavřeš mezeru a natlačíš ruce přes síť. Pevné ruce.', 'Dopad, otočka, od sítě. Řekni si o rychlou.', 'Nahrávač tě najde. Rychlá ruka. Dolů.'],
+  libero: ['Příjem podání. Váha dopředu, ruce uvolněné.', 'Nadhoz jde nahoru. Tvoje oči už tam jsou.', 'Kontakt. Čteš plachtu, nebo rotaci. Nohy už jdou.', 'Za míčem, klidné ruce, natočené k nahrávači.', 'Obrana. Oči na jejich nahrávači, pak na rameni smečaře.', 'Vybereš to vysoko doprostřed. Tohle tě baví.']
+};
+const CS_PHRASES = {
+  'Feet to the target early': 'Včas na místo nahrávky', 'Same hands every set': 'Stejné ruce při každé nahrávce', 'See their middle before I set': 'Před nahrávkou vidět jejich blokaře', 'Talk on every ball': 'Mluvit u každého míče',
+  'Own the tempo': 'Tempo je moje', 'Quiet hands': 'Klidné ruce', 'Feet first': 'Nejdřív nohy', 'Next ball': 'Další míč',
+  'Full approach every time': 'Pokaždé plný rozběh', 'See the block before I swing': 'Vidět blok před úderem', 'Platform still at contact': 'Klidné ruce při kontaktu', 'Call the ball early': 'Hlásit míč včas',
+  'Swing free': 'Volný úder', 'High and fast': 'Vysoko a rychle', 'See it, hit it': 'Vidím, smečuju',
+  'Eyes on the setter’s release': 'Oči na rukou nahrávače', 'Close the block every time': 'Pokaždé uzavřít blok', 'Get off the net fast': 'Rychle od sítě', 'Be up for every quick': 'Být nahoře na každou rychlou',
+  'Read, step, seal': 'Čti, krok, zavři', 'Close and press': 'Zavřít a natlačit', 'Fast feet': 'Rychlé nohy',
+  'Feet to the ball first': 'Nejdřív nohy k míči', 'Platform angle to target': 'Ruce natočené k cíli', 'Talk on every serve': 'Mluvit u každého podání', 'Low and ready on defense': 'V obraně nízko a připraveně',
+  'Early eyes, quiet platform': 'Oči včas, klidné ruce', 'Angle to target': 'Natočit k cíli'
+};
+const trCue = (x) => (Voice.lang === 'cs' && CS_PHRASES[x]) ? CS_PHRASES[x] : (x || '');
+const Voice = {
+  lang: store.get('voice', 'off'),
+  set(l) { this.lang = l; store.set('voice', l); this.stop(); if (l !== 'off') this.say(l === 'cs' ? 'Hlasový průvodce je zapnutý.' : 'Voice coach on.'); },
+  ok() { return this.lang !== 'off' && typeof speechSynthesis !== 'undefined'; },
+  voices() { try { return speechSynthesis.getVoices() || []; } catch { return []; } },
+  has(l) { return this.voices().some(v => (v.lang || '').toLowerCase().startsWith(l)); },
+  pick() { const pre = this.lang === 'cs' ? 'cs' : 'en'; const vs = this.voices().filter(v => (v.lang || '').toLowerCase().startsWith(pre)); return vs.find(v => v.localService) || vs[0] || null; },
+  t(k, x) { const d = VOICE_TXT[this.lang] || VOICE_TXT.en; const v = d[k] != null ? d[k] : VOICE_TXT.en[k]; return typeof v === 'string' ? v.replace('{x}', x == null ? '' : x) : v; },
+  say(text, queue) {
+    if (!this.ok() || !text) return;
+    try {
+      if (!queue) speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text), v = this.pick();
+      if (v) u.voice = v; u.lang = this.lang === 'cs' ? 'cs-CZ' : 'en-US'; u.rate = this.lang === 'cs' ? 1 : 0.95;
+      speechSynthesis.speak(u);
+    } catch {}
+  },
+  key(k, x, queue) { const t = this.t(k, x); if (typeof t === 'string') this.say(t, queue); },
+  stop() { try { speechSynthesis.cancel(); } catch {} },
+  breath(key, kind, rt, dur, i, round) {
+    if (!this.ok()) return;
+    if (key === 'power') { if (kind === 'in' && i === 0 && round === 0) this.key('power'); else if (kind === 'rest') this.key('rest'); return; }
+    if (kind === 'in') this.key('in_nose');
+    else if (kind.startsWith('out')) this.key(rt === 'mouth' ? 'out_mouth' : 'out_nose');
+    else if (kind.startsWith('hold')) this.key('hold');
+    else if (kind === 'rest') this.key('rest');
+  }
+};
+try { speechSynthesis.addEventListener('voiceschanged', () => { if (currentScreen() === 'checkin') renderVoiceSeg(); }); } catch {}
+function renderVoiceSeg() {
+  const seg = $('#voiceSeg'); if (!seg) return;
+  seg.replaceChildren(...[['off', 'Off'], ['en', 'English'], ['cs', 'Čeština']].map(([v, t]) => h('button', { 'aria-pressed': String(Voice.lang === v), onclick: () => { Voice.set(v); renderVoiceSeg(); } }, t)));
+  const note = $('#voiceNote');
+  if (typeof speechSynthesis === 'undefined') { note.hidden = false; note.textContent = 'This browser can’t speak. Try Chrome or Safari.'; }
+  else if (Voice.lang === 'cs' && !Voice.has('cs')) { note.hidden = false; note.textContent = 'No Czech voice found on this phone yet. Add one in your phone’s text-to-speech settings, or the app speaks with the default voice.'; }
+  else if (Voice.lang !== 'off') { note.hidden = false; note.textContent = 'Spoken cues for breathing, mindset, visualization, the reset and the clutch serve. Uses your phone’s built-in voice.'; }
+  else note.hidden = true;
+}
+
+/* ---------- hub cards ---------- */
+function weekPractice() {
+  const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - ((d.getDay() + 6) % 7));
+  return sessions().filter(s => s.kind === 'practice' && s.at >= d.getTime()).length;
+}
+function renderHubCards() {
+  const box = $('#hubCards'); if (!box) return;
+  const n = weekPractice(), cards = [];
+  cards.push(h('button', { class: 'hcard', onclick: openPractice }, h('div', {}, h('b', {}, 'Practice mode'), h('span', { class: 's' }, 'Training days · ' + Math.min(n, 3) + ' of 3 this week')), h('span', { class: 'go' }, 'Train →')));
+  if (Cloud.user && Cloud.profile && Cloud.profile.role === 'coach') cards.push(h('button', { class: 'hcard', onclick: openCoach }, h('div', {}, h('b', {}, 'Coach dashboard'), h('span', { class: 's' }, 'Your team’s flow, alerts and what works')), h('span', { class: 'go' }, 'Open →')));
+  box.replaceChildren(...cards);
+}
+
+/* ---------- practice mode ---------- */
+const PRACTICE = {
+  breath: { title: 'Breathing', short: 'Breathing', dose: '5 min', why: 'Slow breathing practised daily shifts heart-rate variability toward calm and makes the match-day version automatic.' },
+  imagery: { title: 'Imagery', short: 'Imagery', dose: '10 min', why: 'Your position script plus your best rally, replayed in first person. About 10 minutes, 3 times a week gave the biggest gains in studies.' },
+  reset: { title: 'Reset reps', short: 'Reset', dose: '10 reps in drills', why: 'Use the 3-second reset after every point in a drill so it’s automatic in matches.' },
+  clutch: { title: 'Clutch serves', short: 'Clutch', dose: '10 serves', why: 'Run the clutch routine before each serve and track how many go in. Practising under pressure is what transfers.' }
+};
+function openPractice() { renderPractice(); show('practice'); }
+function renderPractice() {
+  const n = weekPractice();
+  $('#practiceWeek').replaceChildren(h('div', { class: 'eyebrow', style: 'margin-bottom:8px' }, 'This week · ' + n + ' of 3 sessions'), h('div', { class: 'weekdots' }, ...[0, 1, 2].map(i => h('i', { class: i < n ? 'on' : '' }))));
+  $('#practiceCards').replaceChildren(...Object.entries(PRACTICE).map(([k, P]) => h('button', { class: 'pcardx', onclick: () => startPractice(k) }, h('b', {}, P.title), h('span', { class: 'dose' }, P.dose), h('span', { class: 's' }, P.why))));
+}
+function logPractice(type, dur, reps, made) {
+  if (dur < 20 && !reps) return;
+  const at = Date.now(), rec = { id: 'p' + at, kind: 'practice', type, at, updatedAt: at, dur: Math.round(dur), reps: reps || 0, made: made || 0, pos: S.pos };
+  const all = sessions(); all.push(rec); saveSessions(all.slice(-500)); Cloud.mark(rec.id);
+  toast('Practice logged', 'cyan', 2000); Voice.key('done', null, true);
+}
+function practiceShell(title, sub) {
+  const inner = h('div', { class: 'inner' });
+  const o = h('div', { class: 'full', role: 'dialog', 'aria-label': title, style: 'justify-content:flex-start' }, inner);
+  inner.append(h('div', { class: 'eyebrow' }, 'Practice · ' + sub), h('h2', { style: 'font-size:34px' }, title));
+  document.body.append(o); keepAwake();
+  return { o, inner };
+}
+function startPractice(type) {
+  Audio.init();
+  const S0 = performance.now(), el = () => (performance.now() - S0) / 1000;
+  if (type === 'breath') {
+    const { o, inner } = practiceShell('Breathing', '5 minutes');
+    let key = 'slow';
+    const seg = h('div', { class: 'seg' });
+    const num = h('span', { class: 'num' }), orb = h('div', { class: 'orb' }, num), route = h('div', { class: 'route' }), lbl = h('div', { class: 'lbl' }), cnt = h('div', { class: 'cnt' });
+    const holder = h('div'); holder.innerHTML = '<svg class="ring" viewBox="0 0 100 100" aria-hidden="true"><circle class="trk" cx="50" cy="50" r="46" fill="none" stroke-width="3"/><circle class="bar" cx="50" cy="50" r="46" fill="none" stroke-width="3"/></svg>';
+    const ring = holder.firstChild, bar = ring.querySelector('.bar');
+    const drawSeg = () => seg.replaceChildren(...['slow', 'sigh', 'box'].map(k => h('button', { 'aria-pressed': String(k === key), onclick: () => { key = k; drawSeg(); runBreath({ orb, lbl, cnt, num, route }, key); } }, BREATHS[k].label)));
+    drawSeg();
+    const fin = h('button', { class: 'btn btn-primary' }, 'Finish');
+    inner.append(seg, h('div', { class: 'breath', style: 'width:min(260px,66vw)' }, ring, orb, cnt, lbl), route, fin);
+    Voice.key('p_breath');
+    setTimeout(() => runBreath({ orb, lbl, cnt, num, route }, key), Voice.ok() ? 2200 : 0);
+    const iv = setInterval(() => { const f = 1 - el() / 300; setRing(bar, f); if (f <= 0) end(); }, 250);
+    const end = () => { clearInterval(iv); stopBreath(); Voice.stop(); o.remove(); logPractice('breath', Math.min(300, el())); renderPractice(); renderHubCards(); };
+    fin.onclick = end;
+  }
+  if (type === 'imagery') {
+    const { o, inner } = practiceShell('Imagery', '10 minutes');
+    const base = POS[S.pos || 'hitter'].script, extra = VOICE_TXT.en.img_extra;
+    const lines = [...base, ...extra], spoken = Voice.lang === 'cs' ? [...SCRIPT_CS[S.pos || 'hitter'], ...VOICE_TXT.cs.img_extra] : lines;
+    const line = h('div', { class: 'viz-line' }, 'Close your eyes between lines. Keep the phone nearby.'), meta = h('div', { class: 'viz-n' }, '10:00 left');
+    const fin = h('button', { class: 'btn btn-primary' }, 'Finish');
+    inner.append(h('div', { class: 'viz-stage' }, meta, line), fin);
+    Voice.key('p_img'); let idx = -1;
+    const iv = setInterval(() => {
+      const t = el(), i = Math.floor(t / 15) % lines.length;
+      meta.textContent = fmt(600 - t) + ' left';
+      if (Math.floor(t / 15) !== idx) { idx = Math.floor(t / 15); line.textContent = lines[i]; if (t > 3) Voice.say(spoken[i]); buzz(10); }
+      if (t >= 600) end();
+    }, 250);
+    const end = () => { clearInterval(iv); Voice.stop(); o.remove(); logPractice('imagery', Math.min(600, el())); renderPractice(); renderHubCards(); };
+    fin.onclick = end;
+  }
+  if (type === 'reset') {
+    const { o, inner } = practiceShell('Reset reps', 'Use it after every point');
+    let reps = 0;
+    const c = h('div', { class: 'counter' }, '0'), go = h('button', { class: 'btn btn-cyan' }, 'Point over · Reset'), fin = h('button', { class: 'btn btn-ghost' }, 'Finish');
+    inner.append(h('p', { style: 'margin:0' }, 'After each point in your drill, tap and run the 3-second reset. Aim for 10.'), c, go, fin);
+    Voice.key('p_reset');
+    go.onclick = () => practiceReset(() => { reps++; c.textContent = reps; if (reps === 10) toast('10 resets. That’s a full set.', 'cyan', 2500); });
+    fin.onclick = () => { o.remove(); logPractice('reset', el(), reps); renderPractice(); renderHubCards(); };
+  }
+  if (type === 'clutch') {
+    const { o, inner } = practiceShell('Clutch serves', 'Routine before every serve');
+    let reps = 0, made = 0;
+    const c = h('div', { class: 'counter' }, '0 / 0'), go = h('button', { class: 'btn btn-cyan' }, 'Go · Run routine'), fin = h('button', { class: 'btn btn-ghost' }, 'Finish');
+    const ask = h('div', { class: 'row', hidden: '' }), yes = h('button', { class: 'btn btn-primary' }, 'In'), no = h('button', { class: 'btn btn-ghost' }, 'Out');
+    ask.append(yes, no);
+    inner.append(h('p', { style: 'margin:0' }, 'Before each serve, tap Go and follow the routine. Then tell the app whether it went in.'), c, go, ask, fin);
+    Voice.key('p_clutch');
+    const draw = () => { c.textContent = made + ' / ' + reps; };
+    go.onclick = () => openClutch(() => { go.hidden = true; ask.hidden = false; Voice.key('made'); });
+    const answer = (inn) => { reps++; if (inn) made++; draw(); ask.hidden = true; go.hidden = false; buzz(inn ? 20 : [10, 30, 10]); };
+    yes.onclick = () => answer(true); no.onclick = () => answer(false);
+    fin.onclick = () => { o.remove(); logPractice('clutch', el(), reps, made); renderPractice(); renderHubCards(); };
+  }
+}
+
+/* ---------- coach dashboard ---------- */
+const coachState = { teamId: store.get('coachTeam', null), player: null, data: null };
+function openCoach() { coachState.player = null; show('coach'); renderCoach(); }
+function sparkSVG(scores, W = 320, H = 80) {
+  const p = 12, X = i => p + (scores.length > 1 ? i / (scores.length - 1) : 0.5) * (W - 2 * p - 12), Y = v => H - p - (v - 1) / 4 * (H - 2 * p);
+  const pts = scores.map((v, i) => X(i).toFixed(1) + ',' + Y(v).toFixed(1));
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H); svg.setAttribute('class', 'spark'); svg.setAttribute('role', 'img'); svg.setAttribute('aria-label', 'Flow score per match, 1 to 5');
+  svg.innerHTML = [1, 3, 5].map(v => '<line x1="' + p + '" x2="' + (W - p - 12) + '" y1="' + Y(v) + '" y2="' + Y(v) + '" stroke="#313833" stroke-width="1"/><text x="' + (W - 2) + '" y="' + (Y(v) + 3) + '" fill="#a3aba2" font-size="9" text-anchor="end" font-family="Inter, system-ui">' + v + '</text>').join('') +
+    (scores.length > 1 ? '<polygon points="' + X(0) + ',' + (H - p) + ' ' + pts.join(' ') + ' ' + X(scores.length - 1) + ',' + (H - p) + '" fill="rgba(127,220,156,.12)"/><polyline points="' + pts.join(' ') + '" fill="none" stroke="#7fdc9c" stroke-width="2.5" stroke-linejoin="round"/>' : '') +
+    (scores.length ? '<circle cx="' + X(scores.length - 1) + '" cy="' + Y(scores[scores.length - 1]) + '" r="5" fill="#e4f55a"/>' : '');
+  return svg;
+}
+function playerStats(list) {
+  const matches = list.filter(s => s.kind !== 'practice' && s.post && s.post.flow);
+  const flows = matches.map(s => avg(s.post.flow));
+  const last5 = flows.slice(-5), prev = flows.slice(-6, -3), recent3 = flows.slice(-3);
+  const lastAt = list.length ? Math.max(...list.map(s => s.at)) : null;
+  const weekAgo = Date.now() - 7 * 864e5, practice7 = list.filter(s => s.kind === 'practice' && s.at >= weekAgo).length;
+  const fits = matches.slice(-5).map(s => s.post.fit);
+  const mids = list.flatMap(s => s.mids || []);
+  const dims = FLOW_ITEMS.map((_, i) => avg(matches.slice(-8).map(s => s.post.flow[i])));
+  const flags = [];
+  if (lastAt && Date.now() - lastAt > 14 * 864e5) flags.push(['No activity for ' + Math.floor((Date.now() - lastAt) / 864e5) + ' days', 'mute']);
+  if (!list.length) flags.push(['No sessions yet', 'mute']);
+  if (flows.length >= 6 && avg(recent3) <= avg(prev) - 0.5) flags.push(['Flow dropping', '']);
+  if (fits.filter(x => x === 'high').length >= 2) flags.push(['Often too wired at first serve', '']);
+  if (fits.filter(x => x === 'low').length >= 2) flags.push(['Often flat at first serve', '']);
+  if (mids.length >= 3 && mids.filter(m => m.head === 'busy').length / mids.length >= 0.5) flags.push(['Busy head between sets', '']);
+  if (matches.length >= 3 && dims[8] <= 2.5) flags.push(['Low enjoyment', '']);
+  if (flows.length >= 3 && avg(last5) >= 4) flags.push(['In a good place', 'ok']);
+  return { matches, flows, last5: last5.length ? avg(last5) : null, lastAt, practice7, dims, flags, mids };
+}
+const ago = (t) => { if (!t) return 'never'; const d = Math.floor((Date.now() - t) / 864e5); return d <= 0 ? 'today' : d === 1 ? 'yesterday' : d + ' days ago'; };
+async function renderCoach() {
+  const body = $('#coachBody');
+  if (!Cloud.enabled()) { body.replaceChildren(h('p', {}, 'Accounts aren’t switched on for this copy of the app, so there’s no coach dashboard yet.')); return; }
+  if (!Cloud.user) { body.replaceChildren(h('h2', { style: 'font-size:32px' }, 'Coach dashboard'), h('p', {}, 'Sign in with your coach account to see your team.'), h('button', { class: 'btn btn-primary', onclick: openAccount }, 'Sign in')); return; }
+  if (!navigator.onLine) { body.replaceChildren(h('p', { class: 'msg err' }, 'You’re offline. The coach dashboard needs a connection.')); return; }
+  body.replaceChildren(h('p', { class: 'note' }, 'Loading your teams…'));
+  let teams;
+  try { teams = (await Cloud.myTeams()).filter(t => t.role === 'coach'); } catch (e) { body.replaceChildren(h('p', { class: 'msg err' }, 'Couldn’t load your teams: ' + e.message)); return; }
+  body.replaceChildren();
+  const nm = h('input', { type: 'text', id: 'newTeam', maxlength: '60', placeholder: 'Team name, e.g. U17 Women' });
+  const mk = h('button', { class: 'btn btn-primary' }, 'Create team'), m = msgEl();
+  mk.onclick = async () => {
+    if (!nm.value.trim()) return say(m, 'Give the team a name.', 'err');
+    busy(mk, true, 'Creating…');
+    try { const t = await Cloud.createTeam(nm.value.trim()); coachState.teamId = t.id; store.set('coachTeam', t.id); if (Cloud.profile) Cloud.profile.role = 'coach'; renderHubCards(); renderCoach(); }
+    catch (e) { busy(mk, false, 'Create team'); say(m, e.message, 'err'); }
+  };
+  const createBlock = [h('div', { class: 'field' }, h('label', { for: 'newTeam' }, 'Team name'), nm), m, mk];
+  if (!teams.length) {
+    body.append(h('h2', { style: 'font-size:32px' }, 'Create your team'),
+      h('p', { class: 'note' }, 'You’ll get a 6-letter code. Players enter it in their Account screen and choose what to share: a summary, or everything. You only see sessions from the day each player joins, and only what they chose.'), ...createBlock);
+    return;
+  }
+  if (!teams.find(t => t.id === coachState.teamId)) coachState.teamId = teams[0].id;
+  const team = teams.find(t => t.id === coachState.teamId);
+  if (teams.length > 1) body.append(h('div', { class: 'chips' }, ...teams.map(t => h('button', { class: 'chip', 'aria-pressed': String(t.id === team.id), onclick: () => { coachState.teamId = t.id; store.set('coachTeam', t.id); coachState.player = null; renderCoach(); } }, t.name))));
+  let data;
+  try { data = await Cloud.teamOverview(team.id) || []; } catch (e) { body.append(h('p', { class: 'msg err' }, 'Couldn’t load the team: ' + e.message)); return; }
+  coachState.data = data;
+  if (coachState.player) { const pl = data.find(x => x.user_id === coachState.player); if (pl) return renderCoachPlayer(body, team, pl); coachState.player = null; }
+  // header + code
+  const codeEl = h('div', { class: 'teamcode' }, team.code);
+  const copy = h('button', { class: 'link', style: 'flex:none' }, 'Copy code');
+  copy.onclick = async () => { try { await navigator.clipboard.writeText(team.code); toast('Code copied', 'cyan', 1500); } catch { toast('Select the code to copy it', '', 2000); } };
+  const regen = h('button', { class: 'link', style: 'flex:none' }, 'New code');
+  regen.onclick = async () => { if (!regen.dataset.sure) { regen.dataset.sure = '1'; regen.textContent = 'Tap again: old code stops working'; return; } try { team.code = await Cloud.regenCode(team.id); renderCoach(); } catch (e) { toast(e.message, '', 3000); } };
+  body.append(h('h2', { style: 'font-size:34px' }, team.name),
+    h('div', { class: 'card' }, h('div', { class: 'eyebrow' }, 'Team code · players join from their Account screen'), codeEl, h('div', { class: 'row', style: 'justify-content:flex-start;gap:18px' }, copy, regen)));
+  // team stats
+  const all = data.map(pl => ({ pl, st: playerStats(pl.sessions || []) }));
+  const cut = Date.now() - 14 * 864e5, cut2 = Date.now() - 28 * 864e5;
+  const recentM = data.flatMap(pl => (pl.sessions || []).filter(s => s.kind !== 'practice' && s.post && s.at >= cut));
+  const prevM = data.flatMap(pl => (pl.sessions || []).filter(s => s.kind !== 'practice' && s.post && s.at >= cut2 && s.at < cut));
+  const teamFlow = recentM.length ? avg(recentM.map(flowScore)) : null, prevFlow = prevM.length ? avg(prevM.map(flowScore)) : null;
+  const practiceWk = data.reduce((n, pl) => n + (pl.sessions || []).filter(s => s.kind === 'practice' && s.at >= Date.now() - 7 * 864e5).length, 0);
+  body.append(h('div', { class: 'stats' },
+    h('div', { class: 'stat' }, h('div', { class: 'v' }, String(data.length)), h('div', { class: 'l' }, 'Players')),
+    h('div', { class: 'stat' }, h('div', { class: 'v' }, teamFlow == null ? '–' : r1(teamFlow).toFixed(1)), h('div', { class: 'l' }, 'Team flow · 14 days' + (teamFlow != null && prevFlow != null ? (teamFlow - prevFlow >= 0.1 ? ' ↑' : teamFlow - prevFlow <= -0.1 ? ' ↓' : '') : ''))),
+    h('div', { class: 'stat' }, h('div', { class: 'v' }, String(practiceWk)), h('div', { class: 'l' }, 'Practice · 7 days'))));
+  if (!data.length) { body.append(h('p', {}, 'No players yet. Share the code above. Each player joins from Account → Teams.')); }
+  else {
+    const order = all.sort((a, b) => (b.st.flags.filter(f => f[1] === '').length - a.st.flags.filter(f => f[1] === '').length) || ((b.st.lastAt || 0) - (a.st.lastAt || 0)));
+    body.append(h('div', { class: 'eyebrow' }, 'Roster · needs attention first'),
+      h('div', { class: 'roster' }, ...order.map(({ pl, st }) => h('button', { class: 'pl', onclick: () => { coachState.player = pl.user_id; renderCoach(); } },
+        h('span', { class: 'nm' }, pl.name), h('span', { class: 'fl' + (st.last5 == null ? ' none' : '') }, st.last5 == null ? 'no logs' : r1(st.last5).toFixed(1)),
+        h('span', { class: 'meta' }, (POS[pl.position] ? POS[pl.position].name + ' · ' : '') + 'active ' + ago(st.lastAt) + ' · ' + st.matches.length + ' logged · ' + (pl.share === 'full' ? 'shares everything' : 'shares summary')),
+        st.flags.length ? h('span', { class: 'flags' }, ...st.flags.map(([t, c]) => h('span', { class: 'flag ' + c }, t))) : null))));
+    // what works across the team
+    const ms = data.flatMap(pl => (pl.sessions || []).filter(s => s.kind !== 'practice' && s.post));
+    const byMethod = {}; ms.forEach(s => { (byMethod[s.method] = byMethod[s.method] || []).push(flowScore(s)); });
+    const rows = Object.entries(byMethod).map(([k, v]) => [methodLabel(k), v.length, avg(v)]).sort((a, b) => b[2] - a[2]);
+    if (rows.length) body.append(h('div', { class: 'card' }, h('h3', {}, 'What works across the team'),
+      h('div', { class: 'tbl-wrap' }, h('table', { class: 'tbl' }, h('thead', {}, h('tr', {}, h('th', {}, 'Breathing method'), h('th', { class: 'n' }, 'Matches'), h('th', { class: 'n' }, 'Avg flow'))),
+        h('tbody', {}, ...rows.map(([k, n, f]) => h('tr', {}, h('td', {}, k), h('td', { class: 'n' }, String(n)), h('td', { class: 'n' }, r1(f).toFixed(1))))))),
+      h('p', { class: 'why' }, ms.length < 20 ? 'Early read: fewer than 20 logged matches across the team. Differences may be luck.' : 'Averages across every logged match on the team. Each player’s own app still adapts to them individually.')));
+  }
+  const more = h('details', {}, h('summary', { class: 'link', style: 'cursor:pointer' }, 'Create another team'), h('div', { style: 'display:grid;gap:12px;margin-top:12px' }, ...createBlock));
+  const delT = h('button', { class: 'link', style: 'color:var(--warn)' }, 'Delete this team');
+  delT.onclick = async () => { if (!delT.dataset.sure) { delT.dataset.sure = '1'; delT.textContent = 'Tap again to delete ' + team.name + '. Players keep their own data.'; return; } try { await Cloud.deleteTeam(team.id); coachState.teamId = null; renderCoach(); } catch (e) { toast(e.message, '', 3000); } };
+  body.append(more, delT, h('p', { class: 'note' }, 'Players chose what to share and can leave at any time. Players under 15 joined with a parent’s or guardian’s agreement.'));
+}
+function renderCoachPlayer(body, team, pl) {
+  const st = playerStats(pl.sessions || []);
+  const back = h('button', { class: 'link' }, '← ' + team.name);
+  back.onclick = () => { coachState.player = null; renderCoach(); };
+  body.append(back, h('h2', { style: 'font-size:34px' }, pl.name),
+    h('p', { class: 'note' }, (POS[pl.position] ? POS[pl.position].name + ' · ' : '') + 'Joined ' + new Date(pl.joined_at).toLocaleDateString() + ' · ' + (pl.share === 'full' ? 'Shares everything' : 'Shares summary (no goals, cues or if-then plans)')),
+    h('div', { class: 'stats' },
+      h('div', { class: 'stat' }, h('div', { class: 'v' }, String(st.matches.length)), h('div', { class: 'l' }, 'Matches logged')),
+      h('div', { class: 'stat' }, h('div', { class: 'v' }, st.last5 == null ? '–' : r1(st.last5).toFixed(1)), h('div', { class: 'l' }, 'Flow · last 5')),
+      h('div', { class: 'stat' }, h('div', { class: 'v' }, String(st.practice7)), h('div', { class: 'l' }, 'Practice · 7 days'))));
+  if (st.flags.length) body.append(h('div', { class: 'flags', style: 'display:flex;flex-wrap:wrap;gap:6px' }, ...st.flags.map(([t, c]) => h('span', { class: 'flag ' + c }, t))));
+  if (st.flows.length >= 2) body.append(h('div', {}, h('div', { class: 'eyebrow' }, 'Flow per match'), sparkSVG(st.flows)));
+  if (st.matches.length) {
+    let lowIdx = -1, lowV = 9; st.dims.forEach((v, i) => { if (i !== 7 && v < lowV) { lowV = v; lowIdx = i; } });
+    body.append(h('div', { class: 'bars' }, h('div', { class: 'eyebrow' }, 'Flow ingredients · last ' + Math.min(8, st.matches.length) + ' matches'),
+      ...FLOW_ITEMS.map(([dim], i) => h('div', { class: 'bar-row' + (i === lowIdx ? ' low' : '') }, h('span', {}, dim), h('span', { class: 'track' }, h('span', { class: 'fill', style: 'display:block;width:' + (st.dims[i] / 5 * 100) + '%' })), h('span', { class: 'n' }, r1(st.dims[i]).toFixed(1))))),
+      h('div', { class: 'card' }, h('h3', {}, 'Talking point'), h('p', { style: 'margin:0' }, DIM_TIPS[lowIdx])));
+  }
+  renderHistory(body, pl.sessions || [], false);
+  const rm = h('button', { class: 'link', style: 'color:var(--warn)' }, 'Remove from team');
+  rm.onclick = async () => { if (!rm.dataset.sure) { rm.dataset.sure = '1'; rm.textContent = 'Tap again to remove ' + pl.name; return; } try { await Cloud.removeMember(team.id, pl.user_id); coachState.player = null; renderCoach(); } catch (e) { toast(e.message, '', 3000); } };
+  body.append(rm);
+}
+
 /* ---------- science sheet ---------- */
 const SCIENCE = [
   ['Flow can be invited, not switched on', 's', 'Flow has nine parts (Csikszentmihalyi; Jackson & Csikszentmihalyi, Flow in Sports). Challenge matched to skill, clear goals and clear feedback are the conditions you can set up; the rest describe the experience. A 2023 review of flow interventions (Goddard et al.) found none that conclusively induced flow, so the app builds the conditions and learns what helps you. A meta-analysis of 22 studies found flow and performance are positively linked, but it cannot show which causes which.', 'https://ore.exeter.ac.uk/articles/journal_contribution/A_systematic_review_and_meta-analysis_of_the_relationship_between_flow_states_and_performance/29784977'],
@@ -1542,6 +2012,7 @@ const SCIENCE = [
   ['Self-talk', 's', 'A meta-analysis of 32 studies found a moderate effect of self-talk on performance (ES = 0.48), larger when the cue is practiced (Hatzigeorgiadis et al. 2011). Say yours in every reset.', 'https://www.psychologicalscience.org/journals/perspectives/1745691611413136/'],
   ['Breathing', 'm', 'Slow breathing reliably raises heart-rate variability, a marker of calm (223 studies; Laborde et al. 2022). Across randomized trials, breathwork lowered stress by a small amount (g = −0.35; Fincham et al. 2023). Daily cyclic sighing improved mood more than mindfulness over a month (Balban et al. 2023). The effect of one session right before a match is not established.', 'https://pmc.ncbi.nlm.nih.gov/articles/PMC9828383/'],
   ['Music', 'm', 'Across 139 studies, music improved mood (g = 0.48) and physical performance (g = 0.31) without changing heart rate (Terry et al. 2020). Fast, loud music raises arousal; the app uses tempo to push energy up or down.', 'https://research.usq.edu.au/item/q57x6/effects-of-music-in-exercise-and-sport-a-meta-analytic-review'],
+  ['Practice mode', 'm', 'Imagery training gave the largest gains at about 10 minutes, 3 times a week, over roughly 100 days (Liu et al. 2025, 86 studies). Routines also need rehearsal: one-off pre-match interventions tend to fade. Practice mode lets you train the breathing, imagery, reset and clutch-serve routine on training days.', 'https://pmc.ncbi.nlm.nih.gov/articles/PMC12109254/'],
   ['Why the app learns from you', 'm', 'Because the best arousal level and the techniques that help are individual, the app compares your post-match flow scores across methods and energy levels. It needs at least 3 logged matches and gets more reliable with more. The post-match questions are Flow of Ace’s own short wording of the nine flow dimensions from Jackson & Csikszentmihalyi’s Flow in Sports (1999), not the validated Flow State Scale, which is licensed through Mind Garden.', null],
   ['Eye drills', 'l', 'Screen-based eye drills improve the drill itself but have not been shown to improve play. Elite volleyball players who trained a tracking task for 8 weeks improved on the task but not on a blocking test (Fleddermann et al. 2019). A 2024 review found no evidence that general perceptual training transfers to sport (Fransen). The app keeps only a 20-second optional eye primer.', 'https://pmc.ncbi.nlm.nih.gov/articles/PMC11560981/'],
   ['Keep screen time short', 'm', 'In a 4-week study of 24 young volleyball players, those who watched TV instead of using social media before training improved their passing and attack decisions; the social media group did not (Fortes et al. 2021). The app keeps on-screen time to a few minutes and sends you to the court with your eyes up.', 'https://pubmed.ncbi.nlm.nih.gov/34404292/'],
@@ -1567,14 +2038,14 @@ $('#startBtn').onclick = startSession;
 $('#tuneNext').onclick = startMindset;
 $('#mindNext').onclick = startSee;
 $('#seePlay').onclick = () => { Audio.init(); playSee(); };
-$('#seeVoice').onclick = (e) => { voice = !voice; e.currentTarget.setAttribute('aria-pressed', String(voice)); e.currentTarget.textContent = voice ? 'Voice on' : 'Voice off'; if (!voice) try { speechSynthesis.cancel(); } catch {} };
+$('#seeVoice').onclick = () => { Voice.set(({ off: 'en', en: 'cs', cs: 'off' })[Voice.lang]); labelSeeVoice(); renderCheckin(); };
 $('#seeNext').onclick = startBody;
 $('#deckPrev').onclick = () => { if (deckI > 0) { deckI--; renderDeck(); } };
 $('#deckNext').onclick = () => { if (deckI < cards.length - 1) { deckI++; renderDeck(); } };
 $('#bodyDone').onclick = goLock;
-$('#resetPractice').onclick = practiceReset;
+$('#resetPractice').onclick = () => practiceReset();
 $('#midBtn').onclick = openMid;
-$('#clutchBtn').onclick = openClutch;
+$('#clutchBtn').onclick = () => openClutch();
 $('#postBtn').onclick = () => openPost();
 $('#lockHome').onclick = () => { renderHub(); show('hub'); };
 $('#postSave').onclick = savePost;
@@ -1582,6 +2053,8 @@ $('#postSkip').onclick = skipPost;
 $('#openProfile').onclick = () => { renderProfile(); show('profile'); };
 $('#acctBtn').onclick = openAccount;
 $('#acctHome').onclick = () => { renderHub(); show('hub'); };
+$('#practiceHome').onclick = () => { renderHub(); show('hub'); };
+$('#coachHome').onclick = () => { coachState.player = null; renderHub(); show('hub'); };
 $('#profileHome').onclick = () => { renderHub(); show('hub'); };
 $('#stExit').onclick = closeEyePrimer;
 $('#muteBtn').onclick = () => { S.muted = !S.muted; Audio.setMuted(S.muted); $('#muteWave').style.display = S.muted ? 'none' : ''; $('#muteBtn').setAttribute('aria-label', S.muted ? 'Unmute audio' : 'Mute audio'); };
