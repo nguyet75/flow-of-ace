@@ -170,7 +170,7 @@ input[type=text]::placeholder { color: var(--muted); }
 .viz-n { font-size: 12px; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; font-family: var(--font-display); font-weight: 700; }
 
 /* Deck */
-.deck { position: relative; height: 380px; touch-action: pan-y; }
+.deck { position: relative; height: 560px; touch-action: pan-y; }
 .dcard { position: absolute; inset: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 22px; padding: 20px; display: flex; flex-direction: column; gap: 12px;
   transition: transform .3s ease, opacity .3s ease; will-change: transform; }
 .dcard.dragging { transition: none; }
@@ -179,7 +179,14 @@ input[type=text]::placeholder { color: var(--muted); }
 .dcard .cuebox { border-left: 4px solid var(--optic); padding: 4px 0 4px 12px; font-weight: 600; font-size: 17px; }
 .dcard .acts { margin-top: auto; display: flex; gap: 8px; }
 .dcard .acts button { flex: 1; min-height: 52px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface-2); font-weight: 600; }
-.dcard .acts button[aria-pressed="true"] { background: var(--optic); color: var(--on-accent); border-color: var(--optic); }
+.dcard .acts button[aria-pressed="true"] { background: var(--good); color: var(--on-accent); border-color: var(--good); }
+.dcard { overflow-y: auto; }
+.demo { width: 100%; height: 150px; display: block; background: var(--surface-2); border-radius: 14px; flex: none; }
+.howto { margin: 0; padding-left: 20px; display: grid; gap: 4px; font-size: 14.5px; }
+.dots i.done { background: var(--good); }
+.voicerow { display: flex; gap: 8px; align-items: center; margin: 6px 0; }
+.voicerow select { flex: 1; min-width: 0; min-height: 44px; border-radius: 12px; border: 2px solid var(--line); background: var(--surface); color: var(--fg); padding: 0 10px; font-size: 14px; }
+#voiceNote { display: grid; gap: 6px; }
 .dots { display: flex; justify-content: center; gap: 8px; }
 .dots i { width: 9px; height: 9px; border-radius: 50%; background: var(--surface-2); }
 .dots i.on { background: var(--optic); }
@@ -448,7 +455,8 @@ input[type=email], input[type=password] { width: 100%; min-height: 54px; border-
   <!-- BODY -->
   <section class="screen" id="body" hidden>
     <div><div class="eyebrow">Step 4 · Body, eyes off the screen</div><h2 style="font-size:30px">Activation finishers</h2></div>
-    <p class="note">Do these after your team warm-up. Put the phone down for each card.</p>
+    <p class="note">After your team warm-up: short finishers that switch on what you need for the first rally (shoulders, ankle spring, first step, your position’s footwork) without tiring you. 3–5 minutes. Watch the demo, put the phone down, do it, tap Done.</p>
+    <div class="eyebrow" id="deckProgress"></div>
     <div class="deck" id="deckEl"></div>
     <div class="dots" id="deckDots"></div>
     <div class="row"><button class="btn btn-ghost" id="deckPrev">Back</button><button class="btn btn-ghost" id="deckNext">Next</button></div>
@@ -625,6 +633,29 @@ window.FOA_CS = {
   'Eye primer': 'Zahřátí očí', 'Close eye primer': 'Zavřít zahřátí očí', 'Dot': 'Bod', 'Eyes on': 'Oči připravené',
   'Head still. A dot jumps across the screen. Tap it the instant it appears. Turn the phone sideways if you can.': 'Hlava v klidu. Bod skáče po displeji. Ťukni na něj, jakmile se objeví. Pokud můžeš, otoč telefon na šířku.',
   'READY': 'POZOR', 'SPLIT': 'SPLIT', 'GO': 'TEĎ', '5 reactions done': '5 reakcí hotovo', 'Reaction drill, tap to exit': 'Reakční cvičení, ťukni pro ukončení',
+
+  'After your team warm-up: short finishers that switch on what you need for the first rally (shoulders, ankle spring, first step, your position’s footwork) without tiring you. 3–5 minutes. Watch the demo, put the phone down, do it, tap Done.': 'Po týmovém rozcvičení: krátká dokončení, která zapnou to, co potřebuješ pro první výměnu (ramena, pružnost kotníků, první krok, práci nohou na tvé pozici), aniž by tě unavila. 3–5 minut. Podívej se na ukázku, odlož telefon, udělej to a ťukni na Hotovo.',
+  'Animated demonstration': 'Animovaná ukázka',
+  'Hold a band at chest height, arms straight.': 'Drž gumu ve výšce hrudníku, ruce natažené.', 'Pull it apart until it touches your chest. Squeeze your shoulder blades.': 'Roztáhni ji, až se dotkne hrudníku. Stáhni lopatky k sobě.',
+  'Then elbows at your sides, rotate your forearms out 8 times each arm.': 'Pak lokty u těla a 8× vytoč předloktí ven na každou ruku.',
+  'Stand tall, feet hip-width.': 'Stůj vzpřímeně, chodidla na šířku boků.', 'Bounce on the balls of your feet. Knees almost straight.': 'Poskakuj po špičkách. Kolena skoro natažená.',
+  'Touch the floor as briefly as you can. Rest 20 seconds between sets.': 'Dotýkej se země co nejkratší dobu. Mezi sériemi 20 sekund pauza.',
+  'Ready stance, weight on the balls of your feet.': 'Připravené postavení, váha na přední části chodidel.', 'Small hop as you imagine the hitter’s contact. Land wide and low.': 'Malý poskok ve chvíli, kdy si představíš úder smečaře. Dopadni široce a nízko.',
+  'On GO, push off fast in any direction. Tap Reaction cue to practise with the screen.': 'Na TEĎ se rychle odraz libovolným směrem. Ťukni na Reakční signál a trénuj s displejem.',
+  'Start in your defensive base.': 'Začni v obranném postavení.', 'On “serve”, run to your setting spot. Arrive early and stop.': 'Na „podání“ běž na místo nahrávky. Buď tam včas a zastav se.',
+  'Jump, hands above your forehead, push the ball up. No ball needed.': 'Výskok, ruce nad čelem, vytlač míč nahoru. Míč není potřeba.',
+  'Start 4 big steps back from the net, at the pin.': 'Začni 4 velké kroky od sítě, u anténky.', 'Slow first step, then fast: right–left (left–right if left-handed).': 'První krok pomalu, pak rychle: pravá–levá (levák levá–pravá).',
+  'Both arms swing back, then up. Jump tall, reach, swing through.': 'Obě ruce švihni dozadu a pak nahoru. Výskok, natáhni se, dokonči švih.',
+  'Stand at the net, hands up at shoulder height.': 'Stůj u sítě, ruce nahoře ve výšce ramen.', 'Step, cross over, plant both feet.': 'Krok, překřížení, zapři obě nohy.',
+  'Jump and press both hands over the net. Repeat to the other side, then 3 quick-attack approaches.': 'Výskok a natlač obě ruce přes síť. Zopakuj na druhou stranu, pak 3 rozběhy na rychlou.',
+  'Low, wide stance, arms ready.': 'Nízké, široké postavení, ruce připravené.', 'Shuffle 2 steps sideways without crossing your feet.': 'Přísunem 2 kroky do strany bez křížení nohou.',
+  'Drop low and stop, platform angled to the target. Hold still for one second.': 'Sniž se a zastav, ruce natočené k cíli. Jednu sekundu bez pohybu.',
+  'Pick one exact spot on the other side.': 'Vyber si jedno přesné místo na druhé straně.', 'Hold your eyes on it for about 2 seconds. Still head, still eyes.': 'Drž na něm oči asi 2 sekundy. Hlava v klidu, oči v klidu.',
+  'Toss and serve without looking away first.': 'Nadhoď a podej, aniž bys předtím uhnul pohledem.',
+  'Turn the phone sideways if you can.': 'Pokud můžeš, otoč telefon na šířku.', 'Keep your head still. Tap each dot as fast as it appears.': 'Hlava v klidu. Ťukni na každý bod, jakmile se objeví.',
+  'A steady final look before aiming skills is one of the better-supported visual habits in sport.': 'Klidný závěrečný pohled před mířením patří k lépe podloženým zrakovým návykům ve sportu.',
+  'Voice': 'Hlas', 'Test voice': 'Vyzkoušet hlas', 'Recorded coach voice in use where available.': 'Kde je k dispozici, mluví nahraný hlas trenéra.',
+  'Voices marked ★ sound most natural. For a better voice, download one: iPhone: Settings → Accessibility → Spoken Content → Voices → pick an “Enhanced” or “Premium” voice. Android: Settings → Text-to-speech → Google → install voice data.': 'Hlasy s ★ znějí nejpřirozeněji. Lepší hlas si můžeš stáhnout: iPhone: Nastavení → Zpřístupnění → Předčítání obsahu → Hlasy → vyber hlas „Vylepšený“ nebo „Prémiový“. Android: Nastavení → Převod textu na řeč → Google → nainstalovat hlasová data.',
 
   // ---------- lock / in-match ----------
   'Locked in': 'Připraven', 'Process goal': 'Procesní cíl', 'If-then': 'Když–pak', 'Reset · 3 seconds between points': 'Reset · 3 sekundy mezi body',
@@ -883,6 +914,7 @@ window.FOA_CS_PATTERNS = [
   [/^Tap again to remove (.+)$/, (m) => 'Ťukni znovu pro odebrání: ' + m[1]],
   [/^Couldn’t (save|delete|load the team|load your teams): (.+)$/, (m) => ({ save: 'Nepodařilo se uložit: ', delete: 'Nepodařilo se smazat: ', 'load the team': 'Tým se nepodařilo načíst: ', 'load your teams': 'Týmy se nepodařilo načíst: ' })[m[1]] + m[2]],
   [/^(\d+) min$/, (m) => m[1] + ' min'],
+  [/^(\d+) of (\d+) done$/, (m) => 'Hotovo ' + m[1] + ' z ' + m[2]],
   [/^(.+) (\d) of 5$/, (m, t) => t(m[1]) + ' ' + m[2] + ' z 5'],
   [/^Practice · (.+)$/, (m, t) => 'Trénink · ' + t(m[1])]
 ];
@@ -1577,6 +1609,7 @@ function startSession() {
   Audio.init();
   S.startAt = Date.now(); S.endAt = S.startAt + S.win * 60000; S.faded = false;
   S.dir = direction(S.energy0, S.nerves0);
+  Voice.setMood(S.dir === 'down' ? 'calm' : S.dir === 'up' ? 'hype' : 'steady');
   const pick = pickMethod(S.dir); S.method = pick.m; S.why = pick.why;
   S.energy1 = S.energy0; $('#energy2In').value = S.energy0; $('#energy2V').textContent = S.energy0;
   S.goal = null; S.cue = null; S.memory = '';
@@ -1763,38 +1796,158 @@ function stopSee() { clearInterval(seeT); seeRunning = false; try { speechSynthe
 function speak(t) { try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.rate = 0.95; speechSynthesis.speak(u); } catch {} }
 
 /* ---------- step 4: body deck ---------- */
-let deckI = 0, cards = [];
-function buildDeck() {
-  cards = [
-    { id: 'scap', title: 'Scap band prep', dose: '10 pull-aparts · 8 rotations each arm', cue: 'Blades back and down', why: 'Wakes up the rotator cuff and shoulder-blade muscles before hitting, serving and setting.' },
-    { id: 'pogo', title: 'Pogo hops', dose: '2 × 10 fast hops', cue: 'Stiff ankles, quick ground', why: 'Short, springy contacts prime the ankles for jumping without tiring the legs.' },
-    { id: 'split', title: 'Split-step reaction', dose: '5 reps on the GO flash', cue: 'Split on contact, drop and go', why: 'Couples a visual trigger to your first step. Tap Reaction cue and watch for GO.', react: true },
-    Object.assign({ id: 'move' }, POS[S.pos].move),
-    { id: 'qe', title: 'Quiet-eye serves', dose: '5 serves with a ball', cue: 'Pick a spot, hold the look, serve', why: 'Before each serve, fix your eyes on one target for about 2 seconds, then go. A steady final look before aiming skills is one of the better-supported visual habits in sport.' },
-    { id: 'eyes', title: 'Eye primer (optional)', dose: '20 seconds on screen', cue: 'Head still, eyes jump', why: 'A short dot-tap warm-up for your eyes. Treat it as a focus switch, not skill training: screen drills haven’t been shown to improve play.', eyes: true }
-  ];
-  if (!S.phys || !cards.find(c => c.id === S.phys && !c.eyes)) S.phys = 'move';
+// Animated stick-figure demos. A pose is a set of joints in a 120×120 box; keyframes are tweened in a loop.
+const BASE = { head: [60, 20], sh: [60, 33], hip: [60, 62], le: [52, 47], lh: [50, 61], re: [68, 47], rh: [70, 61], lk: [55, 85], lf: [54, 108], rk: [65, 85], rf: [66, 108] };
+const pose = (o = {}, dx = 0, dy = 0) => { const q = {}; for (const k in BASE) { const v = o[k] || BASE[k]; q[k] = [v[0] + dx, v[1] + dy]; } for (const k in o) if (!BASE[k]) q[k] = o[k]; return q; };
+const SIDE = { head: [60, 20], sh: [60, 33], hip: [60, 62], le: [58, 47], lh: [60, 60], re: [62, 47], rh: [64, 60], lk: [58, 85], lf: [57, 108], rk: [62, 85], rf: [63, 108] };
+const sidePose = (o = {}, dx = 0, dy = 0) => { const q = {}; for (const k in SIDE) { const v = o[k] || SIDE[k]; q[k] = [v[0] + dx, v[1] + dy]; } for (const k in o) if (!SIDE[k]) q[k] = o[k]; return q; };
+const LOW = { hip: [60, 68], lk: [50, 86], rk: [70, 86], lf: [46, 108], rf: [74, 108], sh: [60, 40], head: [60, 27] };
+const DEMOS = {
+  scap: { dur: 2.4, extra: 'band', frames: [
+    [0, pose({ le: [54, 44], lh: [57, 42], re: [66, 44], rh: [63, 42] })],
+    [0.45, pose({ le: [44, 38], lh: [30, 38], re: [76, 38], rh: [90, 38] })],
+    [0.6, pose({ le: [44, 38], lh: [30, 38], re: [76, 38], rh: [90, 38] })],
+    [1, pose({ le: [54, 44], lh: [57, 42], re: [66, 44], rh: [63, 42] })]] },
+  pogo: { dur: 0.9, frames: [
+    [0, pose({ lk: [56, 86], rk: [64, 86] })], [0.45, pose({ lk: [57, 84], rk: [63, 84] }, 0, -9)], [0.75, pose({ lk: [56, 86], rk: [64, 86] })], [1, pose({ lk: [56, 86], rk: [64, 86] })]] },
+  split: { dur: 2.2, extra: 'go', frames: [
+    [0, pose({ lk: [54, 86], rk: [66, 86] })], [0.3, pose({ lk: [56, 83], rk: [64, 83], lf: [56, 104], rf: [64, 104] }, 0, -6)],
+    [0.45, pose(Object.assign({}, LOW, { le: [46, 54], lh: [44, 66], re: [74, 54], rh: [76, 66] }))], [0.75, pose(Object.assign({}, LOW, { le: [46, 54], lh: [44, 66], re: [74, 54], rh: [76, 66] }))],
+    [1, pose({ lk: [54, 86], rk: [66, 86] })]] },
+  hitter: { dur: 3, view: 'side', frames: [
+    [0, sidePose({}, -34)],
+    [0.22, sidePose({ lk: [64, 84], lf: [70, 108], rk: [56, 86], rf: [52, 108] }, -18)],
+    [0.42, sidePose({ hip: [60, 68], sh: [64, 40], head: [67, 28], le: [52, 52], lh: [44, 62], re: [54, 52], rh: [46, 62], lk: [68, 86], lf: [66, 108], rk: [60, 86], rf: [58, 108] }, 2)],
+    [0.62, sidePose({ le: [62, 22], lh: [64, 8], re: [58, 22], rh: [56, 8], lk: [60, 84], lf: [62, 106], rk: [58, 84], rf: [58, 106] }, 10, -18)],
+    [0.78, sidePose({ le: [70, 28], lh: [80, 38], re: [58, 24], rh: [56, 10] }, 12, -14)],
+    [0.92, sidePose({ hip: [60, 66], lk: [64, 86], rk: [56, 86] }, 14)], [1, sidePose({}, -34)]] },
+  middle: { dur: 3, extra: 'net', frames: [
+    [0, pose({ le: [50, 30], lh: [50, 16], re: [70, 30], rh: [70, 16] }, -22)],
+    [0.2, pose({ le: [50, 30], lh: [50, 16], re: [70, 30], rh: [70, 16], rf: [80, 108], rk: [74, 86] }, -14)],
+    [0.4, pose({ le: [50, 30], lh: [50, 16], re: [70, 30], rh: [70, 16], lf: [74, 108], lk: [66, 86], rf: [60, 108] }, 4)],
+    [0.6, pose({ hip: [60, 68], le: [50, 30], lh: [50, 18], re: [70, 30], rh: [70, 18], lk: [52, 86], rk: [68, 86], lf: [50, 108], rf: [70, 108] }, 14)],
+    [0.78, pose({ le: [52, 18], lh: [54, 2], re: [68, 18], rh: [66, 2] }, 14, -16)],
+    [0.92, pose({ le: [50, 30], lh: [50, 16], re: [70, 30], rh: [70, 16] }, 14)], [1, pose({ le: [50, 30], lh: [50, 16], re: [70, 30], rh: [70, 16] }, -22)]] },
+  libero: { dur: 2.6, frames: [
+    [0, pose(Object.assign({}, LOW, { le: [52, 56], lh: [58, 70], re: [68, 56], rh: [62, 70] }), -20)],
+    [0.25, pose(Object.assign({}, LOW, { le: [52, 56], lh: [58, 70], re: [68, 56], rh: [62, 70], lf: [52, 108], lk: [54, 86] }), -8)],
+    [0.5, pose(Object.assign({}, LOW, { le: [52, 56], lh: [58, 70], re: [68, 56], rh: [62, 70] }), 8)],
+    [0.62, pose(Object.assign({}, LOW, { hip: [60, 74], sh: [60, 46], head: [60, 33], lk: [48, 90], rk: [72, 90], le: [54, 62], lh: [62, 78], re: [66, 62], rh: [64, 78] }), 14)],
+    [0.85, pose(Object.assign({}, LOW, { hip: [60, 74], sh: [60, 46], head: [60, 33], lk: [48, 90], rk: [72, 90], le: [54, 62], lh: [62, 78], re: [66, 62], rh: [64, 78] }), 14)],
+    [1, pose(Object.assign({}, LOW, { le: [52, 56], lh: [58, 70], re: [68, 56], rh: [62, 70] }), -20)]] },
+  setter: { dur: 2.8, extra: 'ball', frames: [
+    [0, pose({}, -30)], [0.25, pose({ lk: [52, 85], rf: [72, 108] }, -12)],
+    [0.45, pose({ hip: [60, 66], le: [48, 24], lh: [54, 12], re: [72, 24], rh: [66, 12], lk: [54, 86], rk: [66, 86] }, 0)],
+    [0.62, pose({ le: [48, 22], lh: [54, 10], re: [72, 22], rh: [66, 10] }, 0, -14)],
+    [0.75, pose({ le: [54, 14], lh: [56, -2], re: [66, 14], rh: [64, -2] }, 0, -14)],
+    [0.9, pose({ le: [50, 30], lh: [52, 18], re: [70, 30], rh: [68, 18] })], [1, pose({}, -30)]] },
+  qe: { dur: 4, view: 'side', extra: 'gaze', frames: [
+    [0, sidePose({ le: [62, 46], lh: [68, 52], re: [56, 46], rh: [52, 52] }, -24)],
+    [0.45, sidePose({ le: [62, 46], lh: [68, 52], re: [56, 46], rh: [52, 52] }, -24)],
+    [0.6, sidePose({ le: [66, 26], lh: [68, 10], re: [54, 40], rh: [46, 34] }, -24)],
+    [0.75, sidePose({ le: [66, 26], lh: [68, 10], re: [56, 22], rh: [62, 8] }, -24)],
+    [0.88, sidePose({ le: [62, 46], lh: [66, 56], re: [70, 30], rh: [82, 40] }, -22)],
+    [1, sidePose({ le: [62, 46], lh: [68, 52], re: [56, 46], rh: [52, 52] }, -24)]] }
+};
+const ease = t => 0.5 - Math.cos(Math.PI * t) / 2;
+function poseAt(D, t) {
+  const F = D.frames; let i = 0; while (i < F.length - 2 && t > F[i + 1][0]) i++;
+  const [t0, a] = F[i], [t1, b] = F[i + 1], k = t1 > t0 ? ease(Math.min(1, Math.max(0, (t - t0) / (t1 - t0)))) : 0, out = {};
+  for (const j in a) out[j] = [a[j][0] + (b[j][0] - a[j][0]) * k, a[j][1] + (b[j][1] - a[j][1]) * k];
+  return out;
 }
-function startBody() { stopSee(); buildDeck(); deckI = 0; show('body'); renderDeck(); }
+function demoSVG(id) {
+  const D = DEMOS[id]; if (!D) return null;
+  const NS = 'http://www.w3.org/2000/svg', svg = document.createElementNS(NS, 'svg');
+  svg.setAttribute('viewBox', '0 -8 120 124'); svg.setAttribute('class', 'demo'); svg.setAttribute('role', 'img'); svg.setAttribute('aria-label', 'Animated demonstration');
+  const mk = (tag, attrs) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); svg.appendChild(e); return e; };
+  mk('line', { x1: 4, y1: 110, x2: 116, y2: 110, stroke: '#313833', 'stroke-width': 2 });
+  if (D.extra === 'net') { mk('rect', { x: 4, y: -6, width: 112, height: 12, fill: 'none', stroke: '#a3aba2', 'stroke-width': 1, 'stroke-dasharray': '2 2' }); }
+  const target = D.extra === 'gaze' ? mk('circle', { cx: 112, cy: 80, r: 4, fill: 'none', stroke: '#e4f55a', 'stroke-width': 2 }) : null;
+  const gaze = D.extra === 'gaze' ? mk('line', { stroke: '#e4f55a', 'stroke-width': 1.2, 'stroke-dasharray': '3 3' }) : null;
+  const band = D.extra === 'band' ? mk('line', { stroke: '#7fdc9c', 'stroke-width': 2.5 }) : null;
+  const ball = (D.extra === 'ball' || D.extra === 'gaze') ? mk('circle', { r: 4.5, fill: '#e4f55a' }) : null;
+  const path = mk('path', { fill: 'none', stroke: '#ebeee6', 'stroke-width': 4, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' });
+  const head = mk('circle', { r: 7, fill: '#ebeee6' });
+  const go = D.extra === 'go' ? mk('text', { x: 100, y: 22, fill: '#e4f55a', 'font-size': 16, 'font-family': 'Barlow Condensed, Arial Narrow, sans-serif', 'font-weight': 800, 'text-anchor': 'middle' }) : null;
+  if (go) go.textContent = 'GO';
+  let raf, t0 = performance.now();
+  const frame = (now) => {
+    if (!svg.isConnected) { cancelAnimationFrame(raf); return; }
+    const t = ((now - t0) / 1000 / D.dur) % 1, P = poseAt(D, t), j = (k) => P[k][0].toFixed(1) + ' ' + P[k][1].toFixed(1);
+    path.setAttribute('d', 'M' + j('sh') + 'L' + j('hip') + 'M' + j('sh') + 'L' + j('le') + 'L' + j('lh') + 'M' + j('sh') + 'L' + j('re') + 'L' + j('rh') + 'M' + j('hip') + 'L' + j('lk') + 'L' + j('lf') + 'M' + j('hip') + 'L' + j('rk') + 'L' + j('rf'));
+    head.setAttribute('cx', P.head[0]); head.setAttribute('cy', P.head[1] - 2);
+    if (band) { band.setAttribute('x1', P.lh[0]); band.setAttribute('y1', P.lh[1]); band.setAttribute('x2', P.rh[0]); band.setAttribute('y2', P.rh[1]); }
+    if (go) go.setAttribute('opacity', t > 0.42 && t < 0.78 ? 1 : 0);
+    if (ball && D.extra === 'ball') { const up = t > 0.4 && t < 0.85; ball.setAttribute('cx', (P.lh[0] + P.rh[0]) / 2); ball.setAttribute('cy', up ? Math.min(P.lh[1], P.rh[1]) - 6 - (t > 0.72 ? (t - 0.72) * 160 : 0) : -40); }
+    if (D.extra === 'gaze') {
+      const hold = t < 0.5; gaze.setAttribute('x1', P.head[0] + 5); gaze.setAttribute('y1', P.head[1] - 2); gaze.setAttribute('x2', 112); gaze.setAttribute('y2', 80); gaze.setAttribute('opacity', hold ? 1 : 0.15);
+      target.setAttribute('r', hold ? 4 + Math.sin(t * 40) : 4);
+      const toss = t > 0.55 && t < 0.86; ball.setAttribute('cx', toss ? P.lh[0] : P.lh[0]); ball.setAttribute('cy', toss ? P.lh[1] - 10 - Math.sin((t - 0.55) / 0.31 * Math.PI) * 14 : P.lh[1] - 4);
+    }
+    raf = requestAnimationFrame(frame);
+  };
+  raf = requestAnimationFrame(frame);
+  return svg;
+}
+let deckI = 0, cards = [], deckDone = new Set();
+const MOVE_DEMO = { setter: 'setter', hitter: 'hitter', middle: 'middle', libero: 'libero' };
+const MOVE_STEPS = {
+  setter: ['Start in your defensive base.', 'On “serve”, run to your setting spot. Arrive early and stop.', 'Jump, hands above your forehead, push the ball up. No ball needed.'],
+  hitter: ['Start 4 big steps back from the net, at the pin.', 'Slow first step, then fast: right–left (left–right if left-handed).', 'Both arms swing back, then up. Jump tall, reach, swing through.'],
+  middle: ['Stand at the net, hands up at shoulder height.', 'Step, cross over, plant both feet.', 'Jump and press both hands over the net. Repeat to the other side, then 3 quick-attack approaches.'],
+  libero: ['Low, wide stance, arms ready.', 'Shuffle 2 steps sideways without crossing your feet.', 'Drop low and stop, platform angled to the target. Hold still for one second.']
+};
+function buildDeck() {
+  const pos = S.pos || 'hitter';
+  cards = [
+    { id: 'scap', title: 'Scap band prep', dose: '10 pull-aparts · 8 rotations each arm', cue: 'Blades back and down', demo: 'scap',
+      steps: ['Hold a band at chest height, arms straight.', 'Pull it apart until it touches your chest. Squeeze your shoulder blades.', 'Then elbows at your sides, rotate your forearms out 8 times each arm.'],
+      why: 'Wakes up the rotator cuff and shoulder-blade muscles before hitting, serving and setting.' },
+    { id: 'pogo', title: 'Pogo hops', dose: '2 × 10 fast hops', cue: 'Stiff ankles, quick ground', demo: 'pogo',
+      steps: ['Stand tall, feet hip-width.', 'Bounce on the balls of your feet. Knees almost straight.', 'Touch the floor as briefly as you can. Rest 20 seconds between sets.'],
+      why: 'Short, springy contacts prime the ankles for jumping without tiring the legs.' },
+    { id: 'split', title: 'Split-step reaction', dose: '5 reps on the GO flash', cue: 'Split on contact, drop and go', demo: 'split', react: true,
+      steps: ['Ready stance, weight on the balls of your feet.', 'Small hop as you imagine the hitter’s contact. Land wide and low.', 'On GO, push off fast in any direction. Tap Reaction cue to practise with the screen.'],
+      why: 'Couples a visual trigger to your first step. Tap Reaction cue and watch for GO.' },
+    Object.assign({ id: 'move', demo: MOVE_DEMO[pos], steps: MOVE_STEPS[pos] }, POS[pos].move),
+    { id: 'qe', title: 'Quiet-eye serves', dose: '5 serves with a ball', cue: 'Pick a spot, hold the look, serve', demo: 'qe',
+      steps: ['Pick one exact spot on the other side.', 'Hold your eyes on it for about 2 seconds. Still head, still eyes.', 'Toss and serve without looking away first.'],
+      why: 'A steady final look before aiming skills is one of the better-supported visual habits in sport.' },
+    { id: 'eyes', title: 'Eye primer (optional)', dose: '20 seconds on screen', cue: 'Head still, eyes jump', eyes: true,
+      steps: ['Turn the phone sideways if you can.', 'Keep your head still. Tap each dot as fast as it appears.'],
+      why: 'A short dot-tap warm-up for your eyes. Treat it as a focus switch, not skill training: screen drills haven’t been shown to improve play.' }
+  ];
+}
+function startBody() {
+  Voice.setMood('hype');
+  stopSee(); buildDeck(); deckI = 0; deckDone = new Set(); show('body'); renderDeck();
+}
 function renderDeck() {
   const el = $('#deckEl');
   el.replaceChildren(...cards.map((c, i) => {
     const acts = [];
-    if (!c.eyes) acts.push(h('button', { 'aria-pressed': String(S.phys === c.id), onclick: () => { S.phys = c.id; store.set('phys', c.id); renderDeck(); } }, S.phys === c.id ? '★ My body cue' : '☆ Use this cue'));
     if (c.react) acts.push(h('button', { onclick: reactionDrill }, 'Reaction cue'));
     else if (c.eyes) acts.push(h('button', { onclick: startEyePrimer }, 'Start 20s'));
     else acts.push(h('button', { onclick: (e) => cardTimer(e.currentTarget) }, 'Start 30s'));
-    const card = h('div', { class: 'dcard', 'aria-hidden': String(i !== deckI) },
-      h('div', { class: 'eyebrow' }, 'Card ' + (i + 1) + ' of ' + cards.length), h('h3', {}, c.title), h('div', { class: 'dose' }, c.dose),
-      h('div', { class: 'cuebox' }, c.cue), h('p', { class: 'note' }, c.why), h('div', { class: 'acts' }, acts));
+    const done = deckDone.has(c.id);
+    acts.push(h('button', { 'aria-pressed': String(done), onclick: () => { deckDone.add(c.id); buzz(15); if (deckI < cards.length - 1) deckI++; renderDeck(); } }, done ? 'Done ✓' : 'Done'));
     const off = i - deckI;
+    const card = h('div', { class: 'dcard', 'aria-hidden': String(i !== deckI) },
+      h('div', { class: 'row', style: 'align-items:baseline' }, h('div', { class: 'eyebrow' }, 'Card ' + (i + 1) + ' of ' + cards.length), done ? h('span', { class: 'done-tick', style: 'flex:none;text-align:right' }, '✓') : null),
+      h('h3', {}, c.title), h('div', { class: 'dose' }, c.dose),
+      off === 0 && c.demo ? demoSVG(c.demo) : (c.demo ? h('div', { class: 'demo' }) : null),
+      h('ol', { class: 'howto' }, ...(c.steps || []).map(t => h('li', {}, t))),
+      h('div', { class: 'cuebox' }, c.cue), h('p', { class: 'note' }, c.why), h('div', { class: 'acts' }, acts));
     card.style.transform = off === 0 ? 'none' : off > 0 ? 'translateX(' + (off === 1 ? 8 : 16) + 'px) scale(' + (1 - off * .04) + ')' : 'translateX(-120%) rotate(-8deg)';
     card.style.opacity = off < 0 || off > 2 ? 0 : 1 - off * .3; card.style.zIndex = 10 - Math.abs(off); card.style.pointerEvents = off === 0 ? 'auto' : 'none';
     if (off === 0) attachSwipe(card);
     return card;
   }).reverse());
-  $('#deckDots').replaceChildren(...cards.map((_, i) => h('i', { class: i === deckI ? 'on' : '' })));
+  $('#deckDots').replaceChildren(...cards.map((c, i) => h('i', { class: i === deckI ? 'on' : deckDone.has(c.id) ? 'done' : '' })));
   $('#deckPrev').disabled = deckI === 0; $('#deckNext').disabled = deckI === cards.length - 1;
+  const n = cards.filter(c => !c.eyes).length, d = cards.filter(c => !c.eyes && deckDone.has(c.id)).length;
+  $('#deckProgress').textContent = d + ' of ' + n + ' done';
 }
 function attachSwipe(card) {
   let x0 = null, dx = 0;
@@ -1939,6 +2092,7 @@ function runMidAction(inner, ans, close) {
   inner.replaceChildren(h('div', { class: 'eyebrow' }, 'Between sets · 30 seconds'), h('h2', { style: 'font-size:34px' }, title), br, route,
     h('p', { style: 'margin:0;font-weight:600' }, focusLine), h('p', { class: 'note' }, 'Cue: “' + (S.cue || 'Next ball') + '”'), done);
   Audio.init();
+  Voice.setMood(ans.energy === 'high' ? 'calm' : ans.energy === 'low' ? 'hype' : 'steady');
   Voice.key(ans.energy === 'high' ? 'mid_high' : ans.energy === 'low' ? 'mid_low' : 'mid_right');
   const startT = setTimeout(() => runBreath({ orb, lbl, cnt, num, route }, key), Voice.ok() ? 2600 : 0);
   const t0 = Date.now(), bar = ring.querySelector('.bar');
@@ -1948,6 +2102,7 @@ function runMidAction(inner, ans, close) {
 
 /* ---------- in-match: clutch serve ("make it happen") ---------- */
 function openClutch(onDone) {
+  Voice.setMood('steady');
   const big = h('div', { class: 'big' }, 'Breathe out');
   const sub = h('p', { class: 'note' }, '');
   const o = h('div', { class: 'full', role: 'dialog', 'aria-label': 'Clutch serve routine' }, h('div', { class: 'eyebrow' }, 'Clutch serve · about 8 seconds · tap to skip ahead'), big, sub);
@@ -2147,19 +2302,51 @@ const Voice = {
   ok() { return this.lang !== 'off' && typeof speechSynthesis !== 'undefined'; },
   voices() { try { return speechSynthesis.getVoices() || []; } catch { return []; } },
   has(l) { return this.voices().some(v => (v.lang || '').toLowerCase().startsWith(l)); },
-  pick() { const pre = this.lang === 'cs' ? 'cs' : 'en'; const vs = this.voices().filter(v => (v.lang || '').toLowerCase().startsWith(pre)); return vs.find(v => v.localService) || vs[0] || null; },
+  mood: 'steady',
+  // Delivery per energy direction: calmer = slower, lower, softer; hype = faster, brighter, louder.
+  MOODS: { calm: { rate: 0.82, pitch: 0.9, volume: 0.85 }, steady: { rate: 0.95, pitch: 1, volume: 1 }, hype: { rate: 1.12, pitch: 1.12, volume: 1 } },
+  setMood(m) { this.mood = this.MOODS[m] ? m : 'steady'; },
+  score(v) {
+    const n = (v.name || '') + ' ' + (v.voiceURI || '');
+    let sc = 0;
+    if (/premium|enhanced|natural|neural|wavenet|studio/i.test(n)) sc += 10;
+    if (/siri/i.test(n)) sc += 8;
+    if (/google/i.test(n)) sc += 6;
+    if (/compact|eloquence|espeak|robot|zarvox|bad news|bells|boing|bubbles|cellos|whisper|wobble|trinoids|albert|jester|organ|superstar/i.test(n)) sc -= 20;
+    if (v.localService) sc += 1;
+    return sc;
+  },
+  ranked() { const pre = this.lang === 'cs' ? 'cs' : 'en'; return this.voices().filter(v => (v.lang || '').toLowerCase().startsWith(pre)).sort((a, b) => this.score(b) - this.score(a)); },
+  pick() { const vs = this.ranked(), want = store.get('voiceName_' + this.lang, null); return (want && vs.find(v => v.name === want)) || vs[0] || null; },
   t(k, x) { const d = VOICE_TXT[this.lang] || VOICE_TXT.en; const v = d[k] != null ? d[k] : VOICE_TXT.en[k]; return typeof v === 'string' ? v.replace('{x}', x == null ? '' : x) : v; },
   say(text, queue) {
     if (!this.ok() || !text) return;
     try {
       if (!queue) speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(text), v = this.pick();
-      if (v) u.voice = v; u.lang = this.lang === 'cs' ? 'cs-CZ' : 'en-US'; u.rate = this.lang === 'cs' ? 1 : 0.95;
+      if (!queue) this.stopClip();
+      const u = new SpeechSynthesisUtterance(text), v = this.pick(), M = this.MOODS[this.mood];
+      if (v) u.voice = v; u.lang = this.lang === 'cs' ? 'cs-CZ' : 'en-US';
+      u.rate = M.rate * (this.lang === 'cs' ? 1.03 : 1); u.pitch = M.pitch; u.volume = M.volume;
       speechSynthesis.speak(u);
     } catch {}
   },
-  key(k, x, queue) { const t = this.t(k, x); if (typeof t === 'string') this.say(t, queue); },
-  stop() { try { speechSynthesis.cancel(); } catch {} },
+  // Recorded clips (audio/manifest.json) take priority over the phone's voice wherever they exist.
+  clips: null, clipEl: null,
+  async loadClips() { try { const r = await fetch('audio/manifest.json', { cache: 'no-cache' }); if (r.ok) this.clips = await r.json(); } catch {} },
+  clipUrl(k) { const m = this.clips && this.clips[this.lang]; if (!m) return null; return m[k + '.' + this.mood] || m[k] || null; },
+  stopClip() { if (this.clipEl) { try { this.clipEl.pause(); } catch {} this.clipEl = null; } },
+  key(k, x, queue) {
+    if (!this.ok()) return;
+    const url = x == null ? this.clipUrl(k) : null;
+    if (url) {
+      try { speechSynthesis.cancel(); } catch {}
+      this.stopClip(); const a = new window.Audio(url); this.clipEl = a; a.volume = this.MOODS[this.mood].volume;
+      a.play().catch(() => { const t = this.t(k, x); if (typeof t === 'string') this.say(t, queue); });
+      return;
+    }
+    const t = this.t(k, x); if (typeof t === 'string') this.say(t, queue);
+  },
+  stop() { try { speechSynthesis.cancel(); } catch {} this.stopClip(); },
   breath(key, kind, rt, dur, i, round) {
     if (!this.ok()) return;
     if (key === 'power') { if (kind === 'in' && i === 0 && round === 0) this.key('power'); else if (kind === 'rest') this.key('rest'); return; }
@@ -2177,11 +2364,21 @@ try { speechSynthesis.addEventListener('voiceschanged', () => { if (currentScree
 function renderVoiceSeg() {
   const seg = $('#voiceSeg'); if (!seg) return;
   seg.replaceChildren(...[['off', 'Off'], ['en', 'English'], ['cs', 'Čeština']].map(([v, t]) => h('button', { 'aria-pressed': String(Voice.lang === v), onclick: () => { Voice.set(v); renderVoiceSeg(); } }, t)));
-  const note = $('#voiceNote');
-  if (typeof speechSynthesis === 'undefined') { note.hidden = false; note.textContent = 'This browser can’t speak. Try Chrome or Safari.'; }
-  else if (Voice.lang === 'cs' && !Voice.has('cs')) { note.hidden = false; note.textContent = 'No Czech voice found on this phone yet. Add one in your phone’s text-to-speech settings, or the app speaks with the default voice.'; }
-  else if (Voice.lang !== 'off') { note.hidden = false; note.textContent = 'Spoken cues for breathing, mindset, visualization, the reset and the clutch serve. Uses your phone’s built-in voice.'; }
-  else note.hidden = true;
+  const note = $('#voiceNote'); note.replaceChildren(); note.hidden = Voice.lang === 'off';
+  if (typeof speechSynthesis === 'undefined') { note.hidden = false; note.textContent = 'This browser can’t speak. Try Chrome or Safari.'; return; }
+  if (Voice.lang === 'off') return;
+  const vs = Voice.ranked(), cur = Voice.pick();
+  if (!vs.length && Voice.lang === 'en') { /* no voices reported yet: the phone default is used */ }
+  else if (Voice.lang === 'cs' && !vs.length) note.append(h('span', {}, 'No Czech voice found on this phone yet. Add one in your phone’s text-to-speech settings, or the app speaks with the default voice.'));
+  else {
+    const sel = h('select', { id: 'voicePick', 'aria-label': 'Voice' }, ...vs.slice(0, 12).map(v => { const o = h('option', { value: v.name }, v.name.replace(/\s*\(.*?\)\s*/g, ' ').trim() + (Voice.score(v) >= 10 ? ' ★' : '')); if (cur && v.name === cur.name) o.selected = true; return o; }));
+    sel.onchange = () => { store.set('voiceName_' + Voice.lang, sel.value); };
+    const test = h('button', { class: 'chip', style: 'flex:none' }, 'Test voice');
+    test.onclick = () => { Voice.setMood('calm'); Voice.key('in_nose'); setTimeout(() => { Voice.setMood('hype'); Voice.say(Voice.t('mid_low'), true); Voice.setMood('steady'); }, 50); };
+    note.append(h('div', { class: 'voicerow' }, sel, test));
+  }
+  note.append(h('span', {}, 'Voices marked ★ sound most natural. For a better voice, download one: iPhone: Settings → Accessibility → Spoken Content → Voices → pick an “Enhanced” or “Premium” voice. Android: Settings → Text-to-speech → Google → install voice data.'));
+  if (Voice.clips && Voice.clips[Voice.lang]) note.append(h('span', { style: 'color:var(--good)' }, 'Recorded coach voice in use where available.'));
 }
 
 /* ---------- pilot check-in (baseline + after 6 weeks) ---------- */
@@ -2303,7 +2500,7 @@ function startPractice(type) {
     drawSeg();
     const fin = h('button', { class: 'btn btn-primary' }, 'Finish');
     inner.append(seg, h('div', { class: 'breath', style: 'width:min(260px,66vw)' }, ring, orb, cnt, lbl), route, fin);
-    Voice.key('p_breath');
+    Voice.setMood('calm'); Voice.key('p_breath');
     setTimeout(() => runBreath({ orb, lbl, cnt, num, route }, key), Voice.ok() ? 2200 : 0);
     const iv = setInterval(() => { const f = 1 - el() / 300; setRing(bar, f); if (f <= 0) end(); }, 250);
     const end = () => { clearInterval(iv); stopBreath(); Voice.stop(); o.remove(); logPractice('breath', Math.min(300, el())); renderPractice(); renderHubCards(); };
@@ -2316,7 +2513,7 @@ function startPractice(type) {
     const line = h('div', { class: 'viz-line' }, 'Close your eyes between lines. Keep the phone nearby.'), meta = h('div', { class: 'viz-n' }, '10:00 left');
     const fin = h('button', { class: 'btn btn-primary' }, 'Finish');
     inner.append(h('div', { class: 'viz-stage' }, meta, line), fin);
-    Voice.key('p_img'); let idx = -1;
+    Voice.setMood('calm'); Voice.key('p_img'); let idx = -1;
     const iv = setInterval(() => {
       const t = el(), i = Math.floor(t / 15) % lines.length;
       meta.textContent = fmt(600 - t) + ' left';
@@ -2540,6 +2737,7 @@ $('#stExit').onclick = closeEyePrimer;
 $('#muteBtn').onclick = () => { S.muted = !S.muted; Audio.setMuted(S.muted); $('#muteWave').style.display = S.muted ? 'none' : ''; $('#muteBtn').setAttribute('aria-label', S.muted ? 'Unmute audio' : 'Mute audio'); };
 
 $('#langBtn').onclick = switchLang;
+Voice.loadClips();
 startI18n();
 renderHub(); renderCheckin(); Cloud.init();
 
