@@ -259,8 +259,10 @@ input[type=text]::placeholder, input[type=search]::placeholder { color: var(--mu
 .dot::after { content: ""; position: absolute; inset: 22px; border-radius: 50%; background: var(--optic); box-shadow: 0 0 18px rgba(228,245,90,.75); }
 
 /* Sheet & toast */
-.sheet { position: fixed; inset: 0; z-index: 50; background: rgba(8,10,9,.7); display: flex; align-items: flex-end; }
-.sheet .panel { background: var(--surface); border-radius: 22px 22px 0 0; max-height: 88vh; overflow: auto; width: 100%; max-width: 560px; margin: 0 auto;
+.sheet { position: fixed; inset: 0; z-index: 50; background: rgba(8,10,9,.7); display: flex; align-items: flex-end; overscroll-behavior: contain; }
+html:has(.sheet) { overflow: hidden; }
+.sheet .panel > .row:first-child { position: sticky; top: -20px; z-index: 2; background: var(--surface); margin: -20px 0 0; padding: 20px 0 10px; border-bottom: 1px solid var(--line); }
+.sheet .panel { background: var(--surface); border-radius: 22px 22px 0 0; max-height: 88vh; max-height: 88dvh; overflow: auto; overscroll-behavior: contain; touch-action: pan-y; -webkit-overflow-scrolling: touch; width: 100%; max-width: 560px; margin: 0 auto;
   padding: 20px max(18px, env(safe-area-inset-right, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) max(18px, env(safe-area-inset-left, 0px)); display: grid; gap: 14px; }
 .sheet h2 { font-size: 30px; }
 .sci { display: grid; gap: 4px; padding-top: 12px; border-top: 1px solid var(--line); }
@@ -396,7 +398,6 @@ input[type=email], input[type=password], input[type=url] { width: 100%; min-heig
     <div class="hub-links">
       <button class="link" id="openProfile">My flow profile</button>
       <button class="link" data-sheet="science">The science</button>
-      <button class="link" id="openIntro">What is flow?</button>
     </div>
     <p class="note" id="hubNote">Works offline once loaded. Your matches and waitlist choices are saved on this device only.</p>
   </section>
@@ -764,7 +765,7 @@ window.FOA_CS = {
   'Go · Run routine': 'Start · Spustit rutinu', 'Practice logged': 'Trénink zapsán',
 
   // ---------- account ----------
-  'Your flow history': 'Tvoje historie flow', 'Role': 'Role', 'Player': 'Hráč', 'Coach': 'Trenér', 'Admin': 'Správce', 'Open admin': 'Otevřít správu',
+  'Your flow history': 'Tvoje historie flow', '▶ Watch the intro again': '▶ Pustit úvod znovu', 'Watch the intro again': 'Pustit úvod znovu', '▶ Play': '▶ Pustit', 'What is flow?': 'Co je flow?', 'Role': 'Role', 'Player': 'Hráč', 'Coach': 'Trenér', 'Admin': 'Správce', 'Open admin': 'Otevřít správu',
   'Everyone’s accounts, roles and teams': 'Účty, role a týmy všech', 'Admins only.': 'Jen pro správce.', 'You’re offline. The admin screen needs a connection.': 'Jsi offline. Správa potřebuje připojení.',
   'Loading accounts…': 'Načítám účty…', 'Search name or email': 'Hledat jméno nebo e-mail', 'All': 'Všichni', 'Players': 'Hráči', 'Coaches': 'Trenéři', 'Admins': 'Správci',
   'No one matches.': 'Nikdo neodpovídá.', 'Refresh': 'Obnovit', 'Accounts': 'Účty', 'All teams': 'Všechny týmy', 'People · tap a name for their history': 'Lidé · klepni na jméno pro historii',
@@ -1359,7 +1360,8 @@ function renderSignIn(body) {
   const lang = h('button', { class: 'acct', style: 'flex:none', onclick: switchLang }, LANG === 'cs' ? 'EN' : 'CZ');
   const parts = [h('div', { class: 'brandrow' }, h('h1', { style: 'font-size:44px' }, 'Flow ', h('span', { class: 'of', style: 'color:var(--cyan);font-size:.55em;vertical-align:.2em' }, 'of'), ' ', h('b', { style: 'color:var(--optic)' }, 'Ace')), lang),
     h('h2', { style: 'font-size:30px' }, 'Sign in to start'),
-    h('p', { class: 'note' }, 'Flow of Ace needs an account. It keeps your sessions, flow scores and what works for you, on every phone, and lets you join your team.')];
+    h('p', { class: 'note' }, 'Flow of Ace needs an account. It keeps your sessions, flow scores and what works for you, on every phone, and lets you join your team.'),
+    h('button', { class: 'link', style: 'justify-self:start', onclick: () => openIntro() }, '▶ Watch the intro again')];
   if (CFG.googleSignIn !== false) {
     const g = h('button', { class: 'btn btn-google' }); g.innerHTML = GOOGLE_G; g.append(h('span', {}, 'Continue with Google'));
     g.onclick = async () => { const { error } = await Cloud.sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: redirectURL() } }); if (error) say(m, error.message, 'err'); };
@@ -1487,7 +1489,8 @@ function renderAccountHome(body) {
     h('dl', { class: 'kv' }, h('dt', {}, 'Signed in as'), h('dd', {}, Cloud.user.email || '—'), h('dt', {}, 'Role'), h('dd', {}, ROLE_NAMES[myRole()] || 'Player'), h('dt', {}, 'Using it'), h('dd', {}, P.mode === 'team' ? 'With my team' : 'For myself'),
       h('dt', {}, 'History'), h('dd', {}, n + ' session' + (n === 1 ? '' : 's') + ', ' + logged_n + ' match' + (logged_n === 1 ? '' : 'es') + ' logged'),
       h('dt', {}, 'Sync'), h('dd', {}, Cloud.dirty.size ? Cloud.dirty.size + ' waiting to upload' : (Cloud.status || 'Up to date'))),
-    h('button', { class: 'btn btn-cyan', onclick: () => { renderProfile(); show('profile'); } }, 'See my flow history'));
+    h('button', { class: 'btn btn-cyan', onclick: () => { renderProfile(); show('profile'); } }, 'See my flow history'),
+    h('button', { class: 'btn btn-ghost', onclick: () => openIntro() }, '▶ Watch the intro again'));
   if (isAdmin()) body.append(h('button', { class: 'btn btn-primary', onclick: openAdmin }, 'Open admin'));
   if (isCoach()) body.append(h('button', { class: isAdmin() ? 'btn btn-ghost' : 'btn btn-primary', onclick: openCoach }, 'Open coach dashboard'));
   if (!isCoach() || (Cloud.teams || []).some(t => t.role === 'player')) renderTeamsCard(body);
@@ -2717,6 +2720,7 @@ function renderHubCards() {
   const box = $('#hubCards'); if (!box) return;
   const n = weekPractice(), cards = [], due = surveyDue();
   if (due) cards.push(h('button', { class: 'hcard', style: 'border-color:var(--cyan)', onclick: () => openSurvey(due) }, h('div', {}, h('b', {}, 'Pilot check-in · 1 minute'), h('span', { class: 's' }, due === 'base' ? 'Start of the pilot' : 'After 6 weeks')), h('span', { class: 'go' }, 'Answer →')));
+  cards.push(h('button', { class: 'hcard', onclick: () => openIntro() }, h('div', {}, h('b', {}, 'What is flow?'), h('span', { class: 's' }, 'Watch the intro again')), h('span', { class: 'go' }, '▶ Play')));
   cards.push(h('button', { class: 'hcard', onclick: openPractice }, h('div', {}, h('b', {}, 'Practice mode'), h('span', { class: 's' }, 'Training days · ' + Math.min(n, 3) + ' of 3 this week')), h('span', { class: 'go' }, 'Train →')));
   if (isAdmin()) cards.push(h('button', { class: 'hcard', onclick: openAdmin }, h('div', {}, h('b', {}, 'Admin'), h('span', { class: 's' }, 'Everyone’s accounts, roles and teams')), h('span', { class: 'go' }, 'Open →')));
   if (isCoach()) cards.push(h('button', { class: 'hcard', onclick: openCoach }, h('div', {}, h('b', {}, 'Coach dashboard'), h('span', { class: 's' }, 'Your team’s flow, alerts and what works')), h('span', { class: 'go' }, 'Open →')));
@@ -3056,7 +3060,8 @@ function openScience() {
 }
 
 /* ---------- wiring ---------- */
-document.addEventListener('click', e => { if (e.target.closest('[data-sheet]')) openScience(); });
+document.addEventListener('click', e => { if (e.target.closest('[data-sheet]') && !document.querySelector('.sheet')) openScience(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { const sh = [...document.querySelectorAll('.sheet')].pop(); if (sh) sh.remove(); } });
 $('#backHub').onclick = () => { renderHub(); show('hub'); };
 $('#startBtn').onclick = startSession;
 $('#tuneNext').onclick = startMindset;
@@ -3085,7 +3090,6 @@ $('#muteBtn').onclick = () => { S.muted = !S.muted; Audio.setMuted(S.muted); $('
 
 if (Cloud.enabled()) document.getElementById('hub').hidden = true;
 $('#langBtn').onclick = switchLang;
-$('#openIntro').onclick = () => openIntro();
 Voice.loadClips();
 startI18n();
 renderHub(); renderCheckin(); Cloud.init();
