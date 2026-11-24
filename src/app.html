@@ -273,7 +273,7 @@ input[type=text]::placeholder { color: var(--muted); }
 .acct span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .acct i { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); flex: none; }
 .acct i.ok { background: var(--good); } .acct i.wait { background: var(--warn); }
-input[type=email], input[type=password] { width: 100%; min-height: 54px; border-radius: 14px; border: 2px solid var(--line); background: var(--surface); color: var(--fg); padding: 0 14px; font-size: 16px; }
+input[type=email], input[type=password], input[type=url] { width: 100%; min-height: 54px; border-radius: 14px; border: 2px solid var(--line); background: var(--surface); color: var(--fg); padding: 0 14px; font-size: 16px; }
 .field { display: grid; gap: 6px; }
 .field label { font-size: 13px; color: var(--muted); font-weight: 600; }
 .check { display: flex; gap: 12px; align-items: flex-start; font-size: 14px; line-height: 1.4; }
@@ -331,6 +331,32 @@ input[type=email], input[type=password] { width: 100%; min-height: 54px; border-
 .teamrow { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid var(--line); }
 .teamrow > div { min-width: 0; }
 
+/* Flow intro */
+.intro { position: fixed; inset: 0; z-index: 45; background: var(--bg); display: flex; flex-direction: column; padding: calc(16px + env(safe-area-inset-top, 0px)) max(20px, env(safe-area-inset-right, 0px)) calc(20px + env(safe-area-inset-bottom, 0px)) max(20px, env(safe-area-inset-left, 0px)); }
+.intro .bar { display: flex; gap: 4px; }
+.intro .bar i { flex: 1; height: 4px; border-radius: 2px; background: var(--surface-2); overflow: hidden; }
+.intro .bar i b { display: block; height: 100%; width: 0; background: var(--optic); }
+.intro .stage { flex: 1; display: grid; align-content: center; gap: 18px; max-width: 520px; margin: 0 auto; width: 100%; }
+.intro h2 { font-size: clamp(38px, 11vw, 60px); line-height: .95; }
+.intro h2 em { font-style: normal; color: var(--optic); }
+.intro p { margin: 0; font-size: 17px; color: var(--muted); max-width: 40ch; }
+.intro .fx { animation: rise .7s ease both; }
+.intro .fx2 { animation: rise .7s .35s ease both; } .intro .fx3 { animation: rise .7s .7s ease both; } .intro .fx4 { animation: rise .7s 1.05s ease both; }
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+.intro .chips .chip { animation: rise .5s ease both; }
+.intro .row3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.intro .tile { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 12px; display: grid; gap: 6px; }
+.intro .tile b { font-family: var(--font-display); font-size: 20px; text-transform: uppercase; color: var(--optic); }
+.intro .tile span { font-size: 13px; color: var(--muted); }
+.intro .nav { display: flex; gap: 10px; }
+.intro svg.chart { width: 100%; height: auto; max-height: 46vh; }
+.wave { font-family: var(--font-display); font-weight: 800; font-size: clamp(90px, 30vw, 160px); line-height: .9; color: var(--optic); letter-spacing: .02em; display: flex; }
+.wave span { display: inline-block; animation: wv 2.4s ease-in-out infinite; }
+.wave span:nth-child(2) { animation-delay: .15s; } .wave span:nth-child(3) { animation-delay: .3s; } .wave span:nth-child(4) { animation-delay: .45s; }
+@keyframes wv { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+.reco { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--bg); background: var(--good); border-radius: 99px; padding: 2px 8px; width: max-content; }
+.music-row { display: flex; gap: 8px; }
+
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: 0s !important; animation-duration: 0s !important; } }
 @media (max-width: 360px) { .choices.three .t { font-size: 26px; } .brand h1 { font-size: 42px; } .bar-row { grid-template-columns: 8em 1fr 2.2em; } }
 </style>
@@ -357,6 +383,7 @@ input[type=email], input[type=password] { width: 100%; min-height: 54px; border-
     <div class="hub-links">
       <button class="link" id="openProfile">My flow profile</button>
       <button class="link" data-sheet="science">The science</button>
+      <button class="link" id="openIntro">What is flow?</button>
     </div>
     <p class="note" id="hubNote">Works offline once loaded. Your matches and waitlist choices are saved on this device only.</p>
   </section>
@@ -377,6 +404,7 @@ input[type=email], input[type=password] { width: 100%; min-height: 54px; border-
     </div>
     <div class="q"><h2>Minutes to first serve</h2><div class="choices three" id="winChoices"></div></div>
     <div class="q"><h2 style="font-size:22px">Voice coach</h2><div class="seg" id="voiceSeg"></div><p class="note" id="voiceNote" hidden></p></div>
+    <div id="musicBox"></div>
     <p class="adapt" id="zoneHint"></p>
     <button class="btn btn-primary" id="startBtn" disabled>Start my flow</button>
   </section>
@@ -795,6 +823,37 @@ window.FOA_CS = {
   'What would make Flow of Ace useful for you as a coach?': 'Co by Flow of Ace udělalo užitečným pro tebe jako trenéra?', 'How useful was the coach dashboard?': 'Jak užitečný byl trenérský přehled?',
   'Did anything change in how you coach because of it?': 'Změnilo se díky tomu něco v tom, jak trénuješ?', 'Would your club pay for this per season?': 'Zaplatil by za to váš klub na sezónu?',
   'Up to €100': 'Do 100 €', 'Up to €200': 'Do 200 €', 'Up to €400': 'Do 400 €', 'More than €400': 'Víc než 400 €',
+
+  // ---------- intro / player type / music ----------
+  'What is flow?': 'Co je flow?', 'Skip': 'Přeskočit', 'Let’s go': 'Jdeme na to', 'You set up': 'Připravíš', 'You feel': 'Cítíš', 'Skill': 'Dovednost', 'Challenge': 'Výzva', 'ANXIETY': 'ÚZKOST', 'BOREDOM': 'NUDA',
+  'Flow is when the': 'Flow je, když', 'game plays itself': 'hra jde sama', 'It lives between': 'Je mezi', 'too easy and too hard': 'moc lehkým a moc těžkým', 'Nine signs': 'Devět znaků', 'of flow': 'flow',
+  'You can’t switch it on.': 'Nedá se zapnout.', 'You can set it up.': 'Dá se připravit.', 'Before, during': 'Před, během', 'and after': 'a po', 'The app learns': 'Aplikace se učí', 'your flow': 'tvoje flow',
+  'Total focus. Moves happen without thinking. Time feels different. Athletes call it being in the zone.': 'Plné soustředění. Pohyby jdou samy. Čas plyne jinak. Sportovci tomu říkají být v zóně.',
+  'When the challenge is bigger than your skill, you get anxious. When it’s smaller, you get bored. Flow is the channel in between.': 'Když je výzva větší než tvoje dovednost, přijde úzkost. Když je menší, přijde nuda. Flow je pásmo mezi tím.',
+  'Three you can set up before the match. Six you feel when it happens.': 'Tři připravíš před zápasem. Šest cítíš, když to přijde.',
+  'No trick forces flow. But the right energy, a clear goal and a calm head make it far more likely.': 'Žádný trik flow nevynutí. Ale správná energie, jasný cíl a klidná hlava ho dělají mnohem pravděpodobnějším.',
+  'Before: tune your energy, set your mindset, see it, switch on your body. During: the reset, between-set checks and the clutch serve. After: 60 seconds to rate the match.': 'Před: nalaď energii, nastav hlavu, viď to, zapni tělo. Během: reset, kontroly mezi sety a podání pod tlakem. Po: 60 sekund na hodnocení zápasu.',
+  'Every match you log teaches it which energy level and which breathing work for you. Log your matches and it gets more personal.': 'Každý zapsaný zápas ji naučí, jaká energie a jaké dýchání ti fungují. Zapisuj zápasy a bude čím dál víc tvoje.',
+  'Flow is when the game plays itself. Total focus, moves happen without thinking, and time feels different. Athletes call it being in the zone.': 'Flow je, když hra jde sama. Plné soustředění, pohyby jdou bez přemýšlení a čas plyne jinak. Sportovci tomu říkají být v zóně.',
+  'Flow lives between too easy and too hard. When the challenge is bigger than your skill, you get anxious. When it is smaller, you get bored. Flow is the channel in between.': 'Flow je mezi moc lehkým a moc těžkým. Když je výzva větší než tvoje dovednost, přijde úzkost. Když je menší, přijde nuda. Flow je pásmo mezi tím.',
+  'Researchers describe nine signs of flow. Three you can set up before the match: a challenge that fits, a clear goal, and clear feedback. Six you feel when it happens.': 'Výzkumníci popisují devět znaků flow. Tři připravíš před zápasem: výzvu, která sedí, jasný cíl a jasnou zpětnou vazbu. Šest cítíš, když to přijde.',
+  'Nobody can switch flow on. But the right energy, a clear goal and a calm head make it far more likely. That is what this app does.': 'Flow nikdo nezapne. Ale správná energie, jasný cíl a klidná hlava ho dělají mnohem pravděpodobnějším. Přesně to tahle aplikace dělá.',
+  'Before the match you tune your energy, set your mindset, see it and switch on your body. During the match you use the reset. After the match, take sixty seconds to rate how it felt.': 'Před zápasem naladíš energii, nastavíš hlavu, uvidíš to a zapneš tělo. Během zápasu používáš reset. Po zápase si dej šedesát sekund na hodnocení, jaké to bylo.',
+  'Every match you log teaches the app which energy level and which breathing work for you. Log your matches, and it gets more personal. Let’s go.': 'Každý zapsaný zápas naučí aplikaci, jaká energie a jaké dýchání ti fungují. Zapisuj zápasy a bude čím dál víc tvoje. Jdeme na to.',
+  'Not too flat, not too wired': 'Ne bez energie, ne přetočený', 'One goal, one cue, a plan': 'Jeden cíl, jedno slovo, plán', 'Switched on, not tired': 'Zapnutý, ne unavený', 'Body': 'Tělo', 'Mindset': 'Hlava', 'Before': 'Před', 'During': 'Během', 'After': 'Po',
+  'Tune · Mindset · See it · Body': 'Ladění · Hlava · Vizualizace · Tělo', 'Reset · Between sets · Clutch serve': 'Reset · Mezi sety · Podání pod tlakem', 'Rate the match · 60 s': 'Hodnocení zápasu · 60 s',
+  'Challenge versus skill: anxiety above, boredom below, flow channel between': 'Výzva proti dovednosti: nahoře úzkost, dole nuda, mezi nimi pásmo flow',
+  'What gets in your way most in matches?': 'Co ti v zápasech nejvíc překáží?', 'Nerves, overthinking': 'Nervozita, moc přemýšlení', 'Low energy, slow start': 'Málo energie, pomalý začátek',
+  'One error turns into more': 'Jedna chyba vede k dalším', 'Big moments, serving under pressure': 'Důležité chvíle, podání pod tlakem', 'Losing focus': 'Ztráta soustředění',
+  'Your player type': 'Tvůj typ hráče', 'Recommended for you': 'Doporučeno pro tebe',
+  'Overthinker': 'Přemýšlivec', 'Slow starter': 'Pomalý start', 'Error spiral': 'Spirála chyb', 'Pressure moments': 'Chvíle pod tlakem', 'Focus drifter': 'Těkavé soustředění',
+  'Calming starts earlier for you, the “I’m excited” reframe comes first, and imagery practice is recommended.': 'Zklidnění u tebe začíná dřív, přerámování „Těším se“ je na prvním místě a doporučený je trénink představivosti.',
+  'Your starting energy target is higher, the fast beat is used more, and activation cards matter most for you.': 'Tvůj výchozí cíl energie je vyšší, rychlý rytmus se používá častěji a nejdůležitější jsou pro tebe aktivační karty.',
+  'Your default if-then plan is for errors, and reset reps are your recommended practice.': 'Tvůj výchozí plán když–pak je na chyby a doporučený trénink je opakování resetu.',
+  'Your default if-then plan is for tight serves, and clutch-serve practice is recommended.': 'Tvůj výchozí plán když–pak je na stažené podání a doporučený je trénink podání pod tlakem.',
+  'The reset after every point is your main tool, and imagery practice is recommended.': 'Hlavní nástroj je pro tebe reset po každém bodu a doporučený je trénink představivosti.',
+  'Use my own music (Spotify)': 'Moje vlastní hudba (Spotify)', 'Calm playlist': 'Klidný playlist', 'Hype playlist': 'Nabuzující playlist', 'Play my calm playlist': 'Pustit můj klidný playlist', 'Play my hype playlist': 'Pustit můj nabuzující playlist',
+  'Paste links to two of your playlists. The app opens the calm one when it’s bringing you down and the hype one when it’s firing you up, and turns its own beat off. Slow songs (60–80 BPM) for calm, fast (130+ BPM) for hype.': 'Vlož odkazy na dva své playlisty. Aplikace otevře klidný, když tě zklidňuje, a nabuzující, když tě nabíjí, a vypne vlastní rytmus. Pomalé písně (60–80 BPM) na klid, rychlé (130+ BPM) na nabuzení.',
 
   // ---------- privacy sheet ----------
   'Your data': 'Tvoje data', 'What’s stored': 'Co se ukládá',
@@ -1311,7 +1370,8 @@ function renderProfileForm(body, setup) {
       renderAcctBtn(); renderCheckin(); renderHub();
       if (setup) {
         toast('Profile saved', 'cyan', 2000);
-        if (st.use === 'coach') openCoach(); else if (st.use === 'team') { openAccount(); setTimeout(() => { const c = $('#joinCode'); if (c) c.focus(); }, 50); } else show('hub');
+        const next = () => { if (st.use === 'coach') openCoach(); else if (st.use === 'team') { openAccount(); setTimeout(() => { const c = $('#joinCode'); if (c) c.focus(); }, 50); } else show('hub'); };
+        if (!store.get('introSeen', false) && st.use !== 'coach') openIntro(next); else next();
       } else { say(m, 'Saved.', 'ok'); busy(save, false, 'Save profile'); }
     } catch (e) { busy(save, false, setup ? 'Save and continue' : 'Save profile'); say(m, 'Couldn’t save: ' + (e.message || 'try again'), 'err'); }
   };
@@ -1436,7 +1496,8 @@ function zone() {
   // Until there is enough data, nudge the default with "too low / too high" answers.
   const tooLow = fit.filter(x => x === 'low').length, tooHigh = fit.filter(x => x === 'high').length;
   const shift = tooLow > tooHigh ? 1 : tooHigh > tooLow ? -1 : 0;
-  return { lo: 6 + shift, hi: 7 + shift, learned: false, n: L.length };
+  const pt = playerType(), typeShift = pt && pt.type === 'flat' ? 1 : 0;
+  return { lo: 6 + shift + typeShift, hi: 7 + shift + typeShift, learned: false, n: L.length };
 }
 function pickMethod(dir) {
   const opts = METHODS[dir];
@@ -1451,8 +1512,9 @@ function pickMethod(dir) {
   return { m: best.o, why: 'Picked for you: your flow averaged ' + r1(best.f) + ' after ' + methodLabel(best.o.id) + ' vs ' + r1(second.f) + ' after ' + methodLabel(second.o.id) + '.' };
 }
 function direction(energy, nerves) {
-  const z = zone();
-  if (nerves >= 7) return 'down';
+  const z = zone(), pt = playerType();
+  const nervesLimit = pt && (pt.type === 'overthink' || (pt.nerves && pt.nerves >= 4)) ? 5 : 7;
+  if (nerves >= nervesLimit) return 'down';
   if (energy < z.lo) return 'up';
   if (energy > z.hi) return 'down';
   return 'steady';
@@ -1597,6 +1659,7 @@ function renderCheckin() {
     ? h('span', {}, h('b', {}, 'Your flow zone: energy ' + z.lo + '–' + z.hi + '. '), 'Learned from ' + z.n + ' logged matches.')
     : h('span', {}, h('b', {}, 'Starting zone: energy ' + z.lo + '–' + z.hi + '. '), z.n ? 'Log ' + left + ' more match' + (left === 1 ? '' : 'es') + ' to personalise it.' : 'Log your matches and the app finds your own zone.'));
   renderVoiceSeg();
+  $('#musicBox').replaceChildren(musicEditor());
   $('#startBtn').disabled = !S.pos;
 }
 $('#energyIn').addEventListener('input', e => { S.energy0 = +e.target.value; $('#energyV').textContent = S.energy0; });
@@ -1658,6 +1721,9 @@ function startTune() {
       $('#bpmV').textContent = m.bpm; Audio.start('down', m.bpm); $('#tuneWhy').hidden = true; runBreath(); } }, BREATHS[m.breath].label)));
   } else seg.hidden = true;
   drawCurve();
+  const kind = S.dir === 'down' ? 'calm' : S.dir === 'up' ? 'hype' : 'calm', link = musicLinks()[kind];
+  const old = $('#playlistBtn'); if (old) old.remove();
+  if (link) $('#tuneNote').after(h('button', { class: 'btn btn-ghost', id: 'playlistBtn', onclick: () => openPlaylist(kind) }, kind === 'calm' ? 'Play my calm playlist' : 'Play my hype playlist'));
   runBreath();
   const dur = { 5: 40, 10: 90, 15: 150 }[S.win], t0 = Date.now();
   clearInterval(tuneT);
@@ -1717,6 +1783,7 @@ function drawCurve() {
 
 /* ---------- step 2: mindset ---------- */
 function startMindset() {
+  applyPlayerType();
   clearInterval(tuneT); stopBreath();
   updateSession({ energy1: S.energy1, method: S.method.id });
   show('mindset');
@@ -1738,7 +1805,7 @@ function startMindset() {
     const gc = $('#goalCustom').value.trim(), cc = $('#cueCustom').value.trim();
     $('#goalChips').replaceChildren(...goalOpts.map(g => h('button', { class: 'chip', 'aria-pressed': String(!gc && S.goal === g), onclick: () => { S.goal = g; $('#goalCustom').value = ''; renderChips(); } }, g)));
     $('#cueChips').replaceChildren(...cueOpts.map(c => h('button', { class: 'chip', 'aria-pressed': String(!cc && S.cue === c), onclick: () => { S.cue = c; $('#cueCustom').value = ''; renderChips(); } }, c)));
-    $('#ifChips').replaceChildren(...IFS.map(x => h('button', { class: 'chip', 'aria-pressed': String(S.ifId === x.id), onclick: () => { S.ifId = x.id; store.set('ifId', x.id); renderChips(); } }, x.t)));
+    $('#ifChips').replaceChildren(...IFS.map(x => h('button', { class: 'chip', 'aria-pressed': String(S.ifId === x.id), onclick: () => { S.ifId = x.id; store.set('ifId', x.id); store.set('ifIdChosen', true); renderChips(); } }, x.t)));
     $('#thenText').textContent = IFS.find(x => x.id === S.ifId).then;
   };
   $('#goalCustom').oninput = e => { S.goal = e.target.value.trim() || goalOpts[0]; renderChips(); };
@@ -2198,6 +2265,7 @@ function renderProfile(justSaved) {
   const perfR = L.length >= 4 ? corr(L.map(flowScore), L.map(s => s.post.perf)) : null;
   if (perfR != null) insights.push('Your flow and how well you rated your play move together ' + (perfR > .5 ? 'strongly' : perfR > .2 ? 'somewhat' : 'only a little') + ' (r = ' + perfR.toFixed(2) + ').');
   body.append(h('div', { class: 'card' }, h('h3', {}, 'What the app has learned'), ...insights.map(t => h('p', { style: 'margin:0' }, t))));
+  const ptc = playerType(); if (ptc && ptc.type && PTYPES[ptc.type]) body.append(h('div', { class: 'card' }, h('div', { class: 'eyebrow' }, 'Your player type'), h('h3', {}, PTYPES[ptc.type].name), h('p', { style: 'margin:0' }, PTYPES[ptc.type].tip)));
   renderHistory(body);
   const clear = h('button', { class: 'link', style: 'color:var(--warn)' }, 'Delete all match data');
   clear.onclick = () => {
@@ -2386,6 +2454,7 @@ const SURVEY = {
   player: {
     base: [['nerves', 'scale', 'How often do nerves hurt your performance in matches?', 'Never', 'Almost always'], ['zone', 'scale', 'How often do you feel “in the zone” in matches?', 'Never', 'Almost always'],
       ['routine', 'choice', 'Do you use a pre-match routine every time?', [['yes', 'Yes'], ['sometimes', 'Sometimes'], ['no', 'No']]], ['serve', 'scale', 'How confident are you serving under pressure?', 'Not at all', 'Completely'],
+      ['type', 'choice', 'What gets in your way most in matches?', [['overthink', 'Nerves, overthinking'], ['flat', 'Low energy, slow start'], ['spiral', 'One error turns into more'], ['pressure', 'Big moments, serving under pressure'], ['focus', 'Losing focus']]],
       ['hope', 'text', 'What do you hope Flow of Ace helps you with?']],
     follow: [['nerves', 'scale', 'How often do nerves hurt your performance in matches?', 'Never', 'Almost always'], ['zone', 'scale', 'How often do you feel “in the zone” in matches?', 'Never', 'Almost always'],
       ['routine', 'choice', 'Do you use a pre-match routine every time?', [['yes', 'Yes'], ['sometimes', 'Sometimes'], ['no', 'No']]], ['serve', 'scale', 'How confident are you serving under pressure?', 'Not at all', 'Completely'],
@@ -2440,10 +2509,112 @@ function openSurvey(phase) {
     if (missing.length) return say(m, 'Answer every question with a scale or choice. Text answers are optional.', 'err');
     const at = Date.now(), rec = { id: 'q' + at, kind: 'survey', phase, role, at, updatedAt: at, answers: ans };
     const all = sessions(); all.push(rec); saveSessions(all.slice(-500)); Cloud.mark(rec.id);
-    o.remove(); toast('Thanks. Answers saved.', 'cyan', 2500); renderHubCards();
+    o.remove(); toast('Thanks. Answers saved.', 'cyan', 2500); applyPlayerType(); renderHubCards();
+    if (phase === 'base' && ans.type && PTYPES[ans.type]) setTimeout(() => toast(tr('Your player type') + ': ' + tr(PTYPES[ans.type].name), 'cyan', 3500), 2600);
   };
   inner.append(m, send, h('button', { class: 'link', onclick: () => o.remove() }, 'Not now'));
   document.body.append(o);
+}
+
+/* ---------- "What is flow?" intro (shown once after sign-up, replayable) ---------- */
+const INTRO = [
+  { h: ['Flow is when the', 'game plays itself'], p: 'Total focus. Moves happen without thinking. Time feels different. Athletes call it being in the zone.', art: 'wave', say: 'Flow is when the game plays itself. Total focus, moves happen without thinking, and time feels different. Athletes call it being in the zone.' },
+  { h: ['It lives between', 'too easy and too hard'], p: 'When the challenge is bigger than your skill, you get anxious. When it’s smaller, you get bored. Flow is the channel in between.', art: 'chart', say: 'Flow lives between too easy and too hard. When the challenge is bigger than your skill, you get anxious. When it is smaller, you get bored. Flow is the channel in between.' },
+  { h: ['Nine signs', 'of flow'], p: 'Three you can set up before the match. Six you feel when it happens.', art: 'nine', say: 'Researchers describe nine signs of flow. Three you can set up before the match: a challenge that fits, a clear goal, and clear feedback. Six you feel when it happens.' },
+  { h: ['You can’t switch it on.', 'You can set it up.'], p: 'No trick forces flow. But the right energy, a clear goal and a calm head make it far more likely.', art: 'three', say: 'Nobody can switch flow on. But the right energy, a clear goal and a calm head make it far more likely. That is what this app does.' },
+  { h: ['Before, during', 'and after'], p: 'Before: tune your energy, set your mindset, see it, switch on your body. During: the reset, between-set checks and the clutch serve. After: 60 seconds to rate the match.', art: 'flow3', say: 'Before the match you tune your energy, set your mindset, see it and switch on your body. During the match you use the reset. After the match, take sixty seconds to rate how it felt.' },
+  { h: ['The app learns', 'your flow'], p: 'Every match you log teaches it which energy level and which breathing work for you. Log your matches and it gets more personal.', art: 'learn', say: 'Every match you log teaches the app which energy level and which breathing work for you. Log your matches, and it gets more personal. Let’s go.' }
+];
+function introArt(kind) {
+  const NS = 'http://www.w3.org/2000/svg';
+  if (kind === 'wave') return h('div', { class: 'wave fx', 'aria-hidden': 'true' }, ...'FLOW'.split('').map(c => h('span', {}, c)));
+  if (kind === 'chart') {
+    const svg = document.createElementNS(NS, 'svg'); svg.setAttribute('viewBox', '0 0 300 230'); svg.setAttribute('class', 'chart fx2'); svg.setAttribute('role', 'img'); svg.setAttribute('aria-label', 'Challenge versus skill: anxiety above, boredom below, flow channel between');
+    svg.innerHTML = '<line x1="40" y1="200" x2="290" y2="200" stroke="#a3aba2" stroke-width="2"/><line x1="40" y1="200" x2="40" y2="10" stroke="#a3aba2" stroke-width="2"/>' +
+      '<polygon points="40,200 40,160 250,10 290,10 290,40 80,200" fill="rgba(228,245,90,.18)"/>' +
+      '<text x="165" y="215" fill="#a3aba2" font-size="12" text-anchor="middle" font-family="Inter, system-ui">' + tr('Skill') + ' →</text>' +
+      '<text x="20" y="105" fill="#a3aba2" font-size="12" text-anchor="middle" font-family="Inter, system-ui" transform="rotate(-90 20 105)">' + tr('Challenge') + ' →</text>' +
+      '<text x="90" y="50" fill="#f0a35e" font-size="16" font-weight="700" font-family="Barlow Condensed, Arial Narrow, sans-serif">' + tr('ANXIETY') + '</text>' +
+      '<text x="210" y="175" fill="#7fdc9c" font-size="16" font-weight="700" font-family="Barlow Condensed, Arial Narrow, sans-serif">' + tr('BOREDOM') + '</text>' +
+      '<text x="170" y="98" fill="#e4f55a" font-size="22" font-weight="800" font-family="Barlow Condensed, Arial Narrow, sans-serif" transform="rotate(-36 170 98)">FLOW</text>' +
+      '<circle r="8" fill="#ebeee6"><animate attributeName="cx" values="70;140;170;210" dur="4s" repeatCount="indefinite"/><animate attributeName="cy" values="60;150;110;80" dur="4s" repeatCount="indefinite"/></circle>';
+    return svg;
+  }
+  if (kind === 'nine') {
+    const set = ['Challenge–skill balance', 'Clear goals', 'Feedback'], feel = ['Action–awareness', 'Concentration', 'Control', 'Self-consciousness', 'Time', 'Enjoyment'];
+    return h('div', { style: 'display:grid;gap:10px' },
+      h('div', { class: 'eyebrow fx2' }, 'You set up'), h('div', { class: 'chips' }, ...set.map((t, i) => h('span', { class: 'chip', style: 'border-color:var(--optic);color:var(--optic);animation-delay:' + (0.4 + i * 0.15) + 's' }, t))),
+      h('div', { class: 'eyebrow fx3' }, 'You feel'), h('div', { class: 'chips' }, ...feel.map((t, i) => h('span', { class: 'chip', style: 'border-color:var(--good);color:var(--good);animation-delay:' + (1 + i * 0.15) + 's' }, t))));
+  }
+  if (kind === 'three') return h('div', { class: 'row3' }, ...[['Energy', 'Not too flat, not too wired'], ['Mindset', 'One goal, one cue, a plan'], ['Body', 'Switched on, not tired']].map(([b, t], i) => h('div', { class: 'tile fx' + (i + 2) }, h('b', {}, b), h('span', {}, t))));
+  if (kind === 'flow3') return h('div', { class: 'row3' }, ...[['Before', 'Tune · Mindset · See it · Body'], ['During', 'Reset · Between sets · Clutch serve'], ['After', 'Rate the match · 60 s']].map(([b, t], i) => h('div', { class: 'tile fx' + (i + 2) }, h('b', {}, b), h('span', {}, t))));
+  if (kind === 'learn') return sparkSVG([2.4, 2.9, 2.7, 3.3, 3.6, 3.4, 3.9, 4.2]);
+  return null;
+}
+function openIntro(onDone) {
+  let i = 0, timer = null, prog = null;
+  const o = h('div', { class: 'intro', role: 'dialog', 'aria-label': 'What is flow?' });
+  const bar = h('div', { class: 'bar' }, ...INTRO.map(() => h('i', {}, h('b'))));
+  const stage = h('div', { class: 'stage' });
+  const back = h('button', { class: 'btn btn-ghost', style: 'flex:1' }, 'Back'), next = h('button', { class: 'btn btn-primary', style: 'flex:2' }, 'Next');
+  const skip = h('button', { class: 'link', style: 'flex:none;text-align:right' }, 'Skip');
+  o.append(h('div', { class: 'row', style: 'align-items:center' }, h('div', { class: 'eyebrow' }, 'What is flow?'), skip), bar, stage, h('div', { class: 'nav' }, back, next));
+  const close = () => { clearTimeout(timer); clearInterval(prog); Voice.stop(); o.remove(); store.set('introSeen', true); if (onDone) onDone(); };
+  const go = (k) => {
+    i = k; clearTimeout(timer); clearInterval(prog);
+    const S1 = INTRO[i];
+    stage.replaceChildren(h('h2', { class: 'fx' }, S1.h[0], h('br'), h('em', {}, S1.h[1])), introArt(S1.art), h('p', { class: 'fx3' }, S1.p));
+    bar.querySelectorAll('i b').forEach((b, j) => { b.style.width = j < i ? '100%' : '0'; });
+    back.disabled = i === 0; next.textContent = i === INTRO.length - 1 ? 'Let’s go' : 'Next';
+    Voice.setMood('steady'); if (Voice.ok()) Voice.say(Voice.lang === 'cs' ? tr(S1.say) : S1.say);
+    const dur = 9000, t0 = Date.now(), cur = bar.querySelectorAll('i b')[i];
+    prog = setInterval(() => { cur.style.width = Math.min(100, (Date.now() - t0) / dur * 100) + '%'; }, 100);
+    timer = setTimeout(() => { if (i < INTRO.length - 1) go(i + 1); }, dur);
+  };
+  back.onclick = () => { if (i > 0) go(i - 1); };
+  next.onclick = () => { if (i < INTRO.length - 1) go(i + 1); else close(); };
+  skip.onclick = close;
+  document.body.append(o); go(0);
+}
+
+/* ---------- player type from the pilot check-in: adapts defaults ---------- */
+const PTYPES = {
+  overthink: { name: 'Overthinker', tip: 'Calming starts earlier for you, the “I’m excited” reframe comes first, and imagery practice is recommended.', practice: 'imagery' },
+  flat: { name: 'Slow starter', tip: 'Your starting energy target is higher, the fast beat is used more, and activation cards matter most for you.', practice: 'breath' },
+  spiral: { name: 'Error spiral', tip: 'Your default if-then plan is for errors, and reset reps are your recommended practice.', practice: 'reset' },
+  pressure: { name: 'Pressure moments', tip: 'Your default if-then plan is for tight serves, and clutch-serve practice is recommended.', practice: 'clutch' },
+  focus: { name: 'Focus drifter', tip: 'The reset after every point is your main tool, and imagery practice is recommended.', practice: 'imagery' }
+};
+function playerType() {
+  const base = sessions().filter(s => s.kind === 'survey' && s.role === 'player' && s.phase === 'base').slice(-1)[0];
+  const a = base && base.answers; if (!a) return null;
+  return { type: a.type || null, nerves: a.nerves || null, serve: a.serve || null };
+}
+function applyPlayerType() {
+  const pt = playerType(); if (!pt) return;
+  if (!store.get('ifIdChosen', false)) {
+    const map = { spiral: 'error', pressure: 'nerves', overthink: 'error', flat: 'run', focus: 'error' };
+    if (pt.type && map[pt.type]) S.ifId = map[pt.type]; else if (pt.serve && pt.serve <= 2) S.ifId = 'nerves';
+  }
+}
+
+/* ---------- music: the player's own Spotify (or any) playlists ---------- */
+function musicLinks() { return store.get('music', { calm: '', hype: '' }); }
+function openPlaylist(kind) {
+  const url = (musicLinks()[kind] || '').trim(); if (!url) return false;
+  Audio.setMuted(true); S.muted = true; $('#muteWave').style.display = 'none';
+  const a = h('a', { href: url, target: '_blank', rel: 'noopener' }); document.body.append(a); a.click(); a.remove();
+  return true;
+}
+function musicEditor() {
+  const m = musicLinks();
+  const calm = h('input', { type: 'url', id: 'musicCalm', placeholder: 'https://open.spotify.com/playlist/…', inputmode: 'url', autocomplete: 'off' }); calm.value = m.calm || '';
+  const hype = h('input', { type: 'url', id: 'musicHype', placeholder: 'https://open.spotify.com/playlist/…', inputmode: 'url', autocomplete: 'off' }); hype.value = m.hype || '';
+  const save = () => store.set('music', { calm: calm.value.trim(), hype: hype.value.trim() });
+  calm.onchange = save; hype.onchange = save;
+  return h('details', { class: 'card' }, h('summary', { class: 'link', style: 'cursor:pointer' }, 'Use my own music (Spotify)'),
+    h('p', { class: 'why' }, 'Paste links to two of your playlists. The app opens the calm one when it’s bringing you down and the hype one when it’s firing you up, and turns its own beat off. Slow songs (60–80 BPM) for calm, fast (130+ BPM) for hype.'),
+    h('div', { class: 'field' }, h('label', { for: 'musicCalm' }, 'Calm playlist'), calm), h('div', { class: 'field' }, h('label', { for: 'musicHype' }, 'Hype playlist'), hype));
 }
 
 /* ---------- hub cards ---------- */
@@ -2471,7 +2642,9 @@ function openPractice() { renderPractice(); show('practice'); }
 function renderPractice() {
   const n = weekPractice();
   $('#practiceWeek').replaceChildren(h('div', { class: 'eyebrow', style: 'margin-bottom:8px' }, 'This week · ' + n + ' of 3 sessions'), h('div', { class: 'weekdots' }, ...[0, 1, 2].map(i => h('i', { class: i < n ? 'on' : '' }))));
-  $('#practiceCards').replaceChildren(...Object.entries(PRACTICE).map(([k, P]) => h('button', { class: 'pcardx', onclick: () => startPractice(k) }, h('b', {}, P.title), h('span', { class: 'dose' }, P.dose), h('span', { class: 's' }, P.why))));
+  const pt = playerType(), rec = pt && pt.type && PTYPES[pt.type] ? PTYPES[pt.type].practice : null;
+  const order = Object.entries(PRACTICE).sort((a, b) => (b[0] === rec) - (a[0] === rec));
+  $('#practiceCards').replaceChildren(...order.map(([k, P]) => h('button', { class: 'pcardx', onclick: () => startPractice(k) }, k === rec ? h('span', { class: 'reco' }, 'Recommended for you') : null, h('b', {}, P.title), h('span', { class: 'dose' }, P.dose), h('span', { class: 's' }, P.why))));
 }
 function logPractice(type, dur, reps, made) {
   if (dur < 20 && !reps) return;
@@ -2737,6 +2910,7 @@ $('#stExit').onclick = closeEyePrimer;
 $('#muteBtn').onclick = () => { S.muted = !S.muted; Audio.setMuted(S.muted); $('#muteWave').style.display = S.muted ? 'none' : ''; $('#muteBtn').setAttribute('aria-label', S.muted ? 'Unmute audio' : 'Mute audio'); };
 
 $('#langBtn').onclick = switchLang;
+$('#openIntro').onclick = () => openIntro();
 Voice.loadClips();
 startI18n();
 renderHub(); renderCheckin(); Cloud.init();
