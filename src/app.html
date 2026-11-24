@@ -852,7 +852,7 @@ window.FOA_CS = {
   'Your default if-then plan is for errors, and reset reps are your recommended practice.': 'Tvůj výchozí plán když–pak je na chyby a doporučený trénink je opakování resetu.',
   'Your default if-then plan is for tight serves, and clutch-serve practice is recommended.': 'Tvůj výchozí plán když–pak je na stažené podání a doporučený je trénink podání pod tlakem.',
   'The reset after every point is your main tool, and imagery practice is recommended.': 'Hlavní nástroj je pro tebe reset po každém bodu a doporučený je trénink představivosti.',
-  'Use my own music (Spotify)': 'Moje vlastní hudba (Spotify)', 'Calm playlist': 'Klidný playlist', 'Hype playlist': 'Nabuzující playlist', 'Play my calm playlist': 'Pustit můj klidný playlist', 'Play my hype playlist': 'Pustit můj nabuzující playlist',
+  'Use my own music (Spotify)': 'Moje vlastní hudba (Spotify)', 'Your club’s playlists are used unless you add your own.': 'Používají se playlisty klubu, dokud nepřidáš vlastní.', 'Calm playlist': 'Klidný playlist', 'Hype playlist': 'Nabuzující playlist', 'Play my calm playlist': 'Pustit můj klidný playlist', 'Play my hype playlist': 'Pustit můj nabuzující playlist',
   'Paste links to two of your playlists. The app opens the calm one when it’s bringing you down and the hype one when it’s firing you up, and turns its own beat off. Slow songs (60–80 BPM) for calm, fast (130+ BPM) for hype.': 'Vlož odkazy na dva své playlisty. Aplikace otevře klidný, když tě zklidňuje, a nabuzující, když tě nabíjí, a vypne vlastní rytmus. Pomalé písně (60–80 BPM) na klid, rychlé (130+ BPM) na nabuzení.',
 
   // ---------- privacy sheet ----------
@@ -1258,7 +1258,7 @@ const Cloud = {
   async deleteAccount() {
     const { error } = await this.sb.rpc('delete_my_account');
     if (error) throw error;
-    try { await this.sb.auth.signOut(); } catch (e) {}
+    try { await this.sb.auth.signOut({ scope: 'local' }); } catch (e) {}
     this.clearLocal(); this.user = null;
   }
 };
@@ -2599,7 +2599,10 @@ function applyPlayerType() {
 }
 
 /* ---------- music: the player's own Spotify (or any) playlists ---------- */
-function musicLinks() { return store.get('music', { calm: '', hype: '' }); }
+function musicLinks() {
+  const own = store.get('music', { calm: '', hype: '' }), club = (window.FOA_CONFIG && window.FOA_CONFIG.playlists) || {};
+  return { calm: (own.calm || '').trim() || club.calm || '', hype: (own.hype || '').trim() || club.hype || '' };
+}
 function openPlaylist(kind) {
   const url = (musicLinks()[kind] || '').trim(); if (!url) return false;
   Audio.setMuted(true); S.muted = true; $('#muteWave').style.display = 'none';
@@ -2607,13 +2610,14 @@ function openPlaylist(kind) {
   return true;
 }
 function musicEditor() {
-  const m = musicLinks();
+  const m = store.get('music', { calm: '', hype: '' }), club = (window.FOA_CONFIG && window.FOA_CONFIG.playlists) || {};
   const calm = h('input', { type: 'url', id: 'musicCalm', placeholder: 'https://open.spotify.com/playlist/…', inputmode: 'url', autocomplete: 'off' }); calm.value = m.calm || '';
   const hype = h('input', { type: 'url', id: 'musicHype', placeholder: 'https://open.spotify.com/playlist/…', inputmode: 'url', autocomplete: 'off' }); hype.value = m.hype || '';
   const save = () => store.set('music', { calm: calm.value.trim(), hype: hype.value.trim() });
   calm.onchange = save; hype.onchange = save;
   return h('details', { class: 'card' }, h('summary', { class: 'link', style: 'cursor:pointer' }, 'Use my own music (Spotify)'),
     h('p', { class: 'why' }, 'Paste links to two of your playlists. The app opens the calm one when it’s bringing you down and the hype one when it’s firing you up, and turns its own beat off. Slow songs (60–80 BPM) for calm, fast (130+ BPM) for hype.'),
+    (club.calm || club.hype) ? h('p', { class: 'why', style: 'color:var(--good)' }, 'Your club’s playlists are used unless you add your own.') : null,
     h('div', { class: 'field' }, h('label', { for: 'musicCalm' }, 'Calm playlist'), calm), h('div', { class: 'field' }, h('label', { for: 'musicHype' }, 'Hype playlist'), hype));
 }
 
