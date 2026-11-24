@@ -1,6 +1,6 @@
 # Flow of Ace
 
-Mobile web app for a 5–15 minute pre-match routine: arousal tuning (synthesized audio + paced breathing), three short visual drills, position-specific visualization and cue selection, an activation card deck, and an "In the zone" summary screen.
+Mobile web app for a 5–15 minute pre-match routine: energy and nerves check-in, adaptive breathing with synthesized music tempo, a mindset step (reframe, process goal, cue, if-then plan), position-specific visualization, an activation card deck (with an optional 20-second eye primer), and a lock-in screen. In-match tools: between-sets check-in and a clutch-serve routine. Post-match flow ratings let the app learn each player's energy zone and best breathing method.
 
 - Source: `src/app.html` (all CSS/JS inline, no dependencies).
 - Build: `./build.sh` writes `index.html` with the PWA manifest and service worker hooks.
