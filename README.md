@@ -9,4 +9,8 @@ Mobile web app for a 5–15 minute pre-match routine: energy and nerves check-in
 
 Accounts: optional sign-in (Google or email) with synced history, teams and a coach dashboard, using Supabase. Practice mode for training days and a voice coach in English and Czech. See [SETUP.md](SETUP.md) to turn it on; without it the app stores everything on the device.
 
+Languages: full English and Czech interface (auto-detected, EN/CZ switch on the home screen). Czech strings live in the `FOA_CS` dictionary in `src/app.html`.
+
+Pilot: guides for players and coaches, the pilot plan and a printable QR poster are at `/pilot/` (https://nguyet75.github.io/flow-of-ace/pilot/). The in-app pilot check-in runs at the start and after 6 weeks; `supabase/pilot_report.sql` has the queries to read the results.
+
 Notes: haptics use the Vibration API, which iPhone Safari does not support. Audio is generated with Web Audio, so no audio files are needed offline.

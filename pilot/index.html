@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Flow of Ace · AVA pilot</title>
+<link rel="icon" href="../icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Layout: single readable column of guides; poster section prints alone on A4 in black on white. */
+:root { --bg: #111412; --surface: #191d1a; --line: #313833; --fg: #ebeee6; --muted: #a3aba2; --optic: #e4f55a; --green: #7fdc9c; --on: #111412;
+  --display: "Barlow Condensed", "Arial Narrow", system-ui, sans-serif; --body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.55 var(--body); padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+.wrap { max-width: 720px; margin: 0 auto; padding: 24px max(16px, env(safe-area-inset-right, 0px)) 64px max(16px, env(safe-area-inset-left, 0px)); display: grid; gap: 28px; }
+h1, h2, h3 { font-family: var(--display); text-transform: uppercase; line-height: 1; margin: 0; letter-spacing: .02em; text-wrap: balance; }
+h1 { font-size: clamp(40px, 9vw, 64px); } h1 b { color: var(--optic); } h1 span { color: var(--green); font-size: .55em; vertical-align: .2em; }
+h2 { font-size: 32px; } h3 { font-size: 22px; color: var(--optic); }
+p { margin: 0; max-width: 62ch; } a { color: var(--green); }
+.top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.lang { display: flex; gap: 6px; }
+.lang button { font: 600 14px var(--body); color: var(--fg); background: var(--surface); border: 1px solid var(--line); border-radius: 99px; min-height: 40px; padding: 0 14px; cursor: pointer; }
+.lang button[aria-pressed="true"] { background: var(--optic); color: var(--on); border-color: var(--optic); }
+.eyebrow { font: 700 13px var(--display); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+section { display: grid; gap: 14px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 18px; display: grid; gap: 10px; }
+ol.steps { margin: 0; padding: 0; list-style: none; counter-reset: s; display: grid; gap: 12px; }
+ol.steps li { counter-increment: s; display: grid; grid-template-columns: 36px 1fr; gap: 12px; align-items: start; }
+ol.steps li::before { content: counter(s); font: 800 28px/1 var(--display); color: var(--green); }
+.timeline { display: grid; gap: 10px; }
+.tl { display: grid; grid-template-columns: 7.5em 1fr; gap: 12px; padding-top: 10px; border-top: 1px solid var(--line); }
+.tl b { font-family: var(--display); font-size: 18px; text-transform: uppercase; color: var(--optic); }
+.btn { display: inline-flex; align-items: center; justify-content: center; min-height: 56px; padding: 0 22px; border-radius: 16px; background: var(--optic); color: var(--on); font: 800 22px var(--display); text-transform: uppercase; text-decoration: none; letter-spacing: .04em; }
+.note { color: var(--muted); font-size: 14px; }
+.poster { background: #fff; color: #111412; border-radius: 18px; padding: 28px; display: grid; gap: 16px; justify-items: center; text-align: center; }
+.poster h2 { font-size: clamp(40px, 9vw, 72px); color: #111412; }
+.poster .sub { font: 700 22px var(--display); text-transform: uppercase; letter-spacing: .08em; }
+.poster .qr { width: min(320px, 70vw); max-width: 100%; }
+.poster .qr svg { width: 100%; height: auto; display: block; }
+.poster .url { font: 600 16px var(--body); }
+.poster ol { text-align: left; margin: 0; padding-left: 22px; font-size: 16px; display: grid; gap: 4px; }
+html:not([lang="cs"]) [data-l="cs"], html:not([lang="en"]) [data-l="en"] { display: none !important; }
+@media print {
+  body { background: #fff; color: #000; } .wrap > *:not(#poster) { display: none !important; } .wrap { padding: 0; max-width: none; }
+  #poster .poster { border-radius: 0; padding: 18mm; min-height: 270mm; align-content: center; } #poster .eyebrow { display: none; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <h1>Flow <span>of</span> <b>Ace</b></h1>
+    <div class="lang" role="group" aria-label="Language"><button id="lcs" aria-pressed="true">CZ</button><button id="len" aria-pressed="false">EN</button></div>
+  </div>
+
+  <section>
+    <div class="eyebrow"><span data-l="cs">Pilot · AVA · sezóna 2026/27</span><span data-l="en">Pilot · AVA · 2026/27 season</span></div>
+    <p data-l="cs">Flow of Ace je předzápasová příprava v telefonu: naladí energii, nastaví hlavu, provede tě vizualizací a dá ti reset na zápas. Po každém zápase krátce ohodnotíš, jak to šlo, a aplikace se učí, co tě dostává do flow. Testujeme ji zdarma se seniorskými týmy AVA a U20 muži.</p>
+    <p data-l="en">Flow of Ace is a pre-match routine on your phone: it tunes your energy, sets your mindset, walks you through visualization and gives you a reset for the match. After each match you rate how it felt, and the app learns what gets you into flow. We're testing it for free with AVA's senior teams and the U20 men.</p>
+    <div><a class="btn" href="../"><span data-l="cs">Otevřít aplikaci</span><span data-l="en">Open the app</span></a></div>
+  </section>
+
+  <section>
+    <h2 data-l="cs">Pro hráče</h2><h2 data-l="en">For players</h2>
+    <div class="card"><ol class="steps">
+      <li><div><b data-l="cs">Otevři aplikaci a přidej si ji na plochu.</b><b data-l="en">Open the app and add it to your home screen.</b>
+        <p class="note" data-l="cs">iPhone: Safari → Sdílet → Přidat na plochu. Android: Chrome → ⋮ → Instalovat aplikaci. Pak funguje i bez signálu.</p>
+        <p class="note" data-l="en">iPhone: Safari → Share → Add to Home Screen. Android: Chrome → ⋮ → Install app. Then it works without signal.</p></div></li>
+      <li><div><b data-l="cs">Vytvoř si účet a vyber „S týmem“.</b><b data-l="en">Create an account and choose “With my team”.</b>
+        <p class="note" data-l="cs">Ťukni na Přihlásit vpravo nahoře. Vyplň profil a odsouhlas ukládání dat.</p>
+        <p class="note" data-l="en">Tap Sign in at the top right. Fill in your profile and agree to data storage.</p></div></li>
+      <li><div><b data-l="cs">Připoj se k týmu kódem od trenéra.</b><b data-l="en">Join your team with your coach's code.</b>
+        <p class="note" data-l="cs">Účet → Týmy. Vyber, co trenér uvidí: souhrn (doporučeno), nebo vše.</p>
+        <p class="note" data-l="en">Account → Teams. Choose what your coach sees: a summary (recommended), or everything.</p></div></li>
+      <li><div><b data-l="cs">Vyplň pilotní dotazník (1 minuta).</b><b data-l="en">Answer the pilot check-in (1 minute).</b>
+        <p class="note" data-l="cs">Najdeš ho na hlavní obrazovce. Trenéři odpovědi nevidí.</p>
+        <p class="note" data-l="en">It's on the home screen. Coaches don't see your answers.</p></div></li>
+      <li><div><b data-l="cs">Před každým zápasem: „Spustit přípravu“, 5–15 minut.</b><b data-l="en">Before every match: “Start my flow”, 5–15 minutes.</b>
+        <p class="note" data-l="cs">Se sluchátky. Hlasového průvodce zapneš v češtině. 3 minuty před podáním tě aplikace pošle sundat sluchátka.</p>
+        <p class="note" data-l="en">Use headphones. Turn on the voice coach in English or Czech. 3 minutes before first serve the app tells you to take headphones off.</p></div></li>
+      <li><div><b data-l="cs">Po zápase: „Konec zápasu · Zapsat“ (60 sekund).</b><b data-l="en">After the match: “Match over · Log it” (60 seconds).</b>
+        <p class="note" data-l="cs">Tohle je nejdůležitější krok. Bez zápisu se aplikace nemá z čeho učit.</p>
+        <p class="note" data-l="en">This is the most important step. Without it the app has nothing to learn from.</p></div></li>
+      <li><div><b data-l="cs">Na tréninku: Tréninkový režim, 3× týdně.</b><b data-l="en">At training: Practice mode, 3 times a week.</b>
+        <p class="note" data-l="cs">Dýchání, představivost, opakování resetu nebo podání pod tlakem. Pár minut stačí.</p>
+        <p class="note" data-l="en">Breathing, imagery, reset reps or clutch serves. A few minutes is enough.</p></div></li>
+    </ol></div>
+  </section>
+
+  <section>
+    <h2 data-l="cs">Pro trenéry</h2><h2 data-l="en">For coaches</h2>
+    <div class="card"><ol class="steps">
+      <li><div><b data-l="cs">Vytvoř si účet a vyber „Jsem trenér“.</b><b data-l="en">Create an account and choose “I'm a coach”.</b></div></li>
+      <li><div><b data-l="cs">V trenérském přehledu vytvoř tým.</b><b data-l="en">Create your team in the coach dashboard.</b>
+        <p class="note" data-l="cs">Dostaneš šestimístný kód. Pošli ho hráčům do týmové skupiny spolu s odkazem na tuto stránku.</p>
+        <p class="note" data-l="en">You get a 6-letter code. Send it to the team chat with a link to this page.</p></div></li>
+      <li><div><b data-l="cs">Jednou týdně se podívej na přehled.</b><b data-l="en">Check the dashboard once a week.</b>
+        <p class="note" data-l="cs">Nahoře jsou hráči, kteří potřebují pozornost: klesající flow, přetočení před podáním, plná hlava mezi sety, neaktivita. Použij „Téma k rozhovoru“ na krátký rozhovor.</p>
+        <p class="note" data-l="en">Players who need attention are at the top: flow dropping, too wired before serving, busy head between sets, inactive. Use the “Talking point” for a short chat.</p></div></li>
+      <li><div><b data-l="cs">Připomínej zápis po zápase.</b><b data-l="en">Remind players to log after matches.</b>
+        <p class="note" data-l="cs">Stačí jedna věta v šatně. Data vidíš jen od hráčů, kteří se připojili, a jen to, co sami zvolili.</p>
+        <p class="note" data-l="en">One sentence in the locker room is enough. You only see players who joined, and only what they chose to share.</p></div></li>
+      <li><div><b data-l="cs">Vyplň trenérský dotazník na začátku a po 6 týdnech.</b><b data-l="en">Answer the coach check-in at the start and after 6 weeks.</b></div></li>
+    </ol></div>
+  </section>
+
+  <section>
+    <h2 data-l="cs">Plán pilotu</h2><h2 data-l="en">Pilot plan</h2>
+    <div class="timeline">
+      <div class="tl"><b data-l="cs">Týden 0</b><b data-l="en">Week 0</b><div><p data-l="cs">Trenéři vytvoří týmy, hráči se přihlásí, připojí a vyplní dotazník.</p><p data-l="en">Coaches create teams, players sign up, join and answer the check-in.</p></div></div>
+      <div class="tl"><b data-l="cs">Týdny 1–2</b><b data-l="en">Weeks 1–2</b><div><p data-l="cs">Zkušební provoz se 2 týmy. Sbíráme chyby a připomínky.</p><p data-l="en">Trial with 2 teams. We collect bugs and feedback.</p></div></div>
+      <div class="tl"><b data-l="cs">Týdny 3–8</b><b data-l="en">Weeks 3–8</b><div><p data-l="cs">Všech 7 týmů. Příprava před každým zápasem, zápis po něm, trénink 3× týdně.</p><p data-l="en">All 7 teams. Routine before every match, log after, practice 3 times a week.</p></div></div>
+      <div class="tl"><b data-l="cs">Týden 8</b><b data-l="en">Week 8</b><div><p data-l="cs">Závěrečný dotazník a vyhodnocení s trenéry.</p><p data-l="en">Follow-up check-in and review with coaches.</p></div></div>
+    </div>
+    <p class="note" data-l="cs">Zatím bez týmu U18. Data jsou uložená v účtu každého hráče; spoluhráči je nevidí a každý je může kdykoli stáhnout nebo smazat. Aplikace není lékařská pomůcka.</p>
+    <p class="note" data-l="en">The U18 team joins later. Data is stored in each player's account; teammates can't see it, and everyone can download or delete it at any time. The app isn't a medical tool.</p>
+  </section>
+
+  <section id="poster">
+    <div class="eyebrow"><span data-l="cs">Plakát do haly · vytiskni na A4</span><span data-l="en">Gym poster · print on A4</span></div>
+    <div class="poster">
+      <div class="sub" data-l="cs">AVA · pilot</div><div class="sub" data-l="en">AVA · pilot</div>
+      <h2>Flow of Ace</h2>
+      <div class="sub" data-l="cs">Hlava připravená na první podání</div><div class="sub" data-l="en">Mind ready for first serve</div>
+      <div class="qr" id="qr"></div>
+      <div class="url">nguyet75.github.io/flow-of-ace</div>
+      <ol data-l="cs"><li>Naskenuj a přidej na plochu</li><li>Účet → S týmem → kód od trenéra</li><li>Před zápasem: Spustit přípravu</li><li>Po zápase: Zapsat (60 s)</li></ol>
+      <ol data-l="en"><li>Scan and add to home screen</li><li>Account → With my team → coach's code</li><li>Before the match: Start my flow</li><li>After the match: Log it (60 s)</li></ol>
+    </div>
+  </section>
+</div>
+<script>
+(function () {
+  var html = document.documentElement, k = 'flowoface.lang';
+  var saved = null; try { saved = JSON.parse(localStorage.getItem(k)); } catch (e) {}
+  function set(l) { html.lang = l; document.getElementById('lcs').setAttribute('aria-pressed', String(l === 'cs')); document.getElementById('len').setAttribute('aria-pressed', String(l === 'en')); try { localStorage.setItem(k, JSON.stringify(l)); } catch (e) {} }
+  set(saved || ((navigator.language || '').toLowerCase().indexOf('cs') === 0 ? 'cs' : 'en'));
+  document.getElementById('lcs').onclick = function () { set('cs'); };
+  document.getElementById('len').onclick = function () { set('en'); };
+  fetch('qr.svg').then(function (r) { return r.text(); }).then(function (t) { document.getElementById('qr').innerHTML = t; }).catch(function () {});
+})();
+</script>
+</body>
+</html>

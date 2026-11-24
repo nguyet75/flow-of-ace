@@ -267,6 +267,7 @@ input[type=text]::placeholder { color: var(--muted); }
 .toast.cyan { background: var(--cyan); }
 
 /* Account */
+.topbtns { display: flex; gap: 8px; flex: none; align-items: center; }
 .brandrow { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .acct { flex: none; min-height: 44px; padding: 0 14px; border-radius: 99px; border: 1px solid var(--line); background: var(--surface); font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; max-width: 50%; }
 .acct span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -348,7 +349,7 @@ input[type=email], input[type=password] { width: 100%; min-height: 54px; border-
 
   <!-- HUB -->
   <section class="screen" id="hub">
-    <div class="brand brandrow"><h1>Flow <span class="of">of</span> <b>Ace</b></h1><button class="acct" id="acctBtn" hidden><i></i><span>Sign in</span></button></div>
+    <div class="brand brandrow"><h1>Flow <span class="of">of</span> <b>Ace</b></h1><div class="topbtns"><button class="acct" id="langBtn" aria-label="Čeština / English">CZ</button><button class="acct" id="acctBtn" hidden><i></i><span>Sign in</span></button></div></div>
     <p class="tag">Get your energy right, set your mindset, and walk on court with one goal and one cue. Log each match and the app learns what puts you in flow.</p>
     <div id="pendingBox"></div>
     <div class="sports" id="sports"></div>
@@ -529,6 +530,372 @@ input[type=email], input[type=password] { width: 100%; min-height: 54px; border-
 </div>
 
 <script>
+/* Flow of Ace: Czech interface strings. English source text → Czech.
+   Keys must match the English text exactly as the app renders it. Patterns handle text with numbers or names in it.
+   Reviewed by: pending native-speaker review. */
+window.FOA_CS = {
+  // ---------- general / navigation ----------
+  'Home': 'Domů', 'Back': 'Zpět', 'Next': 'Další', 'Close': 'Zavřít', 'Done': 'Hotovo', 'Done ✓': 'Hotovo ✓', 'Play': 'Přehrát', 'Pause': 'Pauza', 'Replay': 'Znovu',
+  'Ready': 'Připraveno', 'Not now': 'Teď ne', 'Source': 'Zdroj', 'Required': 'Povinné', 'Off': 'Vypnuto', 'English': 'English', 'Čeština': 'Čeština',
+  'Account': 'Účet', 'Sign in': 'Přihlásit', 'Progress': 'Průběh', 'Mute audio': 'Ztlumit zvuk', 'Unmute audio': 'Zapnout zvuk', 'BPM': 'BPM', 'of': 'of',
+  'The science': 'Věda', 'My flow profile': 'Můj flow profil', 'Coach dashboard': 'Trenérský přehled', 'Practice mode': 'Tréninkový režim',
+  'Works offline once loaded. Your matches and waitlist choices are saved on this device only.': 'Po prvním načtení funguje offline. Zápasy a volby čekací listiny se ukládají jen v tomto zařízení.',
+  'Works offline once loaded. Without an account, your matches are saved on this device only.': 'Po prvním načtení funguje offline. Bez účtu se zápasy ukládají jen v tomto zařízení.',
+  'Works offline once loaded. Your history syncs to your account when you have signal.': 'Po prvním načtení funguje offline. Historie se synchronizuje s účtem, když máš signál.',
+  'Get your energy right, set your mindset, and walk on court with one goal and one cue. Log each match and the app learns what puts you in flow.': 'Nalaď energii, nastav hlavu a jdi na kurt s jedním cílem a jedním klíčovým slovem. Zapisuj zápasy a aplikace se naučí, co tě dostává do flow.',
+
+  // ---------- hub ----------
+  'Volleyball': 'Volejbal', 'Basketball': 'Basketbal', 'Soccer': 'Fotbal', 'Tennis': 'Tenis', 'Track': 'Atletika', 'Esports': 'Esport',
+  'Active': 'Aktivní', 'Coming soon': 'Brzy', 'Waitlist': 'Čekací listina', 'Start pre-match →': 'Začít předzápasovou přípravu →',
+  'Log your last match': 'Zapiš poslední zápas', 'Log it now': 'Zapsat teď', 'Train →': 'Trénovat →', 'Open →': 'Otevřít →',
+  'Training days': 'Tréninkové dny', 'Your team’s flow, alerts and what works': 'Flow týmu, upozornění a co funguje',
+
+  // ---------- check-in ----------
+  'Check-in · 15 seconds': 'Check-in · 15 sekund', 'Your position': 'Tvoje pozice', 'Energy right now': 'Energie právě teď', 'Nerves': 'Nervozita',
+  'Flat, heavy legs': 'Bez energie, těžké nohy', 'Buzzing, wired': 'Nabuzený, přetočený', 'Calm': 'Klid', 'Tight, overthinking': 'Stažený, moc přemýšlím',
+  'Minutes to first serve': 'Minut do prvního podání', 'Start my flow': 'Spustit přípravu', 'Voice coach': 'Hlasový průvodce',
+  'Energy right now, 1 to 10': 'Energie právě teď, 1 až 10', 'Nerves right now, 1 to 10': 'Nervozita právě teď, 1 až 10',
+  'Log your matches and the app finds your own zone.': 'Zapisuj zápasy a aplikace najde tvoji vlastní zónu.',
+  'Spoken cues for breathing, mindset, visualization, the reset and the clutch serve. Uses your phone’s built-in voice.': 'Mluvené pokyny k dýchání, nastavení hlavy, vizualizaci, resetu a podání pod tlakem. Používá vestavěný hlas telefonu.',
+  'No Czech voice found on this phone yet. Add one in your phone’s text-to-speech settings, or the app speaks with the default voice.': 'V telefonu zatím není český hlas. Přidej ho v nastavení převodu textu na řeč, jinak aplikace mluví výchozím hlasem.',
+  'This browser can’t speak. Try Chrome or Safari.': 'Tento prohlížeč neumí mluvit. Zkus Chrome nebo Safari.',
+  'Setter': 'Nahrávač', 'Outside / Opp': 'Smečař / Univerzál', 'Middle Blocker': 'Blokař', 'Libero / DS': 'Libero / Obránce',
+  'Tempo & distribution': 'Tempo a rozdělování', 'Pin attack & passing': 'Útok z kraje a příjem', 'Block & quick attack': 'Blok a rychlý útok', 'Serve receive & defense': 'Příjem a obrana',
+
+  // ---------- session bar ----------
+  'to first serve': 'do prvního podání', 'headphones off': 'sluchátka dolů', 'first serve': 'první podání',
+  'Headphones off. Tune in to the court: calls, contact, the whistle.': 'Sluchátka dolů. Vnímej kurt: hlasy, kontakt s míčem, píšťalku.',
+
+  // ---------- tune ----------
+  'Step 1 · Tune your energy': 'Krok 1 · Nalaď energii', 'Settle in': 'Usaď se', 'Bring it down': 'Zklidni se', 'Turn it up': 'Přidej energii', 'Hold your zone': 'Drž svou zónu',
+  'Long exhales and a slow pulse. Aim for steady and ready, not sleepy: flow shows up at moderate energy.': 'Dlouhé výdechy a pomalý rytmus. Cílem je klid a připravenost, ne ospalost: flow přichází při střední energii.',
+  'Fast beat and power breaths to lift your energy. Stop and breathe normally if you feel dizzy or tingly.': 'Rychlý rytmus a silné dýchání zvednou energii. Pokud se ti zatočí hlava nebo brní prsty, přestaň a dýchej normálně.',
+  'You’re already in your zone. Steady breathing to stay there.': 'Už jsi ve své zóně. Klidné dýchání, abys v ní zůstal.',
+  'Cyclic sigh': 'Cyklický povzdech', 'Slow 4-6': 'Pomalé 4-6', 'Box 4-4-4-4': 'Box 4-4-4-4', 'Steady 4-4': 'Klidné 4-4', 'Power breaths': 'Silné dýchání',
+  'Power breaths · 132 BPM': 'Silné dýchání · 132 BPM', 'Power breaths · 145 BPM': 'Silné dýchání · 145 BPM',
+  'Breathe in': 'Nádech', 'Sip in more': 'Ještě malý nádech', 'Breathe out': 'Výdech', 'Hold': 'Zadrž', 'In': 'Nádech', 'Out': 'Výdech', 'Breathe normally': 'Dýchej normálně',
+  'In through your nose': 'Nádech nosem', 'Out through your mouth': 'Výdech ústy', 'Out through your nose': 'Výdech nosem', 'Easy, through your nose': 'Volně nosem', 'Stay still': 'Bez pohybu',
+  '● Yellow, rising tone = breathe in': '● Žlutá, stoupající tón = nádech', '● Green, falling tone = breathe out': '● Zelená, klesající tón = výdech',
+  'Energy now': 'Energie teď', 'Energy now after tuning, 1 to 10': 'Energie po naladění, 1 až 10', 'Next · Mindset': 'Dál · Hlava', 'Rate your energy': 'Ohodnoť energii',
+  'Energy curve showing where you are and your target zone': 'Křivka energie: kde jsi a tvoje cílová zóna',
+  'YOUR ZONE': 'TVOJE ZÓNA', 'START ZONE': 'VÝCHOZÍ ZÓNA', 'Energy 1': 'Energie 1',
+
+  // ---------- mindset ----------
+  'Step 2 · Set your mindset': 'Krok 2 · Nastav hlavu', 'Challenge, not threat': 'Výzva, ne hrozba',
+  'Say it out loud: “I’m excited.”': 'Řekni nahlas: „Těším se.“', 'Say it out loud: “I get to play.”': 'Řekni nahlas: „Jdu si to užít.“',
+  'Butterflies and excitement feel the same in your body. Don’t try to calm them away. Call them energy you can use.': 'Nervozita a nadšení se v těle cítí stejně. Nesnaž se je potlačit. Ber je jako energii, kterou můžeš využít.',
+  'Today is a challenge you’re ready for. You’ve done the work, you know your role, and the next ball is the only one that matters.': 'Dnešek je výzva, na kterou jsi připravený. Máš odtrénováno, znáš svou roli a počítá se jen další míč.',
+  'Reappraising nerves as excitement gives a small, consistent boost under pressure.': 'Když nervozitu bereš jako nadšení, pod tlakem ti to trochu, ale spolehlivě pomůže.',
+  'Seeing a match as a challenge rather than a threat is linked to steadier focus and better execution.': 'Brát zápas jako výzvu, ne hrozbu, souvisí se stabilnějším soustředěním a lepším provedením.',
+  'Said it': 'Řekl jsem to', '✓ Said it': '✓ Řečeno',
+  'One process goal': 'Jeden procesní cíl', 'Something you control on every ball, not the score.': 'Něco, co ovlivníš u každého míče, ne skóre.', 'Or write your own': 'Nebo napiš vlastní',
+  'Your action cue': 'Tvoje klíčové slovo', 'A short phrase you\'ll say in the reset between points.': 'Krátká fráze, kterou si řekneš při resetu mezi body.',
+  'If-then plan': 'Plán když–pak', 'Decide now what you\'ll do when it goes wrong, so you don\'t have to think then.': 'Rozhodni teď, co uděláš, když se něco pokazí, abys o tom pak nemusel přemýšlet.',
+  'If…': 'Když…', '…then': '…pak',
+  'I make an error': 'Udělám chybu', 'They go on a run': 'Soupeř dá sérii bodů', 'A bad call goes against us': 'Rozhodčí pískne špatně proti nám', 'I feel tight before I serve': 'Před podáním jsem stažený', 'I get subbed out': 'Jdu střídat ven',
+  'Long breath out, say my cue, eyes to the next server. Next ball.': 'Dlouhý výdech, řeknu své klíčové slovo, oči na dalšího podávajícího. Další míč.',
+  'Huddle, one breath, say our process goal out loud, play the next ball only.': 'Sejdeme se, jeden nádech, nahlas řekneme náš procesní cíl a hrajeme jen další míč.',
+  'Turn away, breathe out, eyes on the ball. Let it go with the exhale.': 'Otočím se, vydechnu, oči na míč. Pustím to s výdechem.',
+  'Breathe out longer than in, pick one spot, hold my eyes on it, then serve.': 'Výdech delší než nádech, vyberu jedno místo, podržím na něm oči a pak podám.',
+  'Stay in it: track the setter’s hands from the bench and be ready to go back in.': 'Zůstanu ve hře: z lavičky sleduju ruce nahrávače a jsem připravený jít zpátky.',
+  'Remember a good one': 'Vzpomeň si na dobrý zápas', 'Picture one rally or match where you played free. Hold it for a breath.': 'Představ si jednu výměnu nebo zápas, kdy jsi hrál uvolněně. Podrž to jeden nádech.',
+  'e.g. 3 aces in a row vs North': 'např. 3 esa v řadě proti Spartě', 'Next · See it': 'Dál · Vizualizace',
+
+  // ---------- see ----------
+  'Step 3 · See it': 'Krok 3 · Vizualizace', 'Your role': 'Tvoje role', 'First person, real speed': 'Vlastníma očima, ve skutečné rychlosti',
+  'Tap Play. Read each line, then close your eyes and see it from your own eyes.': 'Ťukni na Přehrát. Přečti si každý řádek, zavři oči a viď to vlastníma očima.',
+  'Tap Play. Read each line, then close your eyes and see it from your own eyes, at real speed.': 'Ťukni na Přehrát. Přečti si každý řádek, zavři oči a viď to vlastníma očima ve skutečné rychlosti.',
+  'Voice off': 'Hlas vypnutý', 'Next · Body': 'Dál · Tělo',
+
+  // ---------- body ----------
+  'Step 4 · Body, eyes off the screen': 'Krok 4 · Tělo, oči pryč od displeje', 'Activation finishers': 'Aktivační dokončení',
+  'Do these after your team warm-up. Put the phone down for each card.': 'Udělej je po týmovém rozcvičení. U každé karty odlož telefon.',
+  'Lock in': 'Připraven', 'Start 30s': 'Start 30 s', 'Start 20s': 'Start 20 s', 'Reaction cue': 'Reakční signál', '★ My body cue': '★ Moje tělesné klíčové slovo', '☆ Use this cue': '☆ Použít toto slovo',
+  'Scap band prep': 'Lopatky s gumou', '10 pull-aparts · 8 rotations each arm': '10 roztažení gumy · 8 rotací na každou ruku', 'Blades back and down': 'Lopatky dozadu a dolů',
+  'Wakes up the rotator cuff and shoulder-blade muscles before hitting, serving and setting.': 'Probudí rotátorovou manžetu a svaly kolem lopatek před smečí, podáním a nahrávkou.',
+  'Pogo hops': 'Pogo poskoky', '2 × 10 fast hops': '2 × 10 rychlých poskoků', 'Stiff ankles, quick ground': 'Pevné kotníky, rychlý odraz',
+  'Short, springy contacts prime the ankles for jumping without tiring the legs.': 'Krátké pružné odrazy připraví kotníky na skákání, aniž by unavily nohy.',
+  'Split-step reaction': 'Reakce ze split stepu', '5 reps on the GO flash': '5 opakování na blik GO', 'Split on contact, drop and go': 'Split při kontaktu, sniž se a vyraž',
+  'Couples a visual trigger to your first step. Tap Reaction cue and watch for GO.': 'Propojí zrakový signál s prvním krokem. Ťukni na Reakční signál a čekej na GO.',
+  'Release & jump-set shadow': 'Odběh a nahrávka ve výskoku naprázdno', '×5 from base to target': '×5 ze základního postavení na místo nahrávky', 'Beat the ball to the spot': 'Buď na místě dřív než míč',
+  'Rehearses the run to target and a balanced jump-set posture at match tempo.': 'Nacvičí odběh na místo nahrávky a stabilní postoj při nahrávce ve výskoku v zápasovém tempu.',
+  '3-step approach, no ball': 'Rozběh na 3 kroky bez míče', '×4, full speed': '×4, plnou rychlostí', 'Slow, fast, arms back': 'Pomalu, rychle, ruce dozadu',
+  'Grooves approach rhythm and arm swing at full speed without the fatigue of a hitting line.': 'Zažije rytmus rozběhu a švih paže plnou rychlostí bez únavy z útočné řady.',
+  'Block slide + quick approach': 'Přesun na blok + rychlý rozběh', '×3 each side + ×3 quick': '×3 na každou stranu + ×3 rychlá', 'Step, cross, plant, press': 'Krok, překřížení, odraz, natlačit',
+  'Primes lateral footwork and a fast two-step approach.': 'Připraví boční práci nohou a rychlý dvoukrokový rozběh.',
+  'Shuffle-drop to platform': 'Přísun a snížení do bagru', '×4 each side': '×4 na každou stranu', 'Low, wide, still at contact': 'Nízko, široko, v klidu při kontaktu',
+  'Rehearses getting there early and stopping before contact.': 'Nacvičí být u míče včas a zastavit se před kontaktem.',
+  'Quiet-eye serves': 'Podání s klidným pohledem', '5 serves with a ball': '5 podání s míčem', 'Pick a spot, hold the look, serve': 'Vyber místo, podrž pohled, podej',
+  'Before each serve, fix your eyes on one target for about 2 seconds, then go. A steady final look before aiming skills is one of the better-supported visual habits in sport.': 'Před každým podáním upři oči asi na 2 sekundy na jeden cíl a pak podej. Klidný závěrečný pohled před mířením patří k lépe podloženým zrakovým návykům ve sportu.',
+  'Eye primer (optional)': 'Zahřátí očí (volitelné)', '20 seconds on screen': '20 sekund na displeji', 'Head still, eyes jump': 'Hlava v klidu, oči skáčou',
+  'A short dot-tap warm-up for your eyes. Treat it as a focus switch, not skill training: screen drills haven’t been shown to improve play.': 'Krátké zahřátí očí ťukáním na body. Ber ho jako přepnutí soustředění, ne trénink dovedností: cvičení na displeji prokazatelně nezlepšují hru.',
+  'Eye primer': 'Zahřátí očí', 'Close eye primer': 'Zavřít zahřátí očí', 'Dot': 'Bod', 'Eyes on': 'Oči připravené',
+  'Head still. A dot jumps across the screen. Tap it the instant it appears. Turn the phone sideways if you can.': 'Hlava v klidu. Bod skáče po displeji. Ťukni na něj, jakmile se objeví. Pokud můžeš, otoč telefon na šířku.',
+  'READY': 'POZOR', 'SPLIT': 'SPLIT', 'GO': 'TEĎ', '5 reactions done': '5 reakcí hotovo', 'Reaction drill, tap to exit': 'Reakční cvičení, ťukni pro ukončení',
+
+  // ---------- lock / in-match ----------
+  'Locked in': 'Připraven', 'Process goal': 'Procesní cíl', 'If-then': 'Když–pak', 'Reset · 3 seconds between points': 'Reset · 3 sekundy mezi body',
+  'Practice the reset': 'Vyzkoušej reset', 'During the match': 'Během zápasu', 'Between sets': 'Mezi sety', 'Clutch serve': 'Podání pod tlakem', 'Match over · Log it': 'Konec zápasu · Zapsat', 'Back to home': 'Zpět domů',
+  'Eyes on the dot': 'Oči na bod', 'Eyes still': 'Oči v klidu', 'Reset': 'Reset',
+  'Between sets check-in': 'Kontrola mezi sety', 'Between sets · 10 seconds': 'Mezi sety · 10 sekund', 'Between sets · 30 seconds': 'Mezi sety · 30 sekund', 'Quick check': 'Rychlá kontrola',
+  'Energy': 'Energie', 'Head': 'Hlava', 'Low': 'Nízká', 'Right': 'Akorát', 'Too high': 'Moc vysoká', 'Busy': 'Plná', 'Mixed': 'Napůl', 'Clear': 'Čistá',
+  'Flow so far (optional)': 'Flow zatím (volitelné)', 'Fighting it': 'Bojuju s tím', 'Flowing': 'Jde to samo', 'Adjust · 30s': 'Upravit · 30 s', 'Stay right there': 'Takhle to drž', 'Back on court': 'Zpátky na kurt',
+  'Clutch serve routine': 'Rutina podání pod tlakem', 'Clutch serve · about 8 seconds · tap to skip ahead': 'Podání pod tlakem · asi 8 sekund · ťuknutím přeskočíš', 'Longer out than in': 'Výdech delší než nádech',
+  'Pick one spot': 'Vyber si jedno místo', 'An exact spot on their court': 'Přesné místo na jejich straně', 'Hold your eyes on it': 'Drž na něm oči', 'Still. About two seconds.': 'V klidu. Asi dvě sekundy.', 'Say it': 'Řekni to', 'Serve': 'Podání',
+
+  // ---------- post ----------
+  'After the match · about 60 seconds': 'Po zápase · asi 60 sekund', 'How did it feel?': 'Jaké to bylo?',
+  'Rate how much you agree, thinking about the match as a whole. This is how the app learns what gets you into flow.': 'Ohodnoť, nakolik souhlasíš, s ohledem na celý zápas. Takhle se aplikace učí, co tě dostává do flow.',
+  'One question for each of the nine flow dimensions described by Susan A. Jackson and Mihaly Csikszentmihalyi in': 'Jedna otázka na každou z devíti dimenzí flow, které popsali Susan A. Jackson a Mihaly Csikszentmihalyi v knize',
+  '(Human Kinetics, 1999). The wording is Flow of Ace’s own. The official Flow State Scale is copyrighted and licensed through Mind Garden.': '(Human Kinetics, 1999). Znění je vlastní znění Flow of Ace. Oficiální Flow State Scale je chráněná autorským právem a licencovaná přes Mind Garden.',
+  'Challenge–skill balance': 'Rovnováha výzvy a dovednosti', 'Action–awareness': 'Splynutí akce a vědomí', 'Clear goals': 'Jasné cíle', 'Feedback': 'Zpětná vazba', 'Concentration': 'Soustředění',
+  'Control': 'Kontrola', 'Self-consciousness': 'Sebe-vědomí', 'Time': 'Čas', 'Enjoyment': 'Radost',
+  'The challenge matched my skills.': 'Výzva odpovídala mým dovednostem.', 'I did things automatically, without thinking it through.': 'Dělal jsem věci automaticky, bez přemýšlení.',
+  'I knew exactly what I wanted to do.': 'Přesně jsem věděl, co chci udělat.', 'I could tell how I was doing while I played.': 'Během hry jsem poznal, jak se mi daří.',
+  'My attention stayed on the ball and the play.': 'Pozornost jsem měl na míči a hře.', 'I felt in control of what I was doing.': 'Měl jsem pod kontrolou, co dělám.',
+  'I wasn’t worried about how I looked to others.': 'Neřešil jsem, jak vypadám před ostatními.', 'Time felt different: it sped up or slowed down.': 'Čas plynul jinak: zrychlil nebo zpomalil.', 'I really enjoyed playing.': 'Hra mě opravdu bavila.',
+  'Not at all': 'Vůbec', 'Completely': 'Úplně', 'How well did you play?': 'Jak dobře jsi hrál?', 'Poor': 'Špatně', 'Best level': 'Nejlepší úroveň',
+  'Your energy at first serve was…': 'Tvoje energie při prvním podání byla…', 'Too low': 'Moc nízká', 'About right': 'Akorát', 'Save match': 'Uložit zápas',
+
+  // ---------- profile / insights ----------
+  'What gets you in flow': 'Co tě dostává do flow', 'Matches': 'Zápasy', 'Flow · last 5': 'Flow · posledních 5', 'Your zone': 'Tvoje zóna', 'Start zone': 'Výchozí zóna', 'Flow per match': 'Flow v jednotlivých zápasech',
+  'Flow score per match, 1 to 5': 'Flow skóre v zápase, 1 až 5', 'Work on next': 'Na čem pracovat', 'What the app has learned': 'Co se aplikace naučila', 'Delete all match data': 'Smazat všechna data zápasů',
+  'Yes, delete everything': 'Ano, smazat vše', 'Match data deleted': 'Data zápasů smazána',
+  'This removes every logged match from this device. It can’t be undone.': 'Tím odstraníš všechny zapsané zápasy z tohoto zařízení. Nelze to vrátit.',
+  'This removes every session from your account and this phone. It can’t be undone.': 'Tím odstraníš všechny záznamy z účtu i z tohoto telefonu. Nelze to vrátit.',
+  'No matches logged yet. Run a pre-match session, then tap “Match over · Log it”. After 3 matches the app starts learning your energy zone and which breathing method works best for you.': 'Zatím žádné zapsané zápasy. Projdi předzápasovou přípravu a pak ťukni na „Konec zápasu · Zapsat“. Po 3 zápasech se aplikace začne učit tvou zónu energie a který způsob dýchání ti funguje nejlépe.',
+  'You’ll see your flow trend, your personal energy zone, your strongest and weakest flow ingredients, and what to change before the next match.': 'Uvidíš vývoj svého flow, osobní zónu energie, nejsilnější a nejslabší složky flow a co změnit před dalším zápasem.',
+  'Your flow ingredients are even right now, with no weak spot. Keep the same routine and log a few more matches.': 'Tvoje složky flow jsou teď vyrovnané, bez slabého místa. Drž stejnou rutinu a zapiš ještě pár zápasů.',
+  'Challenge felt off. Before the match, pick a process goal that stretches you a little, not one you already own.': 'Výzva neseděla. Před zápasem si vyber procesní cíl, který tě trochu posune, ne takový, který už zvládáš.',
+  'You were thinking through movements. Keep cues short and outward ("ball to target"), not technique checklists.': 'Promýšlel jsi pohyby. Klíčová slova drž krátká a mířená ven („míč na cíl“), ne technické checklisty.',
+  'Goals felt fuzzy. Lock one process goal and say it in every reset.': 'Cíle byly nejasné. Zvol jeden procesní cíl a řekni si ho při každém resetu.',
+  'Hard to read how you were doing. Track your goal per rally: did I do it, yes or no?': 'Těžko se poznávalo, jak se ti daří. Sleduj cíl po každé výměně: splnil jsem ho, ano nebo ne?',
+  'Focus drifted. Use the 3-second reset after every point, not just errors.': 'Soustředění utíkalo. Použij 3sekundový reset po každém bodu, nejen po chybě.',
+  'You felt less in control. Write a sharper if-then plan for the situation that threw you.': 'Měl jsi menší kontrolu. Napiš si přesnější plán když–pak pro situaci, která tě rozhodila.',
+  'Worry about others crept in. Use the "I’m excited" reframe and keep eyes on the ball between points.': 'Vloudily se obavy z ostatních. Použij přerámování „Těším se“ a mezi body drž oči na míči.',
+  'Time sense is a sign of flow rather than a lever. It usually follows when the other items rise.': 'Vnímání času je spíš znak flow než páka. Obvykle se zlepší, když porostou ostatní složky.',
+  'Enjoyment was low. Recall a match you loved before playing, and play for the rally, not the result.': 'Radost byla nízká. Před hrou si vzpomeň na zápas, který tě bavil, a hraj pro výměnu, ne pro výsledek.',
+  'Not logged': 'Nezapsáno', 'Log it': 'Zapsat', 'Log this match': 'Zapsat tento zápas', 'Practice': 'Trénink',
+  'Nerves': 'Nervozita', 'Method': 'Metoda', 'Goal': 'Cíl', 'Cue': 'Klíčové slovo', 'Flow': 'Flow', 'Played': 'Výkon', 'Energy at serve': 'Energie při podání', 'Type': 'Typ', 'Reps': 'Opakování',
+  'about right': 'akorát', 'too high': 'moc vysoká', 'too low': 'moc nízká',
+
+  // ---------- practice ----------
+  'Practice · training days': 'Trénink · tréninkové dny', 'Train the routine': 'Natrénuj rutinu',
+  'Routines and imagery work best when you rehearse them, not only on match day. Imagery gave the biggest gains at about 10 minutes, 3 times a week.': 'Rutiny a představivost fungují nejlépe, když je trénuješ, ne jen v den zápasu. Největší zlepšení přinesla představivost zhruba 10 minut třikrát týdně.',
+  'This week': 'Tento týden', 'Breathing': 'Dýchání', 'Imagery': 'Představivost', 'Reset reps': 'Opakování resetu', 'Clutch serves': 'Podání pod tlakem', 'Clutch': 'Pod tlakem',
+  '5 min': '5 min', '10 min': '10 min', '10 reps in drills': '10 opakování ve cvičení', '10 serves': '10 podání', '5 minutes': '5 minut', '10 minutes': '10 minut',
+  'Slow breathing practised daily shifts heart-rate variability toward calm and makes the match-day version automatic.': 'Pomalé dýchání trénované každý den posouvá variabilitu srdeční frekvence ke klidu a v den zápasu pak jde samo.',
+  'Your position script plus your best rally, replayed in first person. About 10 minutes, 3 times a week gave the biggest gains in studies.': 'Scénář tvé pozice plus tvoje nejlepší výměna, přehrané vlastníma očima. Ve studiích přinášelo největší zlepšení zhruba 10 minut třikrát týdně.',
+  'Use the 3-second reset after every point in a drill so it’s automatic in matches.': 'Používej 3sekundový reset po každém bodu ve cvičení, aby v zápase šel automaticky.',
+  'Run the clutch routine before each serve and track how many go in. Practising under pressure is what transfers.': 'Před každým podáním proveď rutinu a sleduj, kolik jich projde. Do zápasu se přenáší právě trénink pod tlakem.',
+  'Finish': 'Dokončit', 'Serve in': 'Prošlo', 'Serve out': 'Neprošlo', 'Close your eyes between lines. Keep the phone nearby.': 'Mezi řádky zavírej oči. Telefon měj poblíž.', 'Use it after every point': 'Použij po každém bodu',
+  'After each point in your drill, tap and run the 3-second reset. Aim for 10.': 'Po každém bodu ve cvičení ťukni a proveď 3sekundový reset. Cíl je 10.',
+  'Point over · Reset': 'Konec bodu · Reset', '10 resets. That’s a full set.': '10 resetů. Celá série.', 'Routine before every serve': 'Rutina před každým podáním',
+  'Before each serve, tap Go and follow the routine. Then tell the app whether it went in.': 'Před každým podáním ťukni na Start a projdi rutinu. Pak aplikaci řekni, jestli podání prošlo.',
+  'Go · Run routine': 'Start · Spustit rutinu', 'Practice logged': 'Trénink zapsán',
+
+  // ---------- account ----------
+  'Your flow history': 'Tvoje historie flow',
+  'Create an account to keep your sessions, flow scores and what works for you across phones. Without one, everything stays on this device.': 'Vytvoř si účet a měj své přípravy, flow skóre a co ti funguje na všech telefonech. Bez účtu zůstane vše v tomto zařízení.',
+  'Continue with Google': 'Pokračovat přes Google', 'or with email': 'nebo e-mailem', 'Email': 'E-mail', 'Password': 'Heslo', 'At least 8 characters': 'Alespoň 8 znaků',
+  'Create account': 'Vytvořit účet', 'Forgot password?': 'Zapomenuté heslo?', 'How your data is handled': 'Jak nakládáme s tvými daty',
+  'Enter a valid email address.': 'Zadej platnou e-mailovou adresu.', 'Password needs at least 8 characters.': 'Heslo musí mít alespoň 8 znaků.', 'Wrong email or password.': 'Špatný e-mail nebo heslo.',
+  'Signing in…': 'Přihlašuji…', 'Creating…': 'Vytvářím…', 'Saving…': 'Ukládám…', 'Deleting…': 'Mažu…', 'Joining…': 'Připojuji…', 'Signing out…': 'Odhlašuji…',
+  'Check your email and tap the confirmation link, then come back and sign in.': 'Zkontroluj e-mail, ťukni na potvrzovací odkaz a pak se vrať a přihlas se.',
+  'If that email has an account, a reset link is on its way.': 'Pokud k tomuto e-mailu existuje účet, posíláme odkaz na obnovení hesla.',
+  'Set a new password': 'Nastav nové heslo', 'New password': 'Nové heslo', 'Save new password': 'Uložit nové heslo', 'Password updated': 'Heslo změněno',
+  'Set up your profile': 'Nastav si profil', 'Your profile': 'Tvůj profil', 'How will you use Flow of Ace?': 'Jak budeš Flow of Ace používat?',
+  'For myself': 'Pro sebe', 'With my team': 'S týmem', 'I’m a coach': 'Jsem trenér', 'Name or nickname': 'Jméno nebo přezdívka', 'What should we call you?': 'Jak ti máme říkat?',
+  'Position': 'Pozice', 'Level': 'Úroveň', 'School': 'Škola', 'Club': 'Klub', 'College': 'Univerzita', 'Pro / semi-pro': 'Profi / poloprofi', 'Beach': 'Beach', 'Birth year': 'Rok narození', 'e.g. 2008': 'např. 2008',
+  'I explicitly agree that Flow of Ace stores my wellbeing data (energy, nerves, mood and flow ratings, and match logs) in my account to show my history and personalise my routine. I can withdraw by deleting my data at any time. ': 'Výslovně souhlasím, aby Flow of Ace ukládala v mém účtu data o mé pohodě (hodnocení energie, nervozity, nálady a flow a záznamy zápasů), aby mi ukázala historii a přizpůsobila přípravu. Souhlas můžu kdykoli odvolat smazáním dat. ',
+  'I’m under 15. My parent or guardian has read how my data is handled and agrees to me using Flow of Ace. ': 'Je mi méně než 15 let. Můj rodič nebo zákonný zástupce si přečetl, jak se s mými daty nakládá, a souhlasí s tím, abych Flow of Ace používal. ',
+  'Required under 15': 'Povinné pod 15 let',
+  'Optional: let my data be used anonymously, without my name or email, to improve recommendations for all players.': 'Volitelné: moje data smí být anonymně, bez jména a e-mailu, použita ke zlepšení doporučení pro všechny hráče.',
+  'Save and continue': 'Uložit a pokračovat', 'Save profile': 'Uložit profil', 'Saved.': 'Uloženo.', 'Profile saved': 'Profil uložen',
+  'Choose how you’ll use Flow of Ace.': 'Vyber, jak budeš Flow of Ace používat.',
+  'Enter your birth year as 4 digits. We need it to check consent rules for under-15s.': 'Zadej rok narození čtyřmi číslicemi. Potřebujeme ho kvůli pravidlům souhlasu pro mladší 15 let.',
+  'Tick the data consent box to use an account.': 'Pro používání účtu zaškrtni souhlas se zpracováním dat.', 'Players under 15 need a parent or guardian to agree first.': 'Hráči mladší 15 let potřebují nejdřív souhlas rodiče nebo zákonného zástupce.',
+  'Signed in as': 'Přihlášen jako', 'Using it': 'Používání', 'History': 'Historie', 'Sync': 'Synchronizace', 'Up to date': 'Aktuální', 'As a coach': 'Jako trenér',
+  'See my flow history': 'Moje historie flow', 'Open coach dashboard': 'Otevřít trenérský přehled', 'Download my data': 'Stáhnout moje data', 'Sign out': 'Odhlásit se', 'Sign out anyway': 'Přesto odhlásit',
+  'Signed out': 'Odhlášeno', 'Delete my account': 'Smazat můj účet', 'Yes, delete my account and history': 'Ano, smazat účet i historii', 'Account deleted': 'Účet smazán',
+  'This permanently deletes your account, profile, team memberships and every logged session, on all your devices. Teams you coach are deleted too. It can’t be undone.': 'Tím trvale smažeš účet, profil, členství v týmech a všechny zapsané přípravy na všech zařízeních. Smažou se i týmy, které trénuješ. Nelze to vrátit.',
+  'Your account': 'Tvůj účet', 'Sign in or create an account': 'Přihlas se nebo vytvoř účet', 'Sync failed. It will retry.': 'Synchronizace selhala. Zkusí se to znovu.',
+  'Can’t reach your account right now. Everything still saves on this phone.': 'Účet je teď nedostupný. Všechno se dál ukládá v tomto telefonu.',
+  'Accounts aren’t switched on for this copy of the app. Everything is saved on this device.': 'V této verzi aplikace nejsou účty zapnuté. Vše se ukládá v tomto zařízení.',
+  'Download isn’t available here': 'Stažení tu není dostupné', 'Couldn’t delete from your account. Check your connection.': 'Z účtu se nepodařilo smazat. Zkontroluj připojení.',
+
+  // ---------- teams ----------
+  'Teams': 'Týmy', 'Join a team': 'Připojit se k týmu', 'Team code': 'Kód týmu', 'Join team': 'Připojit se', 'What your coach can see': 'Co uvidí tvůj trenér',
+  'Summary': 'Souhrn', 'Everything': 'Vše',
+  'Energy and nerves ratings, breathing method, between-set checks, flow and performance ratings, practice counts.': 'Hodnocení energie a nervozity, metoda dýchání, kontroly mezi sety, hodnocení flow a výkonu, počty tréninků.',
+  'The summary plus your goals, cues and if-then plans.': 'Souhrn plus tvoje cíle, klíčová slova a plány když–pak.',
+  'Share my sessions from today onward with this team’s coach. I can change this or leave the team at any time.': 'Sdílet moje přípravy od dneška s trenérem tohoto týmu. Můžu to kdykoli změnit nebo tým opustit.',
+  'You’re not on a team. Join one with the 6-letter code from your coach.': 'Nejsi v žádném týmu. Připoj se šestimístným kódem od trenéra.',
+  'The code is 6 letters and numbers.': 'Kód má 6 písmen a číslic.', 'Choose what your coach can see.': 'Vyber, co uvidí tvůj trenér.',
+  'Tick the box to agree to share with this team’s coach.': 'Zaškrtni souhlas se sdílením s trenérem týmu.', 'Share everything': 'Sdílet vše', 'Share summary only': 'Sdílet jen souhrn',
+  'Leave': 'Opustit', 'Tap again to leave': 'Ťukni znovu pro opuštění',
+  'No team with that code. Check it with your coach.': 'Tým s tímto kódem neexistuje. Ověř ho u trenéra.', 'You coach this team': 'Tento tým trénuješ',
+
+  // ---------- coach ----------
+  'Loading your teams…': 'Načítám týmy…', 'Create your team': 'Vytvoř svůj tým', 'Team name': 'Název týmu', 'Team name, e.g. U17 Women': 'Název týmu, např. U18 ženy', 'Create team': 'Vytvořit tým', 'Create another team': 'Vytvořit další tým',
+  'Give the team a name.': 'Pojmenuj tým.', 'Sign in with your coach account to see your team.': 'Přihlas se trenérským účtem a uvidíš svůj tým.',
+  'Accounts aren’t switched on for this copy of the app, so there’s no coach dashboard yet.': 'V této verzi aplikace nejsou účty zapnuté, takže trenérský přehled zatím není.',
+  'You’re offline. The coach dashboard needs a connection.': 'Jsi offline. Trenérský přehled potřebuje připojení.',
+  'You’ll get a 6-letter code. Players enter it in their Account screen and choose what to share: a summary, or everything. You only see sessions from the day each player joins, and only what they chose.': 'Dostaneš šestimístný kód. Hráči ho zadají ve svém účtu a vyberou, co sdílet: souhrn, nebo vše. Uvidíš jen přípravy ode dne, kdy se hráč připojí, a jen to, co zvolil.',
+  'Team code · players join from their Account screen': 'Kód týmu · hráči se připojí ve svém účtu', 'Copy code': 'Kopírovat kód', 'New code': 'Nový kód', 'Code copied': 'Kód zkopírován', 'Select the code to copy it': 'Označ kód a zkopíruj ho',
+  'Tap again: old code stops working': 'Ťukni znovu: starý kód přestane platit',
+  'Players': 'Hráči', 'Practice · 7 days': 'Trénink · 7 dní', 'Roster · needs attention first': 'Soupiska · nejdřív kdo potřebuje pozornost',
+  'No players yet. Share the code above. Each player joins from Account → Teams.': 'Zatím žádní hráči. Pošli jim kód výše. Každý se připojí v Účet → Týmy.',
+  'no logs': 'bez záznamů', 'shares summary': 'sdílí souhrn', 'shares everything': 'sdílí vše', 'today': 'dnes', 'yesterday': 'včera', 'never': 'nikdy',
+  'No sessions yet': 'Zatím žádné přípravy', 'Flow dropping': 'Flow klesá', 'Often too wired at first serve': 'Při prvním podání často přetočený', 'Often flat at first serve': 'Při prvním podání často bez energie',
+  'Busy head between sets': 'Plná hlava mezi sety', 'Low enjoyment': 'Málo radosti', 'In a good place': 'V dobré formě',
+  'What works across the team': 'Co funguje v celém týmu', 'Breathing method': 'Metoda dýchání', 'Avg flow': 'Průměrné flow',
+  'Early read: fewer than 20 logged matches across the team. Differences may be luck.': 'Předběžné: v týmu je méně než 20 zapsaných zápasů. Rozdíly můžou být náhoda.',
+  'Averages across every logged match on the team. Each player’s own app still adapts to them individually.': 'Průměry ze všech zapsaných zápasů týmu. Aplikace každého hráče se dál přizpůsobuje jemu osobně.',
+  'Delete this team': 'Smazat tento tým',
+  'Players chose what to share and can leave at any time. Players under 15 joined with a parent’s or guardian’s agreement.': 'Hráči si sami vybrali, co sdílet, a můžou kdykoli odejít. Hráči mladší 15 let se připojili se souhlasem rodiče nebo zákonného zástupce.',
+  'Matches logged': 'Zapsané zápasy', 'Shares everything': 'Sdílí vše', 'Shares summary (no goals, cues or if-then plans)': 'Sdílí souhrn (bez cílů, klíčových slov a plánů když–pak)',
+  'Talking point': 'Téma k rozhovoru', 'Remove from team': 'Odebrat z týmu',
+
+  // ---------- pilot check-in ----------
+  'Pilot check-in': 'Pilotní dotazník', 'Pilot check-in · 1 minute': 'Pilotní dotazník · 1 minuta',
+  'Start of the pilot': 'Začátek pilotu', 'After 6 weeks': 'Po 6 týdnech', 'Answer →': 'Odpovědět →', 'Send answers': 'Odeslat odpovědi', 'Thanks. Answers saved.': 'Díky. Odpovědi uloženy.',
+  'Answer every question with a scale or choice. Text answers are optional.': 'Odpověz na všechny otázky se stupnicí nebo výběrem. Textové odpovědi jsou volitelné.',
+  'Your answers go to your account and help decide what to improve. Coaches don’t see them.': 'Odpovědi se uloží do tvého účtu a pomůžou rozhodnout, co zlepšit. Trenéři je nevidí.',
+  'How often do nerves hurt your performance in matches?': 'Jak často ti nervozita v zápasech zhorší výkon?', 'How often do you feel “in the zone” in matches?': 'Jak často se v zápasech cítíš „v zóně“?',
+  'Do you use a pre-match routine every time?': 'Máš před každým zápasem svou rutinu?', 'Yes': 'Ano', 'Sometimes': 'Někdy', 'No': 'Ne',
+  'How confident are you serving under pressure?': 'Jak jistý si jsi při podání pod tlakem?', 'What do you hope Flow of Ace helps you with?': 'S čím doufáš, že ti Flow of Ace pomůže?',
+  'How useful was Flow of Ace?': 'Jak užitečná pro tebe Flow of Ace byla?', 'Which parts helped most?': 'Které části pomohly nejvíc?', 'What would you change?': 'Co bys změnil?',
+  'Mindset step': 'Nastavení hlavy', 'Visualization': 'Vizualizace', 'Never': 'Nikdy', 'Almost always': 'Skoro vždy', 'Very': 'Velmi', 'A lot': 'Hodně', 'Optional': 'Volitelné',
+  'How much does the mental side limit your team in matches?': 'Jak moc vaši hru v zápasech omezuje psychika?', 'How do you support players’ mental readiness today?': 'Jak dnes hráčům pomáháš s psychickou přípravou?',
+  'What would make Flow of Ace useful for you as a coach?': 'Co by Flow of Ace udělalo užitečným pro tebe jako trenéra?', 'How useful was the coach dashboard?': 'Jak užitečný byl trenérský přehled?',
+  'Did anything change in how you coach because of it?': 'Změnilo se díky tomu něco v tom, jak trénuješ?', 'Would your club pay for this per season?': 'Zaplatil by za to váš klub na sezónu?',
+  'Up to €100': 'Do 100 €', 'Up to €200': 'Do 200 €', 'Up to €400': 'Do 400 €', 'More than €400': 'Víc než 400 €',
+
+  // ---------- privacy sheet ----------
+  'Your data': 'Tvoje data', 'What’s stored': 'Co se ukládá',
+  'Your email, your profile (name, position, level, birth year, how you use the app) and each session: energy and nerves ratings, breathing method, goal, cue and if-then plan, between-set check-ins, post-match flow and performance ratings, and practice sessions.': 'Tvůj e-mail, profil (jméno, pozice, úroveň, rok narození, jak aplikaci používáš) a každá příprava: hodnocení energie a nervozity, metoda dýchání, cíl, klíčové slovo a plán když–pak, kontroly mezi sety, hodnocení flow a výkonu po zápase a tréninky.',
+  'Wellbeing data': 'Data o pohodě',
+  'Energy, nerves, mood and flow ratings can count as health-related data under EU law (GDPR). That’s why the app asks for your explicit consent, and why you can withdraw it by deleting your data or account at any time.': 'Hodnocení energie, nervozity, nálady a flow můžou podle práva EU (GDPR) spadat mezi údaje o zdraví. Proto aplikace žádá tvůj výslovný souhlas a proto ho můžeš kdykoli odvolat smazáním dat nebo účtu.',
+  'Under 15': 'Mladší 15 let',
+  'In the Czech Republic, players under 15 need a parent or guardian to agree before using an account. The app asks for birth year and requires that agreement for younger players.': 'V Česku potřebují hráči mladší 15 let k používání účtu souhlas rodiče nebo zákonného zástupce. Aplikace se ptá na rok narození a u mladších hráčů tento souhlas vyžaduje.',
+  'Coaches and teams': 'Trenéři a týmy',
+  'A coach only sees players who joined their team with the team code, only sessions from the day they joined, and only what each player chose: a summary, or everything including goals, cues and if-then plans. You can change that or leave the team at any time.': 'Trenér vidí jen hráče, kteří se k jeho týmu připojili kódem, jen přípravy ode dne připojení a jen to, co si každý hráč zvolil: souhrn, nebo vše včetně cílů, klíčových slov a plánů když–pak. Můžeš to kdykoli změnit nebo tým opustit.',
+  'Who else can see it': 'Kdo další to vidí',
+  'No other player can. Database rules block every account from reading anyone else’s rows. The person who runs this copy of Flow of Ace administers the database and can technically access it.': 'Žádný jiný hráč. Pravidla databáze brání každému účtu číst cizí záznamy. Osoba, která tuto verzi Flow of Ace provozuje, spravuje databázi a technicky k ní má přístup.',
+  'Where it lives': 'Kde jsou uložená', 'In a Supabase database. A copy also stays on your phone so the app works offline.': 'V databázi Supabase. Kopie zůstává i v telefonu, aby aplikace fungovala offline.',
+  'Anonymous sharing': 'Anonymní sdílení',
+  'Off unless you turn it on. If on, your data may later be used without your name or email to improve recommendations for all players. It isn’t used for anything yet.': 'Vypnuto, dokud ho nezapneš. Když je zapnuté, můžou být tvoje data později bez jména a e-mailu použita ke zlepšení doporučení pro všechny hráče. Zatím se k ničemu nepoužívají.',
+  'Your rights': 'Tvoje práva',
+  'Download everything with “Download my data”, delete your match data from your flow profile, or delete your whole account from the Account screen. Deleting removes the data from the database, not just your phone.': 'Vše si stáhneš přes „Stáhnout moje data“, data zápasů smažeš ve flow profilu a celý účet na obrazovce Účet. Smazání odstraní data z databáze, nejen z telefonu.',
+  'Not medical advice': 'Nejde o lékařskou radu',
+  'Flow of Ace is a sport performance and wellbeing routine. It doesn’t diagnose or treat anything. If nerves or low mood affect your life beyond sport, talk to a doctor or psychologist.': 'Flow of Ace je sportovní výkonnostní a wellbeing rutina. Nic nediagnostikuje ani neléčí. Pokud nervozita nebo špatná nálada ovlivňují tvůj život i mimo sport, obrať se na lékaře nebo psychologa.',
+
+  // ---------- science sheet ----------
+  'What each part of the app is based on, and how strong the evidence is. Several figures come from abstracts and are being checked against the full papers.': 'Na čem stojí jednotlivé části aplikace a jak silné jsou důkazy. Některá čísla pocházejí z abstraktů a ověřují se proti plným textům.',
+  'Strong evidence': 'Silné důkazy', 'Mixed or moderate evidence': 'Smíšené nebo střední důkazy', 'Weak evidence': 'Slabé důkazy',
+  'Flow can be invited, not switched on': 'Flow se dá přivolat, ne zapnout',
+  'Flow has nine parts (Csikszentmihalyi; Jackson & Csikszentmihalyi, Flow in Sports). Challenge matched to skill, clear goals and clear feedback are the conditions you can set up; the rest describe the experience. A 2023 review of flow interventions (Goddard et al.) found none that conclusively induced flow, so the app builds the conditions and learns what helps you. A meta-analysis of 22 studies found flow and performance are positively linked, but it cannot show which causes which.': 'Flow má devět složek (Csikszentmihalyi; Jackson & Csikszentmihalyi, Flow in Sports). Výzva odpovídající dovednostem, jasné cíle a jasná zpětná vazba jsou podmínky, které můžeš připravit; ostatní popisují samotný zážitek. Přehled intervencí z roku 2023 (Goddard a kol.) nenašel žádnou, která by flow prokazatelně vyvolala, proto aplikace připravuje podmínky a učí se, co pomáhá tobě. Metaanalýza 22 studií zjistila, že flow a výkon spolu pozitivně souvisí, ale neukazuje, co je příčinou čeho.',
+  'Your energy zone is personal': 'Tvoje zóna energie je osobní',
+  'Arousal and performance follow an inverted U, but the best level differs by athlete (the IZOF model). Athletes inside their own zone performed almost half a standard deviation better than outside it (d = 0.44, Jokela & Hanin 1999). In a lab study, flow peaked at moderate stress arousal, not minimal arousal (Peifer et al. 2014). That is why the app learns your zone from your own logs.': 'Aktivace a výkon mají tvar obráceného U, ale nejlepší úroveň se u sportovců liší (model IZOF). Sportovci ve své zóně podávali výkon téměř o polovinu směrodatné odchylky lepší než mimo ni (d = 0,44, Jokela & Hanin 1999). V laboratorní studii bylo flow nejvyšší při střední, ne minimální stresové aktivaci (Peifer a kol. 2014). Proto se aplikace učí tvoji zónu z tvých vlastních záznamů.',
+  '“I’m excited”': '„Těším se“',
+  'Reappraising pre-performance nerves as excitement or useful energy gave a small benefit across randomized trials (d = 0.23; 0.34 for public performance tasks). Corrected for publication bias, the overall effect is smaller (d = 0.14).': 'Přerámování nervozity před výkonem na nadšení nebo užitečnou energii přineslo v randomizovaných studiích malý přínos (d = 0,23; 0,34 u veřejných výkonů). Po korekci na publikační zkreslení je celkový efekt menší (d = 0,14).',
+  'Golfers told the putting task was a challenge (demands they could meet) putted more accurately than those given threat instructions, with steadier gaze and smoother movement (Moore et al. 2012).': 'Golfisté, kterým byl patování představen jako výzva (nároky, které zvládnou), patovali přesněji než ti s instrukcemi vyznívajícími jako hrozba, s klidnějším pohledem a plynulejším pohybem (Moore a kol. 2012).',
+  'Process goals': 'Procesní cíle',
+  'Goals about how you play (feet first, platform angle) were far more effective than outcome goals like winning the set in a meta-analysis of 27 studies (d = 1.36 vs 0.09; Williamson et al. 2022).': 'Cíle o tom, jak hraješ (nejdřív nohy, natočení rukou), byly v metaanalýze 27 studií mnohem účinnější než výsledkové cíle typu vyhrát set (d = 1,36 vs 0,09; Williamson a kol. 2022).',
+  'If-then plans': 'Plány když–pak',
+  'Deciding in advance “if X happens, I will do Y” had a medium-to-large effect on reaching goals across 94 tests (d = 0.65; Gollwitzer & Sheeran 2006). A later study applied it to athletes’ goals in tennis (Achtziger et al. 2008).': 'Rozhodnout předem „když se stane X, udělám Y“ mělo napříč 94 testy střední až velký vliv na dosahování cílů (d = 0,65; Gollwitzer & Sheeran 2006). Pozdější studie to použila na sportovní cíle v tenise (Achtziger a kol. 2008).',
+  'Routines and the reset': 'Rutiny a reset',
+  'Pre-performance routines improved performance in a meta-analysis (Rupprecht et al. 2021), including under pressure in experiments (g = 0.70). A steady final look at the target (quiet eye) is one of the better-supported visual habits for aiming skills like serving: training it improved performance (d = 0.84; Lebeau et al. 2016).': 'Předvýkonové rutiny v metaanalýze zlepšily výkon (Rupprecht a kol. 2021), v experimentech i pod tlakem (g = 0,70). Klidný závěrečný pohled na cíl (quiet eye) patří k lépe podloženým zrakovým návykům u mířených dovedností jako podání: jeho trénink zlepšil výkon (d = 0,84; Lebeau a kol. 2016).',
+  'Self-talk': 'Vnitřní řeč',
+  'A meta-analysis of 32 studies found a moderate effect of self-talk on performance (ES = 0.48), larger when the cue is practiced (Hatzigeorgiadis et al. 2011). Say yours in every reset.': 'Metaanalýza 32 studií zjistila střední vliv vnitřní řeči na výkon (ES = 0,48), větší, když je klíčové slovo natrénované (Hatzigeorgiadis a kol. 2011). Řekni si to svoje při každém resetu.',
+  'Slow breathing reliably raises heart-rate variability, a marker of calm (223 studies; Laborde et al. 2022). Across randomized trials, breathwork lowered stress by a small amount (g = −0.35; Fincham et al. 2023). Daily cyclic sighing improved mood more than mindfulness over a month (Balban et al. 2023). The effect of one session right before a match is not established.': 'Pomalé dýchání spolehlivě zvyšuje variabilitu srdeční frekvence, ukazatel klidu (223 studií; Laborde a kol. 2022). V randomizovaných studiích dechová cvičení mírně snížila stres (g = −0,35; Fincham a kol. 2023). Denní cyklický povzdech zlepšil náladu během měsíce víc než mindfulness (Balban a kol. 2023). Vliv jednoho cvičení těsně před zápasem není prokázaný.',
+  'Music': 'Hudba',
+  'Across 139 studies, music improved mood (g = 0.48) and physical performance (g = 0.31) without changing heart rate (Terry et al. 2020). Fast, loud music raises arousal; the app uses tempo to push energy up or down.': 'Napříč 139 studiemi hudba zlepšila náladu (g = 0,48) a fyzický výkon (g = 0,31) beze změny srdeční frekvence (Terry a kol. 2020). Rychlá, hlasitá hudba zvyšuje aktivaci; aplikace tempem posouvá energii nahoru nebo dolů.',
+  'Practice mode': 'Tréninkový režim',
+  'Imagery training gave the largest gains at about 10 minutes, 3 times a week, over roughly 100 days (Liu et al. 2025, 86 studies). Routines also need rehearsal: one-off pre-match interventions tend to fade. Practice mode lets you train the breathing, imagery, reset and clutch-serve routine on training days.': 'Trénink představivosti přinesl největší zlepšení zhruba při 10 minutách třikrát týdně po dobu asi 100 dní (Liu a kol. 2025, 86 studií). I rutiny je potřeba trénovat: jednorázové zásahy před zápasem mají tendenci vyprchat. V tréninkovém režimu si v tréninkové dny natrénuješ dýchání, představivost, reset i podání pod tlakem.',
+  'Why the app learns from you': 'Proč se aplikace učí od tebe',
+  'Because the best arousal level and the techniques that help are individual, the app compares your post-match flow scores across methods and energy levels. It needs at least 3 logged matches and gets more reliable with more. The post-match questions are Flow of Ace’s own short wording of the nine flow dimensions from Jackson & Csikszentmihalyi’s Flow in Sports (1999), not the validated Flow State Scale, which is licensed through Mind Garden.': 'Nejlepší úroveň aktivace i techniky, které pomáhají, jsou individuální, proto aplikace porovnává tvoje flow skóre po zápase napříč metodami a úrovněmi energie. Potřebuje alespoň 3 zapsané zápasy a s každým dalším je spolehlivější. Otázky po zápase jsou vlastní krátké znění devíti dimenzí flow z knihy Flow in Sports (Jackson & Csikszentmihalyi, 1999), ne validovaná Flow State Scale, která je licencovaná přes Mind Garden.',
+  'Eye drills': 'Cvičení očí',
+  'Screen-based eye drills improve the drill itself but have not been shown to improve play. Elite volleyball players who trained a tracking task for 8 weeks improved on the task but not on a blocking test (Fleddermann et al. 2019). A 2024 review found no evidence that general perceptual training transfers to sport (Fransen). The app keeps only a 20-second optional eye primer.': 'Cvičení očí na displeji zlepšují samotné cvičení, ale prokazatelně nezlepšují hru. Elitní volejbalisté, kteří 8 týdnů trénovali sledovací úlohu, se v ní zlepšili, ale v testu bloku ne (Fleddermann a kol. 2019). Přehled z roku 2024 nenašel důkazy, že by se obecný percepční trénink přenášel do sportu (Fransen). Aplikace si nechává jen volitelné 20sekundové zahřátí očí.',
+  'Keep screen time short': 'Drž čas u displeje krátký',
+  'In a 4-week study of 24 young volleyball players, those who watched TV instead of using social media before training improved their passing and attack decisions; the social media group did not (Fortes et al. 2021). The app keeps on-screen time to a few minutes and sends you to the court with your eyes up.': 'Ve čtyřtýdenní studii 24 mladých volejbalistů zlepšili rozhodování při příjmu a útoku ti, kteří před tréninkem místo sociálních sítí sledovali televizi; skupina se sociálními sítěmi ne (Fortes a kol. 2021). Aplikace drží čas u displeje na pár minutách a posílá tě na kurt s očima nahoře.',
+  'Screen colors': 'Barvy displeje',
+  'No color has been shown to be healthy for your eyes. In a crossover study of 30 tablet users, visual fatigue did not differ significantly between dark and light mode, though dark mode scored better on two eye measures (Sengsoon et al. 2025). Evening screen light can delay sleep, so Flow of Ace uses a dark, low-glare look with no blue accents. Blue-light filters did not reduce eye strain in a controlled trial.': 'U žádné barvy se neprokázalo, že by byla pro oči zdravá. V křížové studii 30 uživatelů tabletu se zraková únava mezi tmavým a světlým režimem významně nelišila, i když tmavý režim vyšel lépe ve dvou očních měřeních (Sengsoon a kol. 2025). Večerní světlo z displeje může oddálit spánek, proto má Flow of Ace tmavý vzhled s nízkým oslněním a bez modrých prvků. Filtry modrého světla v kontrolované studii únavu očí nesnížily.',
+  'Not supported': 'Nepodložené',
+  'Claims that flow is a “neurochemical cocktail” of dopamine and anandamide, or that the prefrontal cortex “switches off”, are not established by human studies. Popular lists of “flow triggers” go beyond the evidence.': 'Tvrzení, že flow je „neurochemický koktejl“ dopaminu a anandamidu nebo že se prefrontální kůra „vypne“, studie na lidech nepotvrdily. Populární seznamy „spouštěčů flow“ jdou za hranici důkazů.'
+};
+
+// Patterns: [regex, replacement(match, tr)] for text containing numbers or names.
+const lc = (x) => x ? x[0].toLowerCase() + x.slice(1) : x;
+window.FOA_CS_PATTERNS = [
+  [/^Started (.+)\. 60 seconds, and the app gets smarter\.$/, (m) => 'Začalo ' + m[1] + '. 60 sekund a aplikace bude chytřejší.'],
+  [/^Your flow zone: energy (\d+)–(\d+)\. $/, (m) => 'Tvoje flow zóna: energie ' + m[1] + '–' + m[2] + '. '],
+  [/^Starting zone: energy (\d+)–(\d+)\. $/, (m) => 'Výchozí zóna: energie ' + m[1] + '–' + m[2] + '. '],
+  [/^Learned from (\d+) logged matches\.$/, (m, t, p) => 'Naučeno z ' + m[1] + ' ' + p(+m[1], 'zapsaného zápasu', 'zapsaných zápasů', 'zapsaných zápasů') + '.'],
+  [/^Log (\d+) more match(?:es)? to personalise it\.$/, (m, t, p) => 'Zapiš ještě ' + m[1] + ' ' + p(+m[1], 'zápas', 'zápasy', 'zápasů') + ' a zóna se přizpůsobí tobě.'],
+  [/^Log (\d+) more match(?:es)? to learn your own energy zone\. Until then the app aims for (\d+)–(\d+)\.$/, (m, t, p) => 'Zapiš ještě ' + m[1] + ' ' + p(+m[1], 'zápas', 'zápasy', 'zápasů') + ' a aplikace zjistí tvou zónu energie. Do té doby míří na ' + m[2] + '–' + m[3] + '.'],
+  [/^Trying (.+?)( again)? so the app can learn what works for you\.$/, (m, t) => 'Zkoušíme ' + lc(t(m[1])) + (m[2] ? ' znovu' : '') + ', aby aplikace zjistila, co ti funguje.'],
+  [/^Re-testing (.+) \(avg flow ([\d.]+)\) to keep your profile accurate\.$/, (m, t) => 'Znovu testujeme ' + lc(t(m[1])) + ' (průměrné flow ' + m[2] + '), aby profil zůstal přesný.'],
+  [/^Picked for you: your flow averaged ([\d.]+) after (.+) vs ([\d.]+) after (.+)\.$/, (m, t) => 'Vybráno pro tebe: po metodě ' + lc(t(m[2])) + ' bylo tvoje flow v průměru ' + m[1] + ', po metodě ' + lc(t(m[4])) + ' ' + m[3] + '.'],
+  [/^Energy (\d+) is inside your zone\.$/, (m) => 'Energie ' + m[1] + ' je v tvé zóně.'],
+  [/^YOU · (\d+)$/, (m) => 'TY · ' + m[1]],
+  [/^Breath (\d+) \/ (\d+)$/, (m) => 'Nádech ' + m[1] + ' / ' + m[2]],
+  [/^Scene (\d+) of (\d+)$/, (m) => 'Scéna ' + m[1] + ' z ' + m[2]],
+  [/^Card (\d+) of (\d+)$/, (m) => 'Karta ' + m[1] + ' z ' + m[2]],
+  [/^Voice: (.+)$/, (m, t) => 'Hlas: ' + t(m[1])],
+  [/^Start with your best: (.+)\. Feel how loose you were\.$/, (m) => 'Začni tím nejlepším: ' + m[1] + '. Vzpomeň si na ten pocit lehkosti.'],
+  [/^Your goal on every ball: (.+)\. Your cue: (.+)\.$/, (m, t) => 'Tvůj cíl u každého míče: ' + t(m[1]) + '. Tvoje klíčové slovo: ' + t(m[2]) + '.'],
+  [/^(\d+) hits · (\d+) missed(?: · (\d+) ms avg)?$/, (m) => m[1] + ' zásahů · ' + m[2] + ' minuto' + (m[3] ? ' · průměr ' + m[3] + ' ms' : '')],
+  [/^If (.+) → (.+)$/, (m, t) => { const u = m[1][0].toUpperCase() + m[1].slice(1), c = t(u); return 'Když ' + c[0].toLowerCase() + c.slice(1) + ' → ' + t(m[2]); }],
+  [/^Breathe out long · eyes on one fixed point · say “(.+)”$/, (m, t) => 'Dlouhý výdech · oči na jeden bod · řekni „' + t(m[1]) + '“'],
+  [/^Too many thoughts\. Drop them on the exhale\. One thing only: (.+)\.$/, (m, t) => 'Moc myšlenek. Pusť je s výdechem. Jen jedna věc: ' + t(m[1]) + '.'],
+  [/^Next set, same goal: (.+)\.$/, (m, t) => 'Další set, stejný cíl: ' + t(m[1]) + '.'],
+  [/^Cue: “(.+)”$/, (m, t) => 'Klíčové slovo: „' + t(m[1]) + '“'],
+  [/^Flow ([\d.]+) \/ 5 this match\.$/, (m) => 'Flow ' + m[1] + ' / 5 v tomto zápase.'],
+  [/^Saved\. $/, () => 'Uloženo. '],
+  [/^Flow ingredients · last (\d+) match(?:es)?$/, (m, t, p) => 'Složky flow · ' + p(+m[1], 'poslední zápas', 'poslední ' + m[1] + ' zápasy', 'posledních ' + m[1] + ' zápasů')],
+  [/^History · (\d+) sessions?$/, (m, t, p) => 'Historie · ' + m[1] + ' ' + p(+m[1], 'záznam', 'záznamy', 'záznamů')],
+  [/^You average ([\d.]+) flow when your energy at first serve is (\d+)–(\d+)\. The app now tunes you toward that zone\.$/, (m) => 'Když máš při prvním podání energii ' + m[2] + '–' + m[3] + ', je tvoje flow v průměru ' + m[1] + '. Aplikace tě teď ladí do této zóny.'],
+  [/^(Calming down|Firing up): (.+) \(([\d.]+), (\d+) match(?:es)?\) (beats|is level with) (.+) \(([\d.]+), (\d+)\)(\. Early read: a few more matches will make this reliable\.|\.)$/,
+    (m, t) => (m[1] === 'Calming down' ? 'Zklidnění: ' : 'Nabuzení: ') + t(m[2]) + ' (' + m[3] + ', ' + m[4] + ') ' + (m[5] === 'beats' ? 'vychází lépe než ' : 'vychází stejně jako ') + t(m[6]) + ' (' + m[7] + ', ' + m[8] + ')' + (m[9].length > 1 ? '. Předběžné: pár dalších zápasů to zpřesní.' : '.')],
+  [/^You felt too wired at first serve in (\d+) of your last (\d+) matches\. Start breathing earlier and skip the fast beat\.$/, (m) => 'V ' + m[1] + ' z posledních ' + m[2] + ' zápasů jsi byl při prvním podání přetočený. Začni dýchat dřív a vynech rychlý rytmus.'],
+  [/^You felt flat at first serve in (\d+) of your last (\d+) matches\. Do the activation cards closer to first serve\.$/, (m) => 'V ' + m[1] + ' z posledních ' + m[2] + ' zápasů jsi byl při prvním podání bez energie. Aktivační karty dělej blíž prvnímu podání.'],
+  [/^Your head was busy in (\d+) of (\d+) between-set check-ins\. Lean on the reset after every point, not just errors\.$/, (m) => 'Při ' + m[1] + ' z ' + m[2] + ' kontrol mezi sety jsi měl plnou hlavu. Opři se o reset po každém bodu, nejen po chybě.'],
+  [/^Your flow and how well you rated your play move together (strongly|somewhat|only a little) \(r = (-?[\d.]+)\)\.$/, (m) => 'Tvoje flow a hodnocení výkonu spolu souvisí ' + ({ strongly: 'silně', somewhat: 'středně', 'only a little': 'jen málo' })[m[1]] + ' (r = ' + m[2] + ').'],
+  [/^(.+) → (.+) after tuning$/, (m) => m[1] + ' → ' + m[2] + ' po naladění'],
+  [/^(\d+) · (\d+) in \((\d+)%\)$/, (m) => m[1] + ' · ' + m[2] + ' dobře (' + m[3] + ' %)'],
+  [/(low|right|high|\?) energy, (busy|ok|clear|\?) head/, null], // handled by mids()
+  [/^(\d+) sessions?, (\d+) match(?:es)? logged$/, (m, t, p) => m[1] + ' ' + p(+m[1], 'příprava', 'přípravy', 'příprav') + ', ' + m[2] + ' ' + p(+m[2], 'zapsaný zápas', 'zapsané zápasy', 'zapsaných zápasů')],
+  [/^(\d+) waiting to upload$/, (m) => m[1] + ' čeká na nahrání'],
+  [/^Synced (.+)$/, (m) => 'Synchronizováno ' + m[1]],
+  [/^Added (\d+) sessions? from this phone to your account$/, (m, t, p) => 'Do účtu ' + p(+m[1], 'přibyla 1 příprava', 'přibyly ' + m[1] + ' přípravy', 'přibylo ' + m[1] + ' příprav') + ' z tohoto telefonu'],
+  [/^(\d+) sessions? (?:hasn’t|haven’t) synced yet\. Connect to the internet first, or sign out anyway and lose them\.$/, (m, t, p) => m[1] + ' ' + p(+m[1], 'příprava se ještě nesynchronizovala', 'přípravy se ještě nesynchronizovaly', 'příprav se ještě nesynchronizovalo') + '. Nejdřív se připoj k internetu, nebo se přesto odhlas a přijdeš o ně.'],
+  [/^Signed in as (.+)\.$/, (m) => 'Přihlášen jako ' + m[1] + '.'],
+  [/^Your coach sees: (summary|everything)$/, (m) => 'Trenér vidí: ' + (m[1] === 'summary' ? 'souhrn' : 'vše')],
+  [/^Joined (.+)$/, (m) => 'Připojeno: ' + m[1]],
+  [/^Left (.+)$/, (m) => 'Opuštěno: ' + m[1]],
+  [/^On the (.+) waitlist$/, (m, t) => 'Na čekací listině: ' + t(m[1])],
+  [/^Notify me when (.+) launches$/, (m, t) => 'Dej mi vědět, až spustíte ' + t(m[1])],
+  [/^Account: (.+), (sync pending|synced)$/, (m) => 'Účet: ' + m[1] + (m[2] === 'synced' ? ', synchronizováno' : ', čeká na synchronizaci')],
+  [/^(\d+) of 3 this week$/, (m) => m[1] + ' ze 3 tento týden'],
+  [/^(\d+) of 3 sessions$/, (m) => m[1] + ' ze 3 tréninků'],
+  [/^(\d+:\d\d) left$/, (m) => 'zbývá ' + m[1]],
+  [/^active (.+)$/, (m, t) => 'aktivní ' + t(m[1])],
+  [/^(\d+) days ago$/, (m, t, p) => 'před ' + m[1] + ' dny'],
+  [/^(\d+) logged$/, (m) => m[1] + ' zapsáno'],
+  [/^No activity for (\d+) days$/, (m) => 'Bez aktivity ' + m[1] + ' dní'],
+  [/^Team flow · 14 days( ↑| ↓)?$/, (m) => 'Flow týmu · 14 dní' + (m[1] || '')],
+  [/^Tap again to delete (.+)\. Players keep their own data\.$/, (m) => 'Ťukni znovu pro smazání týmu ' + m[1] + '. Hráčům zůstanou jejich data.'],
+  [/^Tap again to remove (.+)$/, (m) => 'Ťukni znovu pro odebrání: ' + m[1]],
+  [/^Couldn’t (save|delete|load the team|load your teams): (.+)$/, (m) => ({ save: 'Nepodařilo se uložit: ', delete: 'Nepodařilo se smazat: ', 'load the team': 'Tým se nepodařilo načíst: ', 'load your teams': 'Týmy se nepodařilo načíst: ' })[m[1]] + m[2]],
+  [/^(\d+) min$/, (m) => m[1] + ' min'],
+  [/^(.+) (\d) of 5$/, (m, t) => t(m[1]) + ' ' + m[2] + ' z 5'],
+  [/^Practice · (.+)$/, (m, t) => 'Trénink · ' + t(m[1])]
+];
+</script>
+
+<script>
 (() => {
 'use strict';
 
@@ -554,6 +921,56 @@ const fmt = (s) => { s = Math.max(0, Math.ceil(s)); return Math.floor(s / 60) + 
 const setRing = (el, f) => { const c = 2 * Math.PI * +el.getAttribute('r'); el.style.strokeDasharray = c; el.style.strokeDashoffset = c * (1 - Math.max(0, Math.min(1, f))); };
 const avg = a => a.length ? a.reduce((x, y) => x + y, 0) / a.length : 0;
 const r1 = x => Math.round(x * 10) / 10;
+
+/* ---------- language (English / Czech) ---------- */
+// The interface is written in English; in Czech mode every rendered text node and label is translated
+// through the FOA_CS dictionary and patterns as it appears on screen.
+let LANG = store.get('lang', null) || ((navigator.language || '').toLowerCase().startsWith('cs') ? 'cs' : 'en');
+const CS = window.FOA_CS || {}, CS_PAT = window.FOA_CS_PATTERNS || [];
+const plural = (n, one, few, many) => n === 1 ? one : (n >= 2 && n <= 4) ? few : many;
+const MIDS_CS = { energy: { low: 'nízká', right: 'akorát', high: 'vysoká', '?': '?' }, head: { busy: 'plná', ok: 'napůl', clear: 'čistá', '?': '?' } };
+function tr(s) {
+  if (LANG !== 'cs' || !s || !/[A-Za-z]/.test(s)) return s;
+  if (CS[s] != null) return CS[s];
+  const core = s.trim(), lead = s.slice(0, s.indexOf(core)), trail = s.slice(s.indexOf(core) + core.length);
+  if (CS[core] != null) return lead + CS[core] + trail;
+  for (const [re, f] of CS_PAT) {
+    if (!f) continue;
+    let m = s.match(re); if (m) return f(m, tr, plural);
+    m = core.match(re); if (m) return lead + f(m, tr, plural) + trail;
+  }
+  if (/(low|right|high|\?) energy, (busy|ok|clear|\?) head/.test(core))
+    return s.replace(/(low|right|high|\?) energy, (busy|ok|clear|\?) head/g, (_, e, hd) => 'energie ' + MIDS_CS.energy[e] + ', hlava ' + MIDS_CS.head[hd]);
+  if (core.includes(' · ')) { const parts = core.split(' · '), out = parts.map(tr); if (out.some((x, i) => x !== parts[i])) return lead + out.join(' · ') + trail; }
+  return s;
+}
+const TR_ATTRS = ['placeholder', 'aria-label', 'title'];
+function trNode(n) {
+  if (!n) return;
+  if (n.nodeType === 3) { const pn = n.parentNode; if (!pn || pn.nodeName === 'SCRIPT' || pn.nodeName === 'STYLE') return; const v = n.nodeValue, t2 = tr(v); if (t2 !== v) n.nodeValue = t2; return; }
+  if (n.nodeType !== 1 || n.nodeName === 'SCRIPT' || n.nodeName === 'STYLE') return;
+  for (const a of TR_ATTRS) if (n.hasAttribute(a)) { const v = n.getAttribute(a), t2 = tr(v); if (t2 !== v) n.setAttribute(a, t2); }
+  for (const c of n.childNodes) trNode(c);
+}
+function startI18n() {
+  document.documentElement.lang = LANG;
+  const lb = document.getElementById('langBtn'); if (lb) { lb.textContent = LANG === 'cs' ? 'EN' : 'CZ'; lb.setAttribute('aria-label', LANG === 'cs' ? 'Switch to English' : 'Přepnout do češtiny'); }
+  if (LANG !== 'cs') return;
+  trNode(document.body);
+  new MutationObserver(ms => {
+    for (const m of ms) {
+      if (m.type === 'characterData') trNode(m.target);
+      else if (m.type === 'attributes') { const v = m.target.getAttribute(m.attributeName), t2 = tr(v); if (v != null && t2 !== v) m.target.setAttribute(m.attributeName, t2); }
+      else m.addedNodes.forEach(trNode);
+    }
+  }).observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: TR_ATTRS });
+}
+function switchLang() {
+  const next = LANG === 'cs' ? 'en' : 'cs';
+  store.set('lang', next);
+  const v = store.get('voice', 'off'); if (v !== 'off') store.set('voice', next);
+  location.reload();
+}
 
 /* ---------- content ---------- */
 const SPORTS = [{ id: 'volleyball', name: 'Volleyball', live: true }, { id: 'basketball', name: 'Basketball' }, { id: 'soccer', name: 'Soccer' }, { id: 'tennis', name: 'Tennis' }, { id: 'track', name: 'Track' }, { id: 'esports', name: 'Esports' }];
@@ -921,7 +1338,7 @@ function renderTeamsCard(body) {
   body.append(card);
 }
 function renderAccountHome(body) {
-  const P = Cloud.profile, n = sessions().length, logged_n = logged().length;
+  const P = Cloud.profile, n = sessions().filter(s => s.kind !== 'survey').length, logged_n = logged().length;
   const out = h('button', { class: 'btn btn-ghost' }, 'Sign out'), m = msgEl();
   out.onclick = async () => {
     busy(out, true, 'Signing out…');
@@ -1136,7 +1553,7 @@ function renderHub() {
     sw.addEventListener('click', () => { wl[sp.id] = !wl[sp.id]; store.set('waitlist', wl); sw.setAttribute('aria-checked', String(!!wl[sp.id])); if (wl[sp.id]) toast('On the ' + sp.name + ' waitlist', 'cyan', 2000); });
     return h('div', { class: 'sport locked' }, h('span', { class: 'badge' }, 'Coming soon'), h('span', { class: 'name' }, sp.name), h('span', { class: 'wl' }, 'Waitlist', sw));
   }));
-  const pend = sessions().filter(s => !s.post && !s.skipped && s.kind !== 'practice').slice(-1)[0];
+  const pend = sessions().filter(s => !s.post && !s.skipped && !s.kind).slice(-1)[0];
   $('#pendingBox').replaceChildren(...(pend ? [h('div', { class: 'pending' },
     h('b', {}, 'Log your last match'), h('p', { class: 'note' }, 'Started ' + new Date(pend.at).toLocaleString([], { weekday: 'short', hour: 'numeric', minute: '2-digit' }) + '. 60 seconds, and the app gets smarter.'),
     h('button', { class: 'btn btn-cyan', onclick: () => openPost(pend.id) }, 'Log it now'))] : []));
@@ -1646,7 +2063,7 @@ function renderProfile(justSaved) {
   body.append(clear);
 }
 function renderHistory(body, list, own = true) {
-  const all = (list || sessions()).slice().reverse();
+  const all = (list || sessions()).filter(s => s.kind !== 'survey').slice().reverse();
   if (!all.length) return;
   const fitTxt = { low: 'too low', right: 'about right', high: 'too high' };
   body.append(h('div', { class: 'hist' }, h('div', { class: 'eyebrow', style: 'border:0;padding:0 0 4px' }, 'History · ' + all.length + ' session' + (all.length === 1 ? '' : 's')),
@@ -1759,6 +2176,10 @@ const Voice = {
     else if (kind === 'rest') this.key('rest');
   }
 };
+// Reuse the Czech voice texts as on-screen translations: goals, cues, position scripts, imagery lines.
+Object.assign(CS, CS_PHRASES);
+Object.keys(POS).forEach(k => POS[k].script.forEach((line, i) => { if (SCRIPT_CS[k] && SCRIPT_CS[k][i]) CS[line] = SCRIPT_CS[k][i]; }));
+VOICE_TXT.en.img_extra.forEach((line, i) => { CS[line] = VOICE_TXT.cs.img_extra[i]; });
 try { speechSynthesis.addEventListener('voiceschanged', () => { if (currentScreen() === 'checkin') renderVoiceSeg(); }); } catch {}
 function renderVoiceSeg() {
   const seg = $('#voiceSeg'); if (!seg) return;
@@ -1770,6 +2191,71 @@ function renderVoiceSeg() {
   else note.hidden = true;
 }
 
+/* ---------- pilot check-in (baseline + after 6 weeks) ---------- */
+const SURVEY = {
+  player: {
+    base: [['nerves', 'scale', 'How often do nerves hurt your performance in matches?', 'Never', 'Almost always'], ['zone', 'scale', 'How often do you feel “in the zone” in matches?', 'Never', 'Almost always'],
+      ['routine', 'choice', 'Do you use a pre-match routine every time?', [['yes', 'Yes'], ['sometimes', 'Sometimes'], ['no', 'No']]], ['serve', 'scale', 'How confident are you serving under pressure?', 'Not at all', 'Completely'],
+      ['hope', 'text', 'What do you hope Flow of Ace helps you with?']],
+    follow: [['nerves', 'scale', 'How often do nerves hurt your performance in matches?', 'Never', 'Almost always'], ['zone', 'scale', 'How often do you feel “in the zone” in matches?', 'Never', 'Almost always'],
+      ['routine', 'choice', 'Do you use a pre-match routine every time?', [['yes', 'Yes'], ['sometimes', 'Sometimes'], ['no', 'No']]], ['serve', 'scale', 'How confident are you serving under pressure?', 'Not at all', 'Completely'],
+      ['useful', 'scale', 'How useful was Flow of Ace?', 'Not at all', 'Very'],
+      ['best', 'multi', 'Which parts helped most?', [['breath', 'Breathing'], ['mind', 'Mindset step'], ['see', 'Visualization'], ['reset', 'Reset'], ['clutch', 'Clutch serve'], ['practice', 'Practice mode']]],
+      ['change', 'text', 'What would you change?']]
+  },
+  coach: {
+    base: [['limit', 'scale', 'How much does the mental side limit your team in matches?', 'Not at all', 'A lot'], ['support', 'text', 'How do you support players’ mental readiness today?'],
+      ['hope', 'text', 'What would make Flow of Ace useful for you as a coach?']],
+    follow: [['limit', 'scale', 'How much does the mental side limit your team in matches?', 'Not at all', 'A lot'], ['dash', 'scale', 'How useful was the coach dashboard?', 'Not at all', 'Very'],
+      ['changed', 'text', 'Did anything change in how you coach because of it?'],
+      ['pay', 'choice', 'Would your club pay for this per season?', [['no', 'No'], ['100', 'Up to €100'], ['200', 'Up to €200'], ['400', 'Up to €400'], ['more', 'More than €400']]],
+      ['change', 'text', 'What would you change?']]
+  }
+};
+const surveyRole = () => (Cloud.profile && Cloud.profile.role === 'coach') ? 'coach' : 'player';
+function surveyDue() {
+  if (!Cloud.user) return null;
+  const role = surveyRole(), done = sessions().filter(s => s.kind === 'survey' && s.role === role);
+  const base = done.find(s => s.phase === 'base');
+  if (!base) return 'base';
+  if (!done.find(s => s.phase === 'follow') && Date.now() - base.at >= 42 * 864e5) return 'follow';
+  return null;
+}
+function openSurvey(phase) {
+  const role = surveyRole(), qs = SURVEY[role][phase], ans = {};
+  const inner = h('div', { class: 'inner' });
+  const o = h('div', { class: 'full', role: 'dialog', 'aria-label': 'Pilot check-in', style: 'justify-content:flex-start' }, inner);
+  inner.append(h('div', { class: 'eyebrow' }, phase === 'base' ? 'Start of the pilot' : 'After 6 weeks'), h('h2', { style: 'font-size:34px' }, 'Pilot check-in'),
+    h('p', { class: 'note' }, 'Your answers go to your account and help decide what to improve. Coaches don’t see them.'));
+  qs.forEach(([id, type, q, a, b]) => {
+    const box = h('div', { class: 'q' }, h('h3', { style: 'font-size:18px;text-transform:none;font-family:var(--font-body);font-weight:600;letter-spacing:0;line-height:1.3' }, q));
+    if (type === 'scale') {
+      const sc = h('div', { class: 'scale' });
+      for (let v = 1; v <= 5; v++) sc.append(h('button', { 'aria-pressed': 'false', onclick: () => { ans[id] = v; sc.querySelectorAll('button').forEach((x, j) => x.setAttribute('aria-pressed', String(j + 1 === v))); } }, String(v)));
+      box.append(h('div', { class: 'likert', style: 'border:0;padding:0' }, sc, h('div', { class: 'ends' }, h('span', {}, a), h('span', {}, b))));
+    } else if (type === 'choice' || type === 'multi') {
+      const row = h('div', { class: 'chips' });
+      a.forEach(([v, t]) => { const c = h('button', { class: 'chip', 'aria-pressed': 'false' }, t); c.onclick = () => {
+        if (type === 'choice') { ans[id] = v; row.querySelectorAll('.chip').forEach(x => x.setAttribute('aria-pressed', String(x === c))); }
+        else { const set = new Set(ans[id] || []); set.has(v) ? set.delete(v) : set.add(v); ans[id] = [...set]; c.setAttribute('aria-pressed', String(set.has(v))); } }; row.append(c); });
+      box.append(row);
+    } else {
+      const inp = h('input', { type: 'text', id: 'sv_' + id, maxlength: '200', placeholder: 'Optional' }); inp.oninput = () => { ans[id] = inp.value.trim(); }; box.append(inp);
+    }
+    inner.append(box);
+  });
+  const m = msgEl(), send = h('button', { class: 'btn btn-primary' }, 'Send answers');
+  send.onclick = () => {
+    const missing = qs.filter(([id, type]) => type !== 'text' && type !== 'multi' && ans[id] == null);
+    if (missing.length) return say(m, 'Answer every question with a scale or choice. Text answers are optional.', 'err');
+    const at = Date.now(), rec = { id: 'q' + at, kind: 'survey', phase, role, at, updatedAt: at, answers: ans };
+    const all = sessions(); all.push(rec); saveSessions(all.slice(-500)); Cloud.mark(rec.id);
+    o.remove(); toast('Thanks. Answers saved.', 'cyan', 2500); renderHubCards();
+  };
+  inner.append(m, send, h('button', { class: 'link', onclick: () => o.remove() }, 'Not now'));
+  document.body.append(o);
+}
+
 /* ---------- hub cards ---------- */
 function weekPractice() {
   const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - ((d.getDay() + 6) % 7));
@@ -1777,7 +2263,8 @@ function weekPractice() {
 }
 function renderHubCards() {
   const box = $('#hubCards'); if (!box) return;
-  const n = weekPractice(), cards = [];
+  const n = weekPractice(), cards = [], due = surveyDue();
+  if (due) cards.push(h('button', { class: 'hcard', style: 'border-color:var(--cyan)', onclick: () => openSurvey(due) }, h('div', {}, h('b', {}, 'Pilot check-in · 1 minute'), h('span', { class: 's' }, due === 'base' ? 'Start of the pilot' : 'After 6 weeks')), h('span', { class: 'go' }, 'Answer →')));
   cards.push(h('button', { class: 'hcard', onclick: openPractice }, h('div', {}, h('b', {}, 'Practice mode'), h('span', { class: 's' }, 'Training days · ' + Math.min(n, 3) + ' of 3 this week')), h('span', { class: 'go' }, 'Train →')));
   if (Cloud.user && Cloud.profile && Cloud.profile.role === 'coach') cards.push(h('button', { class: 'hcard', onclick: openCoach }, h('div', {}, h('b', {}, 'Coach dashboard'), h('span', { class: 's' }, 'Your team’s flow, alerts and what works')), h('span', { class: 'go' }, 'Open →')));
   box.replaceChildren(...cards);
@@ -1859,7 +2346,7 @@ function startPractice(type) {
     const { o, inner } = practiceShell('Clutch serves', 'Routine before every serve');
     let reps = 0, made = 0;
     const c = h('div', { class: 'counter' }, '0 / 0'), go = h('button', { class: 'btn btn-cyan' }, 'Go · Run routine'), fin = h('button', { class: 'btn btn-ghost' }, 'Finish');
-    const ask = h('div', { class: 'row', hidden: '' }), yes = h('button', { class: 'btn btn-primary' }, 'In'), no = h('button', { class: 'btn btn-ghost' }, 'Out');
+    const ask = h('div', { class: 'row', hidden: '' }), yes = h('button', { class: 'btn btn-primary' }, 'Serve in'), no = h('button', { class: 'btn btn-ghost' }, 'Serve out');
     ask.append(yes, no);
     inner.append(h('p', { style: 'margin:0' }, 'Before each serve, tap Go and follow the routine. Then tell the app whether it went in.'), c, go, ask, fin);
     Voice.key('p_clutch');
@@ -2059,6 +2546,8 @@ $('#profileHome').onclick = () => { renderHub(); show('hub'); };
 $('#stExit').onclick = closeEyePrimer;
 $('#muteBtn').onclick = () => { S.muted = !S.muted; Audio.setMuted(S.muted); $('#muteWave').style.display = S.muted ? 'none' : ''; $('#muteBtn').setAttribute('aria-label', S.muted ? 'Unmute audio' : 'Mute audio'); };
 
+$('#langBtn').onclick = switchLang;
+startI18n();
 renderHub(); renderCheckin(); Cloud.init();
 
 try {
