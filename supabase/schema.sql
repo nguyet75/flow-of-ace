@@ -215,3 +215,12 @@ begin
   end loop;
   execute 'revoke all on function public.new_team_code() from public, anon, authenticated';
 end $$;
+
+-- ============================================================
+-- Table privileges (v3). Newer Supabase projects don't grant table access to the API roles
+-- by default. Signed-in players get exactly the access their row-level security policies allow;
+-- anonymous visitors get none; team tables are reachable only through the functions above.
+-- ============================================================
+revoke all on public.profiles, public.sessions, public.teams, public.team_members from anon;
+revoke all on public.profiles, public.sessions, public.teams, public.team_members from authenticated;
+grant select, insert, update, delete on public.profiles, public.sessions to authenticated;
