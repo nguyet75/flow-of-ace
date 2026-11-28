@@ -765,7 +765,11 @@ window.FOA_CS = {
   'Go · Run routine': 'Start · Spustit rutinu', 'Practice logged': 'Trénink zapsán',
 
   // ---------- account ----------
-  'Your flow history': 'Tvoje historie flow', '▶ Watch the intro again': '▶ Pustit úvod znovu', 'Watch the intro again': 'Pustit úvod znovu', '▶ Play': '▶ Pustit', 'What is flow?': 'Co je flow?', 'Role': 'Role', 'Player': 'Hráč', 'Coach': 'Trenér', 'Admin': 'Správce', 'Open admin': 'Otevřít správu',
+  'Your flow history': 'Tvoje historie flow', 'That link has expired or was already used. Tap “Forgot password?” to get a new one.': 'Odkaz vypršel nebo už byl použit. Klepni na „Zapomenuté heslo?“ a pošleme nový.',
+  'Too many emails in the last hour. Wait a bit and try again.': 'Za poslední hodinu odešlo moc e-mailů. Chvíli počkej a zkus to znovu.',
+  'If that email has an account, a reset link is on its way. Open it and set a new password there. It works in any browser.': 'Pokud k tomu e-mailu existuje účet, posíláme odkaz pro obnovu. Otevři ho a nastav si tam nové heslo. Funguje v jakémkoli prohlížeči.',
+  'Password updated': 'Heslo změněno', 'You’re signed in here. If you use Flow of Ace from your home screen, open it and sign in there with your new password.': 'Tady jsi přihlášen(a). Pokud používáš Flow of Ace z plochy telefonu, otevři ji a přihlas se tam novým heslem.',
+  'Continue': 'Pokračovat', 'Set a new password': 'Nastav nové heslo', 'New password': 'Nové heslo', 'Save new password': 'Uložit nové heslo', '▶ Watch the intro again': '▶ Pustit úvod znovu', 'Watch the intro again': 'Pustit úvod znovu', '▶ Play': '▶ Pustit', 'What is flow?': 'Co je flow?', 'Role': 'Role', 'Player': 'Hráč', 'Coach': 'Trenér', 'Admin': 'Správce', 'Open admin': 'Otevřít správu',
   'Everyone’s accounts, roles and teams': 'Účty, role a týmy všech', 'Admins only.': 'Jen pro správce.', 'You’re offline. The admin screen needs a connection.': 'Jsi offline. Správa potřebuje připojení.',
   'Loading accounts…': 'Načítám účty…', 'Search name or email': 'Hledat jméno nebo e-mail', 'All': 'Všichni', 'Players': 'Hráči', 'Coaches': 'Trenéři', 'Admins': 'Správci',
   'No one matches.': 'Nikdo neodpovídá.', 'Refresh': 'Obnovit', 'Accounts': 'Účty', 'All teams': 'Všechny týmy', 'People · tap a name for their history': 'Lidé · klepni na jméno pro historii',
@@ -1190,8 +1194,14 @@ const Cloud = {
   enabled() { return !!(CFG.supabaseUrl && CFG.supabaseAnonKey && window.supabase && window.supabase.createClient); },
   async init() {
     if (!this.enabled()) { renderAcctBtn(); return; }
+    // An email link that failed (expired, already used) comes back with an error in the URL. Show it instead of failing silently.
+    const urlP = new URLSearchParams(location.hash.slice(1) + '&' + location.search.slice(1));
+    const linkErr = urlP.get('error_description');
+    if (linkErr) this.linkProblem = /expired|invalid/i.test(linkErr) ? 'That link has expired or was already used. Tap “Forgot password?” to get a new one.' : linkErr;
     try {
-      this.sb = window.supabase.createClient(CFG.supabaseUrl, CFG.supabaseAnonKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: 'pkce' } });
+      // Implicit flow: the email link carries the session itself, so it works in whichever browser opens it
+      // (Gmail's built-in browser, Safari, a home-screen app). PKCE links only worked in the browser that asked for them.
+      this.sb = window.supabase.createClient(CFG.supabaseUrl, CFG.supabaseAnonKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: 'implicit' } });
       this.sb.auth.onAuthStateChange((event, sess) => {
         if (event === 'PASSWORD_RECOVERY') { this.recovery = true; setTimeout(openAccount, 0); }
         setTimeout(() => this.setUser(sess ? sess.user : null), 0);
@@ -1207,12 +1217,15 @@ const Cloud = {
   async setUser(u) {
     const prev = this.user ? this.user.id : null, next = u ? u.id : null;
     this.user = u || null;
+    if (next && next === prev && this.loading) await this.loading; // another caller is still loading this user's profile
     if (next && next !== prev) {
+      let done; this.loading = new Promise(r => { done = r; });
       const owner = store.get('owner', null);
       if (owner && owner !== next) { saveSessions([]); this.dirty.clear(); store.set('dirty', []); }
       const guest = owner ? 0 : sessions().length;
       store.set('owner', next);
       try { await this.loadProfile(); await this.sync(); await this.myTeams(); } catch (e) { this.status = 'Sync failed. It will retry.'; }
+      done(); this.loading = null;
       if (guest) toast('Added ' + guest + ' session' + (guest === 1 ? '' : 's') + ' from this phone to your account', 'cyan', 3500);
       if (!this.profile || !this.profile.consent_at || !this.profile.health_consent_at) openAccount();
       renderHub(); renderCheckin();
@@ -1323,6 +1336,9 @@ function renderAccount() {
   const body = $('#acctBody'); body.replaceChildren();
   if (!Cloud.enabled()) { body.append(h('p', {}, 'Accounts aren’t switched on for this copy of the app. Everything is saved on this device.')); return; }
   if (Cloud.recovery && Cloud.user) return renderNewPassword(body);
+  if (Cloud.pwDone && Cloud.user) return body.append(h('h2', { style: 'font-size:30px' }, 'Password updated'),
+    h('p', {}, 'You’re signed in here. If you use Flow of Ace from your home screen, open it and sign in there with your new password.'),
+    h('button', { class: 'btn btn-primary', onclick: () => { Cloud.pwDone = false; renderHub(); renderCheckin(); show('hub'); } }, 'Continue'));
   if (!Cloud.user) return renderSignIn(body);
   if (!Cloud.profile || !Cloud.profile.consent_at || !Cloud.profile.health_consent_at) return renderProfileForm(body, true);
   renderAccountHome(body);
@@ -1355,7 +1371,7 @@ function renderSignIn(body) {
   forgot.onclick = async () => {
     if (!valid(false)) return;
     const { error } = await Cloud.sb.auth.resetPasswordForEmail(email.value.trim(), { redirectTo: redirectURL() });
-    say(m, error ? error.message : 'If that email has an account, a reset link is on its way.', error ? 'err' : 'ok');
+    say(m, error ? (/rate limit/i.test(error.message) ? 'Too many emails in the last hour. Wait a bit and try again.' : error.message) : 'If that email has an account, a reset link is on its way. Open it and set a new password there. It works in any browser.', error ? 'err' : 'ok');
   };
   const lang = h('button', { class: 'acct', style: 'flex:none', onclick: switchLang }, LANG === 'cs' ? 'EN' : 'CZ');
   const parts = [h('div', { class: 'brandrow' }, h('h1', { style: 'font-size:44px' }, 'Flow ', h('span', { class: 'of', style: 'color:var(--cyan);font-size:.55em;vertical-align:.2em' }, 'of'), ' ', h('b', { style: 'color:var(--optic)' }, 'Ace')), lang),
@@ -1370,6 +1386,7 @@ function renderSignIn(body) {
   parts.push(h('div', { class: 'field' }, h('label', { for: 'acEmail' }, 'Email'), email), h('div', { class: 'field' }, h('label', { for: 'acPass' }, 'Password'), pass),
     m, signIn, signUp, forgot, h('button', { class: 'link', onclick: openPrivacy }, 'How your data is handled'));
   body.append(...parts);
+  if (Cloud.linkProblem) { say(m, Cloud.linkProblem, 'err'); Cloud.linkProblem = null; }
 }
 function renderNewPassword(body) {
   const m = msgEl(), pass = h('input', { type: 'password', id: 'acNewPass', autocomplete: 'new-password', placeholder: 'At least 8 characters' });
@@ -1378,9 +1395,9 @@ function renderNewPassword(body) {
     if (pass.value.length < 8) return say(m, 'Password needs at least 8 characters.', 'err');
     const { error } = await Cloud.sb.auth.updateUser({ password: pass.value });
     if (error) return say(m, error.message, 'err');
-    Cloud.recovery = false; toast('Password updated', 'cyan', 2000); renderAccount();
+    Cloud.recovery = false; Cloud.pwDone = true; history.replaceState(null, '', location.pathname); toast('Password updated', 'cyan', 2500); renderAccount();
   };
-  body.append(h('h2', { style: 'font-size:30px' }, 'Set a new password'), h('div', { class: 'field' }, h('label', { for: 'acNewPass' }, 'New password'), pass), m, save);
+  body.append(h('h2', { style: 'font-size:30px' }, 'Set a new password'), h('p', { class: 'note' }, 'Signed in as ' + ((Cloud.user && Cloud.user.email) || 'your account') + '.'), h('div', { class: 'field' }, h('label', { for: 'acNewPass' }, 'New password'), pass), m, save);
 }
 function ageFromYear(y) { return y ? new Date().getFullYear() - y : null; }
 function renderProfileForm(body, setup) {
@@ -1660,7 +1677,7 @@ document.addEventListener('visibilitychange', () => { if (document.visibilitySta
 /* ---------- navigation ---------- */
 function gateStart() {
   Cloud.gated = true;
-  if (!store.get('introSeen', false)) { show('account'); openIntro(() => openAccount()); }
+  if (!store.get('introSeen', false) && !Cloud.recovery) { show('account'); openIntro(() => openAccount()); }
   else openAccount();
 }
 const needAuth = () => Cloud.enabled() && Cloud.ready && (!Cloud.user || !Cloud.profile || !Cloud.profile.consent_at || !Cloud.profile.health_consent_at);
